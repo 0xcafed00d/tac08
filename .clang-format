@@ -1,0 +1,12 @@
+﻿---
+BasedOnStyle: Chromium
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: None
+ColumnLimit: '100'
+IndentWidth: '4'
+NamespaceIndentation: All
+Standard: Cpp11
+TabWidth: '4'
+UseTab: ForIndentation
+
+...
