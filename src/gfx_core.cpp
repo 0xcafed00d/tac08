@@ -4,6 +4,7 @@
 static SDL_Window* sdlWin = nullptr;
 static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
+static SDL_PixelFormat* sdlPixFmt = nullptr;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -33,6 +34,9 @@ void GFX_End() {
 	if (sdlWin) {
 		SDL_DestroyWindow(sdlWin);
 	}
+	if (sdlPixFmt) {
+		SDL_FreeFormat(sdlPixFmt);
+	}
 	if (sdlTex) {
 		SDL_DestroyTexture(sdlTex);
 	}
@@ -44,6 +48,12 @@ void GFX_CreateBackBuffer(int x, int y) {
 	if (sdlTex == nullptr) {
 		throw_error("SDL_CreateTexture Error: ");
 	}
+
+	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
+}
+
+pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
+	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
 }
 
 void GFX_LockBackBuffer(pixel_t** pixels, int* pitch) {

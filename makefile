@@ -11,15 +11,25 @@ EXE = thing
 
 all: $(EXE)
 
-$(EXE): main.o gfx_core.o
+$(EXE): main.o gfx_core.o pico_core.o pico_data.o
 	$(CXX) $^ $(LDFLAGS) -o $@
+	cowsay "Built All The Things!!!"
 
-main.o: src/main.cpp src/gfx_core.h
+main.o: src/main.cpp src/gfx_core.h src/pico_core.h src/pico_data.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 gfx_core.o: src/gfx_core.cpp src/gfx_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
+pico_core.o: src/pico_core.cpp src/pico_core.h src/gfx_core.h
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h
+	$(CXX) $(CXXFLAGS) $< -o $@
+
 clean:
 	rm *.o && rm $(EXE)
 	
+run: all
+	./$(EXE)
+
