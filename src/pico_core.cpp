@@ -1,34 +1,80 @@
 #include "pico_core.h"
 
 static pixel_t palette[16];
+static pixel_t base_palette[16];
+static bool transparent[16];
+
 static pixel_t* backbuffer;
 static int backbuffer_pitch;
 static int buffer_size_x;
 static int buffer_size_y;
 
-static pixel_t sprite_data[128][128];
+struct SpriteSheet {
+	pico_api::colour_t sprite_data[128 * 128];
+	uint8_t flags;
+};
+
+static SpriteSheet spriteSheet;
+static SpriteSheet* currentSprData = &spriteSheet;
+
+namespace pico_private {
+
+	using namespace pico_api;
+
+	void restore_palette() {
+		for (size_t n = 0; n < 16; n++) {
+			palette[n] = base_palette[n];
+		}
+	}
+
+	void restore_transparency() {
+		for (size_t n = 0; n < 16; n++) {
+			transparent[n] = false;
+		}
+		transparent[0] = true;
+	}
+
+	static void blitter(int scr_x, int scr_y, int spr_x, int spr_y, int w, int h) {
+		pixel_t* pix = backbuffer + scr_y * backbuffer_pitch / sizeof(pixel_t) + scr_x;
+		colour_t* spr = currentSprData->sprite_data + spr_y * 128 + spr_x;
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				colour_t c = spr[x];
+				if (!transparent[c]) {
+					pix[x] = palette[c];
+				}
+			}
+			pix += backbuffer_pitch / sizeof(pixel_t);
+			spr += 128;
+		}
+	}
+}  // namespace pico_private
 
 namespace pico_control {
+
 	void init(int x, int y) {
 		buffer_size_x = x;
 		buffer_size_y = y;
 
-		palette[0] = GFX_GetPixel(0, 0, 0);
-		palette[1] = GFX_GetPixel(29, 43, 83);
-		palette[2] = GFX_GetPixel(126, 37, 83);
-		palette[3] = GFX_GetPixel(0, 135, 81);
-		palette[4] = GFX_GetPixel(171, 82, 54);
-		palette[5] = GFX_GetPixel(95, 87, 79);
-		palette[6] = GFX_GetPixel(194, 195, 199);
-		palette[7] = GFX_GetPixel(255, 241, 232);
-		palette[8] = GFX_GetPixel(255, 0, 77);
-		palette[9] = GFX_GetPixel(255, 163, 0);
-		palette[10] = GFX_GetPixel(255, 240, 36);
-		palette[11] = GFX_GetPixel(0, 231, 86);
-		palette[12] = GFX_GetPixel(41, 173, 255);
-		palette[13] = GFX_GetPixel(131, 118, 156);
-		palette[14] = GFX_GetPixel(255, 119, 168);
-		palette[15] = GFX_GetPixel(255, 204, 170);
+		base_palette[0] = GFX_GetPixel(0, 0, 0);
+		base_palette[1] = GFX_GetPixel(29, 43, 83);
+		base_palette[2] = GFX_GetPixel(126, 37, 83);
+		base_palette[3] = GFX_GetPixel(0, 135, 81);
+		base_palette[4] = GFX_GetPixel(171, 82, 54);
+		base_palette[5] = GFX_GetPixel(95, 87, 79);
+		base_palette[6] = GFX_GetPixel(194, 195, 199);
+		base_palette[7] = GFX_GetPixel(255, 241, 232);
+		base_palette[8] = GFX_GetPixel(255, 0, 77);
+		base_palette[9] = GFX_GetPixel(255, 163, 0);
+		base_palette[10] = GFX_GetPixel(255, 240, 36);
+		base_palette[11] = GFX_GetPixel(0, 231, 86);
+		base_palette[12] = GFX_GetPixel(41, 173, 255);
+		base_palette[13] = GFX_GetPixel(131, 118, 156);
+		base_palette[14] = GFX_GetPixel(255, 119, 168);
+		base_palette[15] = GFX_GetPixel(255, 204, 170);
+
+		pico_private::restore_palette();
+		pico_private::restore_transparency();
 	}
 
 	void set_buffer(pixel_t* buffer, int pitch) {
@@ -37,6 +83,15 @@ namespace pico_control {
 	}
 
 	void set_sprite_data(std::string data, std::string flags) {
+		size_t i = 0;
+		for (size_t n = 0; n < data.length(); n++) {
+			char buf[2] = {0};
+
+			if (data[n] > ' ') {
+				buf[0] = data[n];
+				currentSprData->sprite_data[i++] = strtol(buf, nullptr, 16);
+			}
+		}
 	}
 
 	void set_map_data(std::string data) {
@@ -46,7 +101,7 @@ namespace pico_control {
 
 namespace pico_api {
 
-	void cls(colour c) {
+	void cls(colour_t c) {
 		pixel_t p = palette[c];
 		pixel_t* pix = backbuffer;
 		for (int y = 0; y < buffer_size_y; y++) {
@@ -58,9 +113,29 @@ namespace pico_api {
 	}
 
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y) {
+		int spr_x = (n % 16) * 8;
+		int spr_y = (n / 16) * 8;
+		pico_private::blitter(x, y, spr_x, spr_y, w * 8, h * 8);
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
+	}
+
+	void pal(colour_t c0, colour_t c1) {
+		if (c0 == 255) {
+			pico_private::restore_palette();
+			pico_private::restore_transparency();
+			return;
+		}
+		palette[c0] = base_palette[c1];
+	}
+
+	void palt(colour_t col, bool t) {
+		if (col == 255) {
+			pico_private::restore_transparency();
+			return;
+		}
+		transparent[col] = t;
 	}
 
 	int btn(int n) {

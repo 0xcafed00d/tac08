@@ -4,9 +4,12 @@
 #include "gfx_core.h"
 
 namespace pico_api {
-	typedef uint8_t colour;
+	typedef uint8_t colour_t;
 
-	void cls(colour c);
+	void cls(colour_t c);
+	void pal(colour_t c0 = 255, colour_t c1 = 255);
+	void palt(colour_t col = 255, bool t = false);
+
 	void spr(int n, int x, int y, int w = 1, int h = 1, bool flip_x = false, bool flip_y = false);
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer = 0);
 	int btn(int n);
