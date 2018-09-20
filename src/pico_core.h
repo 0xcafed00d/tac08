@@ -7,11 +7,16 @@ namespace pico_api {
 	typedef uint8_t colour_t;
 
 	void cls(colour_t c);
+
 	void pal(colour_t c0 = 255, colour_t c1 = 255);
 	void palt(colour_t col = 255, bool t = false);
 
 	void spr(int n, int x, int y, int w = 1, int h = 1, bool flip_x = false, bool flip_y = false);
+
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer = 0);
+	uint8_t mget(int x, int y);
+	void mset(int x, int y, uint8_t v);
+
 	int btn(int n);
 	int btnp(int n);
 

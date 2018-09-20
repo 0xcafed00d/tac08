@@ -29,6 +29,8 @@ int main(int, char**) {
 			pico_control::set_buffer(pixels, pitch);
 
 			cls(1);
+			map(0, 0, 0, 0, 16, 16);
+
 			pal(13, 5);
 			spr(64, 9, 41, 14, 2);
 			pal(13, 7);

@@ -17,6 +17,13 @@ struct SpriteSheet {
 static SpriteSheet spriteSheet;
 static SpriteSheet* currentSprData = &spriteSheet;
 
+struct MapSheet {
+	uint8_t map_data[128 * 64];
+};
+
+static MapSheet mapSheet;
+static MapSheet* currentMapData = &mapSheet;
+
 namespace pico_private {
 
 	using namespace pico_api;
@@ -95,6 +102,16 @@ namespace pico_control {
 	}
 
 	void set_map_data(std::string data) {
+		size_t i = 0;
+		for (size_t n = 0; n < data.length(); n++) {
+			char buf[3] = {0};
+
+			if (data[n] > ' ') {
+				buf[0] = data[n++];
+				buf[1] = data[n];
+				currentMapData->map_data[i++] = strtol(buf, nullptr, 16);
+			}
+		}
 	}
 
 }  // namespace pico_control
@@ -119,6 +136,20 @@ namespace pico_api {
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
+		for (int y = 0; y < cell_h; y++) {
+			for (int x = 0; x < cell_w; x++) {
+				uint8_t cell = mget(cell_x + x, cell_y + y);
+				spr(cell, scr_x + x * 8, scr_y + y * 8);
+			}
+		}
+	}
+
+	uint8_t mget(int x, int y) {
+		return currentMapData->map_data[y * 128 + x];
+	}
+
+	void mset(int x, int y, uint8_t v) {
+		currentMapData->map_data[y * 128 + x] = v;
 	}
 
 	void pal(colour_t c0, colour_t c1) {
