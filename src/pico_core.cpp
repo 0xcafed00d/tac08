@@ -28,20 +28,39 @@ namespace pico_private {
 
 	using namespace pico_api;
 
-	void restore_palette() {
+	static void restore_palette() {
 		for (size_t n = 0; n < 16; n++) {
 			palette[n] = base_palette[n];
 		}
 	}
 
-	void restore_transparency() {
+	static void restore_transparency() {
 		for (size_t n = 0; n < 16; n++) {
 			transparent[n] = false;
 		}
 		transparent[0] = true;
 	}
 
+	static void clip_axis(int& dest_pos, int& src_pos, int& len, int min, int max) {
+		if (dest_pos < min) {
+			len = len - (min - dest_pos);
+			src_pos += (min - dest_pos);
+			dest_pos = min;
+		}
+
+		if ((dest_pos + len) > max) {
+			len = len - (dest_pos + len - max);
+		}
+
+		if (len < 0) {
+			len = 0;
+		}
+	}
+
 	static void blitter(int scr_x, int scr_y, int spr_x, int spr_y, int w, int h) {
+		clip_axis(scr_x, spr_x, w, 0, 128);
+		clip_axis(scr_y, spr_y, h, 0, 128);
+
 		pixel_t* pix = backbuffer + scr_y * backbuffer_pitch / sizeof(pixel_t) + scr_x;
 		colour_t* spr = currentSprData->sprite_data + spr_y * 128 + spr_x;
 		for (int y = 0; y < h; y++) {
