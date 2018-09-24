@@ -4,7 +4,7 @@ extern "C" {
 #include <SDL2/SDL.h>
 }
 
-#include "gfx_core.h"
+#include "hal_core.h"
 #include "pico_core.h"
 #include "pico_data.h"
 
@@ -26,6 +26,8 @@ int main(int, char**) {
 		if (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				break;
+			} else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+				INP_ProcessInputEvents(e);
 			}
 		} else {
 			using namespace pico_api;
@@ -34,6 +36,7 @@ int main(int, char**) {
 			int pitch;
 			GFX_LockBackBuffer(&pixels, &pitch);
 			pico_control::set_buffer(pixels, pitch);
+			pico_control::set_input_state(INP_GetInputState());
 
 			if (!init) {
 				pico_init();

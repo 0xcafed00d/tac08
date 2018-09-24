@@ -4,8 +4,8 @@ static pixel_t* backbuffer;
 static int backbuffer_pitch;
 static int buffer_size_x;
 static int buffer_size_y;
-
-pixel_t base_palette[16];
+static pixel_t base_palette[16];
+static int input_state[4] = {0, 0, 0, 0};
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
@@ -152,6 +152,10 @@ namespace pico_control {
 		}
 	}
 
+	void set_input_state(int state, int player) {
+		input_state[player] = state;
+	}
+
 }  // namespace pico_control
 
 namespace pico_api {
@@ -219,7 +223,7 @@ namespace pico_api {
 			y = currentGraphicsState->text_y;
 		}
 		if (c == UINT8_MAX) {
-			c == currentGraphicsState->fg;
+			c = currentGraphicsState->fg;
 		}
 
 		for (size_t n = 0; n < str.length(); n++) {
@@ -238,11 +242,11 @@ namespace pico_api {
 		currentGraphicsState->text_y = y + 6;
 	}
 
-	int btn(int n) {
-		return 0;
+	int btn(int n, int player) {
+		return (input_state[player] >> n) & 1;
 	}
 
-	int btnp(int n) {
-		return 0;
+	int btnp(int n, int player) {
+		return (input_state[player] >> n) & 1;
 	}
 }  // namespace pico_api

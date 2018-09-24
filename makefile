@@ -11,17 +11,17 @@ EXE = thing
 
 all: $(EXE)
 
-$(EXE): main.o gfx_core.o pico_core.o pico_data.o game.o
+$(EXE): main.o hal_core.o pico_core.o pico_data.o game.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 	cowsay "Built All The Things!!!"
 
-main.o: src/main.cpp src/gfx_core.h src/pico_core.h src/pico_data.h src/game.h
+main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/game.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-gfx_core.o: src/gfx_core.cpp src/gfx_core.h
+hal_core.o: src/hal_core.cpp src/hal_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_core.o: src/pico_core.cpp src/pico_core.h src/gfx_core.h
+pico_core.o: src/pico_core.cpp src/pico_core.h src/hal_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h

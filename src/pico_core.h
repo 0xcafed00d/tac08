@@ -1,7 +1,7 @@
 #ifndef PICO_CORE_H
 #define PICO_CORE_H
 
-#include "gfx_core.h"
+#include "hal_core.h"
 
 namespace pico_api {
 	typedef uint8_t colour_t;
@@ -19,8 +19,8 @@ namespace pico_api {
 
 	void print(std::string str, int x = INT32_MAX, int y = INT32_MAX, colour_t c = UINT8_MAX);
 
-	int btn(int n);
-	int btnp(int n);
+	int btn(int n, int player = 0);
+	int btnp(int n, int player = 0);
 
 }  // namespace pico_api
 
@@ -30,6 +30,7 @@ namespace pico_control {
 	void set_sprite_data(std::string data, std::string flags);
 	void set_map_data(std::string data);
 	void set_font_data(std::string data);
+	void set_input_state(int state, int player = 0);
 }  // namespace pico_control
 
 #endif /* PICO_CORE_H */
