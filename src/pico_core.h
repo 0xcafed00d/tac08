@@ -17,6 +17,8 @@ namespace pico_api {
 	uint8_t mget(int x, int y);
 	void mset(int x, int y, uint8_t v);
 
+	void print(std::string str, int x, int y, colour_t c);
+
 	int btn(int n);
 	int btnp(int n);
 
@@ -27,6 +29,7 @@ namespace pico_control {
 	void set_buffer(pixel_t* buffer, int pitch);
 	void set_sprite_data(std::string data, std::string flags);
 	void set_map_data(std::string data);
+	void set_font_data(std::string data);
 }  // namespace pico_control
 
 #endif /* PICO_CORE_H */

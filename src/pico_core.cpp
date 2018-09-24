@@ -1,19 +1,30 @@
 #include "pico_core.h"
 
-static pixel_t palette[16];
-static pixel_t base_palette[16];
-static bool transparent[16];
-
 static pixel_t* backbuffer;
 static int backbuffer_pitch;
 static int buffer_size_x;
 static int buffer_size_y;
+
+pixel_t base_palette[16];
+
+struct GraphicsState {
+	pico_api::colour_t fg = 7;
+	pico_api::colour_t bg = 0;
+	int text_x = 0;
+	int text_y = 0;
+	pixel_t palette[16];
+	bool transparent[16];
+};
+
+static GraphicsState graphicsState;
+static GraphicsState* currentGraphicsState = &graphicsState;
 
 struct SpriteSheet {
 	pico_api::colour_t sprite_data[128 * 128];
 	uint8_t flags;
 };
 
+static SpriteSheet fontSheet;
 static SpriteSheet spriteSheet;
 static SpriteSheet* currentSprData = &spriteSheet;
 
@@ -30,15 +41,15 @@ namespace pico_private {
 
 	static void restore_palette() {
 		for (size_t n = 0; n < 16; n++) {
-			palette[n] = base_palette[n];
+			currentGraphicsState->palette[n] = base_palette[n];
 		}
 	}
 
 	static void restore_transparency() {
 		for (size_t n = 0; n < 16; n++) {
-			transparent[n] = false;
+			currentGraphicsState->transparent[n] = false;
 		}
-		transparent[0] = true;
+		currentGraphicsState->transparent[0] = true;
 	}
 
 	static void clip_axis(int& dest_pos, int& src_pos, int& len, int min, int max) {
@@ -66,8 +77,8 @@ namespace pico_private {
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				colour_t c = spr[x];
-				if (!transparent[c]) {
-					pix[x] = palette[c];
+				if (!currentGraphicsState->transparent[c]) {
+					pix[x] = currentGraphicsState->palette[c];
 				}
 			}
 			pix += backbuffer_pitch / sizeof(pixel_t);
@@ -120,6 +131,13 @@ namespace pico_control {
 		}
 	}
 
+	void set_font_data(std::string data) {
+		SpriteSheet* old = currentSprData;
+		currentSprData = &fontSheet;
+		set_sprite_data(data, "");
+		currentSprData = old;
+	}
+
 	void set_map_data(std::string data) {
 		size_t i = 0;
 		for (size_t n = 0; n < data.length(); n++) {
@@ -138,7 +156,7 @@ namespace pico_control {
 namespace pico_api {
 
 	void cls(colour_t c) {
-		pixel_t p = palette[c];
+		pixel_t p = currentGraphicsState->palette[c];
 		pixel_t* pix = backbuffer;
 		for (int y = 0; y < buffer_size_y; y++) {
 			for (int x = 0; x < buffer_size_x; x++) {
@@ -177,7 +195,7 @@ namespace pico_api {
 			pico_private::restore_transparency();
 			return;
 		}
-		palette[c0] = base_palette[c1];
+		currentGraphicsState->palette[c0] = base_palette[c1];
 	}
 
 	void palt(colour_t col, bool t) {
@@ -185,7 +203,10 @@ namespace pico_api {
 			pico_private::restore_transparency();
 			return;
 		}
-		transparent[col] = t;
+		currentGraphicsState->transparent[col] = t;
+	}
+
+	void print(std::string str, int x, int y, colour_t c) {
 	}
 
 	int btn(int n) {

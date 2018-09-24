@@ -15,6 +15,7 @@ int main(int, char**) {
 	GFX_CreateBackBuffer(128, 128);
 	pico_control::init(128, 128);
 	pico_data::load_test_data();
+	pico_data::load_font_data();
 
 	bool init = false;
 
