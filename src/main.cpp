@@ -19,7 +19,7 @@ int main(int, char**) {
 
 	bool init = false;
 
-	uint32_t ticks = SDL_GetTicks();
+	uint32_t ticks = 0;
 
 	while (true) {
 		SDL_Event e;
@@ -32,20 +32,24 @@ int main(int, char**) {
 		} else {
 			using namespace pico_api;
 
-			pixel_t* pixels;
-			int pitch;
-			GFX_LockBackBuffer(&pixels, &pitch);
-			pico_control::set_buffer(pixels, pitch);
-			pico_control::set_input_state(INP_GetInputState());
+			if ((SDL_GetTicks() - ticks) > 20) {
+				pixel_t* pixels;
+				int pitch;
+				GFX_LockBackBuffer(&pixels, &pitch);
+				pico_control::set_buffer(pixels, pitch);
+				pico_control::set_input_state(INP_GetInputState());
 
-			if (!init) {
-				pico_init();
-				init = true;
+				if (!init) {
+					pico_init();
+					init = true;
+				}
+
+				pico_update();
+				pico_draw();
+				GFX_UnlockBackBuffer();
+
+				ticks = SDL_GetTicks();
 			}
-
-			pico_update();
-			pico_draw();
-			GFX_UnlockBackBuffer();
 			GFX_Flip();
 		}
 	}

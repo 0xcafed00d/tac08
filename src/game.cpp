@@ -3,6 +3,8 @@ using namespace pico_api;
 
 float bg_pos1;
 float bg_pos2;
+int x = 0;
+int y = 0;
 
 void pico_init() {
 	bg_pos1 = 0;
@@ -20,6 +22,19 @@ void update_bg() {
 
 void pico_update() {
 	update_bg();
+	if (btn(0)) {
+		x = x - 1;
+	}
+	if (btn(1)) {
+		x = x + 1;
+	}
+
+	if (btn(2)) {
+		y = y - 1;
+	}
+	if (btn(3)) {
+		y = y + 1;
+	}
 }
 
 void draw_bg1() {
@@ -30,8 +45,8 @@ void draw_bg1() {
 }
 
 void draw_bg2() {
-	map(0, 14, bg_pos2, 112, 16, 2);
-	map(0, 14, bg_pos2 + 128, 112, 16, 2);
+	map(0, 14, floorf(bg_pos2), 112, 16, 2);
+	map(0, 14, floorf(bg_pos2) + 128, 112, 16, 2);
 }
 
 void pico_draw() {
@@ -45,4 +60,5 @@ void pico_draw() {
 	spr(64, 8, 40, 14, 2);
 	pal();
 	print("press x or tap screen to start", 3, 70, 7);
+	spr(1, x, y);
 }
