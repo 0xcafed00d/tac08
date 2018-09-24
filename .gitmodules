@@ -1,0 +1,3 @@
+[submodule "src/z8lua"]
+	path = src/z8lua
+	url = https://github.com/simulatedsimian/z8lua.git
