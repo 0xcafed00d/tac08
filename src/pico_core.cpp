@@ -68,12 +68,13 @@ namespace pico_private {
 		}
 	}
 
-	static void blitter(int scr_x, int scr_y, int spr_x, int spr_y, int w, int h) {
+	static void
+	blitter(SpriteSheet& sprites, int scr_x, int scr_y, int spr_x, int spr_y, int w, int h) {
 		clip_axis(scr_x, spr_x, w, 0, 128);
 		clip_axis(scr_y, spr_y, h, 0, 128);
 
 		pixel_t* pix = backbuffer + scr_y * backbuffer_pitch / sizeof(pixel_t) + scr_x;
-		colour_t* spr = currentSprData->sprite_data + spr_y * 128 + spr_x;
+		colour_t* spr = sprites.sprite_data + spr_y * 128 + spr_x;
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				colour_t c = spr[x];
@@ -164,12 +165,14 @@ namespace pico_api {
 			}
 			pix += backbuffer_pitch / sizeof(pixel_t);
 		}
+		currentGraphicsState->text_x = 0;
+		currentGraphicsState->text_y = 0;
 	}
 
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y) {
 		int spr_x = (n % 16) * 8;
 		int spr_y = (n / 16) * 8;
-		pico_private::blitter(x, y, spr_x, spr_y, w * 8, h * 8);
+		pico_private::blitter(*currentSprData, x, y, spr_x, spr_y, w * 8, h * 8);
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
@@ -196,6 +199,8 @@ namespace pico_api {
 			return;
 		}
 		currentGraphicsState->palette[c0] = base_palette[c1];
+		currentGraphicsState->bg = 0;
+		currentGraphicsState->fg = 7;
 	}
 
 	void palt(colour_t col, bool t) {
@@ -207,6 +212,30 @@ namespace pico_api {
 	}
 
 	void print(std::string str, int x, int y, colour_t c) {
+		if (x == INT32_MAX) {
+			x = currentGraphicsState->text_x;
+		}
+		if (y == INT32_MAX) {
+			y = currentGraphicsState->text_y;
+		}
+		if (c == UINT8_MAX) {
+			c == currentGraphicsState->fg;
+		}
+
+		for (size_t n = 0; n < str.length(); n++) {
+			char ch = str[n];
+			if (ch >= ' ') {
+				int index = ch - 32;
+				pico_private::blitter(fontSheet, x, y, (index % 32) * 4, (index / 32) * 6, 4, 5);
+				x += 4;
+			} else if (ch == '\n') {
+				x = 0;
+				y += 6;
+			}
+		}
+
+		currentGraphicsState->text_x = 0;
+		currentGraphicsState->text_y = y + 6;
 	}
 
 	int btn(int n) {

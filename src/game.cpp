@@ -33,6 +33,7 @@ void draw_bg2() {
 	map(0, 14, bg_pos2, 112, 16, 2);
 	map(0, 14, bg_pos2 + 128, 112, 16, 2);
 }
+
 void pico_draw() {
 	draw_bg1();
 	draw_bg2();
@@ -43,4 +44,5 @@ void pico_draw() {
 	pal(13, 9);
 	spr(64, 8, 40, 14, 2);
 	pal();
+	print("press x or tap screen to start", 3, 70, 7);
 }
