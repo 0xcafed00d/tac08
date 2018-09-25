@@ -1,5 +1,6 @@
 #include "pico_data.h"
 #include "pico_core.h"
+#include "pico_script.h"
 
 const char* gfx =
     R"(00000000000aaa00008c8000009c9000000000000000000011111111111111111111111111111111bbbb3bbbbbbb3bbbb3bbbbbb444444440000000000000000
@@ -105,6 +106,472 @@ const char* font =
 00000000770077700777770000777000770007700000070000700070770707700000000070707070000000000000000000000000000000000000000000000000
 00000000077777000700070007777700077777000000000000000000077777007777777070707070000000000000000000000000000000000000000000000000)";
 
+const char* script = R"(
+g = {}
+
+function _init()
+	cartdata("jetdude_hs_data")
+	cls()
+	poke(0x5f2d, 1)
+	init_score()
+	set_mode("intro")
+	change_mode()
+end
+
+
+smoke_colours = {5, 13, 8, 9, 10, 10, 10, 10}
+explode_colours = {5, 13, 8, 9, 10, 7, 7, 7}
+
+function do_init()
+	bg_pos1=0
+	bg_pos2=0
+	p1_pos={x=12, y=64}
+	p1_dy=0
+	last_shoot=false
+	pipe_countdown=rnd(32)+50
+	pipe_size={w=16, h=64}
+	frame_count = 0
+	set_timer(0)
+
+	smoke = make_particles(
+		function (p) 
+			if (p.y + p.dy > 112) p.dy = -p.dy
+ 			p.x += p.dx
+ 			p.y += p.dy
+			p.dy = p.dy * 0.9
+ 		end, 
+		function (p)		
+			rectfill(p.x, p.y, p.x+1, p.y+1, smoke_colours[flr(p.ttl/3)])
+		end)
+	explode = make_particles(
+		function (p) 
+ 			p.x += p.dx
+ 			p.y += p.dy
+			p.dx = p.dx * 0.9
+			p.dy = p.dy * 0.9 + 0.2
+ 		end, 
+		function (p) 
+			if (p.size == nil) p.size=6
+			circfill( p.x, p.y, p.size, explode_colours[flr(p.ttl/2)+1])
+			p.size-=0.3
+		end)
+	sparks = make_particles()
+	shots = make_particles(nil, 
+		function (p)
+			clip(p1_pos.x, 0, 127 - p1_pos.x, 127)
+			sspr(0,8+band(p.ttl, 7)/2, 6*8, 1, p.x, p.y)
+			clip() 
+		end)
+	pipes = make_particles(nil, 
+		function (p)
+			map(pick(p.y<=0,18,16),0,p.x,p.y,2,8)
+		end)
+
+ 	aliens = make_particles( 
+		function (p)
+			p.y = 64 + sin(p.t)*32
+			p.t += 0.01
+		end,
+		function (p)
+			spr(pick(band(frame_count, 0x10) == 0,4,5), p.x, p.y)
+		end)
+
+end
+
+function set_mode (m)
+	_new_mode = m
+end
+
+function change_mode ()
+	_enter = true
+	do_update = g["update_".._new_mode]
+	do_draw = g["draw_".._new_mode]
+end
+
+
+function _update()
+	do_update(_enter)
+	update_timer()
+	frame_count+=1
+end 
+
+function _draw()
+	do_draw(_enter)
+	_enter = false
+	if (_new_mode ~= nil) then 
+		change_mode()
+		_new_mode = nil
+		_enter = true
+	end
+end
+
+function update_bg () 
+	bg_pos1-=1
+	bg_pos2-=1.5
+	if(bg_pos1<=-128) bg_pos1+=128	
+	if(bg_pos2<=-128) bg_pos2+=128	
+end
+
+g.update_intro = function (enter)
+	if (enter) do_init()
+	if (btn(5) or btn(4) or (stat(34) > 0)) set_mode("play")
+	update_bg()
+end
+
+g.update_play = function (enter)
+	if (enter) then 
+		init_score()
+	end
+ 
+	local shoot = btn(❎) or (stat(34) > 0)
+	local moving = false;
+
+	if(shoot) then 
+		p1_dy-=0.2
+		for i=0,2 do 
+			add_p(smoke, p1_pos.x+1, p1_pos.y+4+rnd(2),-0.02+rnd(5)/90, 2, 15+rnd(10))
+		end
+	else 
+		p1_dy+=0.1
+	end
+ 
+	p1_dy=limit(p1_dy,-5, 5)
+	p1_pos.y+=p1_dy
+	p1_pos.y=limit(p1_pos.y,0,104) 
+
+	if(p1_pos.y<104) then 
+		update_bg()
+		moving = true;
+	else
+		p1_dy = -p1_dy * 0.6
+	end	
+
+	if(p1_pos.y==0) p1_dy=limit(p1_dy, 0, 3)
+
+	if(shoot and not last_shoot) then
+		add_p(shots, p1_pos.x-48, p1_pos.y+4, 0.75, 6, 60)
+		sfx(0, 0)
+		sfx(1, 1)
+	end 
+
+	if(not shoot) sfx(-2, 1)
+
+	last_shoot=shoot
+
+	if(moving) then	
+		pipe_countdown-=1
+		if(pipe_countdown < 0) then
+			pipe_countdown=rnd(32)+32
+			local pos = pick(rnd(1)<0.5, irnd(50, 100), irnd(-50, 0)) 
+			local p = add_p(pipes, 150, pos, 0, 0, 180)
+			p.w, p.h = pipe_size.w, pipe_size.h
+
+			local a = add_p(aliens, p.x+4, 0, 0, 0, 180)
+			a.w,a.h=8,8
+			a.t = rnd(1)
+		end 
+	end
+
+	local p1_hitp = {x=p1_pos.x+4, y=p1_pos.y+4}
+	hit = p_in_rs(p1_hitp, pipes.ps) ~= nil
+	hit = hit or p_in_rs(p1_hitp, aliens.ps) ~= nil 
+	if (hit) then 
+		set_mode("gameover")
+		add_explosion(explode, p1_hitp.x, p1_hitp.y, 50)
+		sfx(3, 2)
+	end
+
+	for s in rall(shots.ps) do 
+		local sp = {x=s.x+40, y=s.y}
+		local hp = p_in_rs(sp, pipes.ps)
+		if (hp ~= nil) then 
+			add_explosion(sparks, sp.x, sp.y, 10)
+			del (shots.ps, s)
+			sfx(4, 3)
+		else
+			local ha = p_in_rs(sp, aliens.ps)
+			if (ha ~= nil) then 
+				del (aliens.ps, ha)
+				del (shots.ps, s)
+				add_explosion(explode, sp.x, sp.y, 30)
+				add_score(10)
+				sfx(3, 2)
+			end
+		end
+	end
+
+	local motion = pick (moving, -1.5, 0)
+	
+	update_p(pipes, motion, 0, moving)		
+	update_p(smoke)
+	update_p(shots)	
+	update_p(aliens, motion, 0, moving)	
+	update_p(explode, motion, 0)	
+	update_p(sparks, motion, 0)	
+
+	update_score()
+end
+
+g.update_gameover = function (enter)
+	if (enter) then 
+		set_timer(120)
+		sync_score() 
+		sfx(-2, 1)
+	end
+
+	update_p(explode)
+	update_p(sparks)
+	if (timer_exp()) then 
+		set_mode("intro")
+	end
+	
+end
+
+
+g.draw_intro = function ()
+	draw_bg1()
+	draw_bg2()
+	pal(13, 5)
+	spr(64, 9, 41, 14, 2)
+	pal(13, 7)
+	spr(64, 7, 39, 14, 2)
+	pal(13, 9)
+	spr(64, 8, 40, 14, 2)
+	pal()
+	draw_scores()
+	print("press ❎ or tap screen to start", 3, 70, 7)
+end
+
+bg_animation = {
+	{x=4, y=10, s=58, count=0},
+	{x=10, y=12, s=43, count=0},
+	{x=12, y=10, s=42, count=0}
+}
+
+function draw_bg1 ()
+	for a in all(bg_animation) do
+		if(a.count == 0) then 
+			local s = mget(a.x, a.y)
+			a.count = fget(a.s)
+			mset(a.x, a.y, a.s)
+			a.s = s
+		else
+			a.count-=1
+		end
+	end
+	palt(0, false)
+	map(0,0,bg_pos1,0,16,14)
+	map(0,0,bg_pos1+128,0,16,14)
+	palt(0, true)
+
+end
+
+function draw_bg2 ()
+	map(0,14,bg_pos2,112,16,2)
+	map(0,14,bg_pos2+128,112,16,2)
+end
+
+function draw_player ()
+	spr(1,p1_pos.x,p1_pos.y)
+end
+
+g.draw_play = function ()
+	draw_bg1()
+	draw_p(shots)
+	draw_p(smoke)
+	draw_p(aliens)
+	draw_p(pipes)
+	draw_p(explode)
+	draw_p(sparks)
+	draw_bg2()
+	draw_player()
+	draw_scores()
+end
+
+g.draw_gameover = function () 
+	draw_bg1()
+	draw_p(aliens)
+	draw_p(pipes)
+	draw_p(explode)
+	draw_p(sparks)
+	draw_bg2()
+	--draw_player()
+	draw_scores()
+
+	if(#explode.ps == 0) then 
+		print("game over", 51, 31, 0)
+		print("game over", 49, 31, 0)
+		print("game over", 51, 29, 0)
+		print("game over", 49, 29, 0)		
+		print("game over", 50, 30, 7)
+	end
+end
+ 
+-->8
+
+function set_timer(t)
+	_timer = t
+end
+
+function update_timer()
+	if (_timer > 0) _timer-=1 
+end
+
+function timer_exp ()
+	return _timer == 0
+end
+
+function rall(a)
+	local i = #a	
+	return function()
+		if(i==0) return nil
+		i-=1
+		return a[i+1] 
+	end	
+end
+
+function limit(v, lmin, lmax)
+	if(v < lmin) return lmin
+	if(v > lmax) return lmax
+	return v
+end
+
+function irnd(a, b)
+	return flr(rnd(b-a) + a)
+end
+
+function pick(f, a, b)
+	if(f) return a
+	return b
+end
+
+function add_v (a, b)
+	return {a.x + b.x, a.y + b.y}
+end
+
+function sub_v (a, b)
+	return {a.x - b.x, a.y - b.y}
+end
+
+-->8
+
+function make_particles (up, dp)
+	local p = {}
+	p.ps = {} 
+	if(up==nil) then
+ 	p.up = function (p) 
+ 		p.x += p.dx
+ 		p.y += p.dy
+ 	end
+ else
+ 	p.up = up
+ end
+	
+	if(dp==nil) then
+		p.dp = function (p)
+			pset(p.x, p.y, 7)
+		end
+	else 
+		p.dp = dp
+	end
+	return p
+end
+
+function add_p (ps, x, y, a, s, ttl)
+	local p = {}
+	p.x, p.y = x, y
+	p.dx, p.dy = sin(a) * s, cos(a) * s
+	p.ttl = ttl 
+	add(ps.ps, p)
+	return p
+end
+
+function update_p (ps, ox, oy, ttldec)
+	for p in rall(ps.ps) do 
+		if p.ttl<=0 then 
+			del(ps.ps, p)
+		else 
+			ps.up(p)
+			if (ox~=nil) p.x += ox
+			if (oy~=nil) p.y += oy
+			if (ttldec==nil or ttldec == true) p.ttl-=1
+		end
+	end
+end
+
+function draw_p (ps)
+	for p in all(ps.ps) do 
+		ps.dp(p)		
+	end
+end
+
+function add_explosion (ps, x, y, c) 
+	for n=0,c do
+		add_p(ps, x, y, rnd(1), rnd(1)+1, 10+rnd(10))
+	end
+end
+
+-->8
+
+function p_in_r (p, r)
+	if (p.x < r.x) return false
+	if (p.y < r.y) return false
+	if (p.x > r.x+r.w) return false
+	if (p.y > r.y+r.h) return false
+	return true
+end
+
+function p_in_rs (p, rs) 
+	for r in rall(rs) do 
+		if (p_in_r(p, r)) return r
+	end
+	return nil
+end
+-->8
+
+function init_score()
+	score_cur = 0;
+	score_disp = 0;
+	score_hi = dget (1);
+	new_hi = false
+end
+
+function update_score()
+	if(score_disp < score_cur) score_disp+=1
+	if(score_disp > score_hi) then 
+		score_hi = score_disp
+		new_hi = true
+	end
+end
+
+function sync_score()
+	score_disp = score_cur 
+	if(score_cur > score_hi) then 
+		score_hi = score_cur
+		new_hi = true
+	end
+	dset (1, score_hi)
+end
+
+function add_score (s)
+	score_cur+=s
+end
+
+function draw_score(x, y, scr, str, colour)
+	local s = tostr(scr)
+	str = sub(str,0,#str-#s)..s
+	print(str, x+1, y+1, 0)
+	print(str, x, y, colour)
+end
+
+function draw_scores()
+	draw_score(4,120,score_disp,"score: 000000", 7)
+	draw_score(84,120,score_hi,"hi: 000000", pick(new_hi and band(frame_count, 0x8)==0, 9, 7))
+end
+
+
+)";
+
 namespace pico_data {
 	void load_test_data() {
 		pico_control::set_sprite_data(gfx, gff);
@@ -113,6 +580,10 @@ namespace pico_data {
 
 	void load_font_data() {
 		pico_control::set_font_data(font);
+	}
+
+	void load_script() {
+		pico_script::load(script);
 	}
 
 }  // namespace pico_data

@@ -7,6 +7,7 @@ extern "C" {
 #include "hal_core.h"
 #include "pico_core.h"
 #include "pico_data.h"
+#include "pico_script.h"
 
 #include "game.h"
 
@@ -16,6 +17,7 @@ int main(int, char**) {
 	pico_control::init(128, 128);
 	pico_data::load_test_data();
 	pico_data::load_font_data();
+	pico_data::load_script();
 
 	bool init = false;
 
@@ -40,12 +42,16 @@ int main(int, char**) {
 				pico_control::set_input_state(INP_GetInputState());
 
 				if (!init) {
-					pico_init();
+					// pico_init();
+					pico_script::run("_init");
 					init = true;
 				}
 
-				pico_update();
-				pico_draw();
+				// pico_update();
+				// pico_draw();
+				pico_script::run("_update");
+				pico_script::run("_draw");
+
 				GFX_UnlockBackBuffer();
 
 				ticks = SDL_GetTicks();

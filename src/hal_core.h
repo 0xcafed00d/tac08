@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <stdexcept>
 
-typedef std::runtime_error gfx_exception;
+struct gfx_exception : public std::runtime_error {
+	using std::runtime_error::runtime_error;
+};
 
 typedef uint16_t pixel_t;
 
