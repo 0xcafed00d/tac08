@@ -6,7 +6,7 @@ SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
 LUA_LIB =  -Lsrc/z8lua -lz8lua 
 SDL_INCLUDE = -I/usr/local/include
 # You may need to change -std=c++11 to -std=c++0x if your compiler is a bit older
-CXXFLAGS = -Wall -c -std=c++11 $(SDL_INCLUDE)
+CXXFLAGS = -Wall -Wno-unused-variable -Wno-unused-but-set-variable -c -std=c++11 $(SDL_INCLUDE)
 LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
 EXE = thing
 
@@ -14,7 +14,7 @@ all: $(EXE)
 
 $(EXE): main.o hal_core.o pico_core.o pico_data.o game.o pico_script.o
 	$(CXX) $^ $(LDFLAGS) -o $@
-	cowsay "Built All The Things!!!"
+	@cowsay "Built All The Things!!!"
 
 main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/pico_script.h src/game.h
 	$(CXX) $(CXXFLAGS) $< -o $@

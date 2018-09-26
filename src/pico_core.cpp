@@ -173,6 +173,10 @@ namespace pico_api {
 		currentGraphicsState->text_y = 0;
 	}
 
+	void cls() {
+		cls(0);
+	}
+
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y) {
 		int spr_x = (n % 16) * 8;
 		int spr_y = (n / 16) * 8;

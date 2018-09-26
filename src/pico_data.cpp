@@ -340,7 +340,7 @@ g.draw_intro = function ()
 	spr(64, 8, 40, 14, 2)
 	pal()
 	draw_scores()
-	print("press ❎ or tap screen to start", 3, 70, 7)
+	print("press x or tap screen to start", 3, 70, 7)
 end
 
 bg_animation = {

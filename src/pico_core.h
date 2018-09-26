@@ -7,6 +7,7 @@ namespace pico_api {
 	typedef uint8_t colour_t;
 
 	void cls(colour_t c);
+	void cls();
 
 	void pal(colour_t c0 = 255, colour_t c1 = 255);
 	void palt(colour_t col = 255, bool t = false);
