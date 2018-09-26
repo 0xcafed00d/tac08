@@ -109,6 +109,7 @@ const char* font =
 const char* script = R"(
 g = {}
 
+
 function _init()
 	cartdata("jetdude_hs_data")
 	cls()
@@ -223,7 +224,7 @@ g.update_play = function (enter)
 		init_score()
 	end
  
-	local shoot = btn(❎) or (stat(34) > 0)
+	local shoot = btn(5) or (stat(34) > 0)
 	local moving = false;
 
 	if(shoot) then 

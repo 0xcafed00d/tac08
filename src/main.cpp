@@ -11,7 +11,7 @@ extern "C" {
 
 #include "game.h"
 
-int main(int, char**) {
+int safe_main(int, char**) {
 	GFX_Init(512, 512);
 	GFX_CreateBackBuffer(128, 128);
 	pico_control::init(128, 128);
@@ -60,4 +60,15 @@ int main(int, char**) {
 		}
 	}
 	GFX_End();
+	return 0;
+}
+
+int main(int argc, char** argv) {
+	try {
+		return safe_main(argc, argv);
+	} catch (gfx_exception& err) {
+		std::cerr << err.what() << std::endl;
+	} catch (pico_script::error& err) {
+		std::cerr << err.what() << std::endl;
+	}
 }
