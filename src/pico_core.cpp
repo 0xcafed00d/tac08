@@ -199,14 +199,14 @@ namespace pico_api {
 		pico_private::blitter(*currentSprData, dx, dy, sx, sy, sw, sh);
 	}
 
-	void pset(int x, int y, int colour) {
+	void pset(int x, int y) {
+		pset(x, y, currentGraphicsState->fg);
+	}
+
+	void pset(int x, int y, colour_t colour) {
 		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
 		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
-		}
-
-		if (colour == INT32_MAX) {
-			colour = currentGraphicsState->fg;
 		}
 
 		pixel_t* pix = backbuffer + y * backbuffer_pitch / sizeof(pixel_t) + x;
@@ -248,18 +248,15 @@ namespace pico_api {
 	void palt() {
 		pico_private::restore_transparency();
 	}
+	void print(std::string str) {
+		print(str, currentGraphicsState->text_x, currentGraphicsState->text_y);
+	}
 
-	void print(std::string str, int x, int y, int c) {
-		if (x == INT32_MAX) {
-			x = currentGraphicsState->text_x;
-		}
-		if (y == INT32_MAX) {
-			y = currentGraphicsState->text_y;
-		}
-		if (c == INT32_MAX) {
-			c = currentGraphicsState->fg;
-		}
+	void print(std::string str, int x, int y) {
+		print(str, x, y, currentGraphicsState->fg);
+	}
 
+	void print(std::string str, int x, int y, colour_t c) {
 		pixel_t old = currentGraphicsState->palette[7];
 		currentGraphicsState->palette[7] = base_palette[c & 0xf];
 
@@ -279,7 +276,7 @@ namespace pico_api {
 		currentGraphicsState->text_y = y + 6;
 
 		currentGraphicsState->palette[7] = old;
-	}
+	}  // namespace pico_api
 
 	int btn(int n, int player) {
 		return (input_state[player] >> n) & 1;

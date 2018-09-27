@@ -220,10 +220,17 @@ static int impl_sspr(lua_State* ls) {
 
 static int impl_print(lua_State* ls) {
 	auto s = luaL_tolstring(ls, 1, nullptr);
-	auto x = luaL_optnumber(ls, 2, INT32_MAX);
-	auto y = luaL_optnumber(ls, 3, INT32_MAX);
-	auto c = luaL_optnumber(ls, 4, INT32_MAX);
-
+	if (lua_gettop(ls) == 1) {
+		pico_api::print(s);
+		return 0;
+	}
+	auto x = luaL_checknumber(ls, 2);
+	auto y = luaL_checknumber(ls, 3);
+	if (lua_gettop(ls) == 3) {
+		pico_api::print(s, x, y);
+		return 0;
+	}
+	auto c = luaL_checknumber(ls, 4);
 	pico_api::print(s, x, y, c);
 	return 0;
 }

@@ -20,13 +20,16 @@ namespace pico_api {
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y);
 
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy);
-	void pset(int x, int y, int colour = INT32_MAX);
+	void pset(int x, int y);
+	void pset(int x, int y, colour_t colour);
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer = 0);
 	uint8_t mget(int x, int y);
 	void mset(int x, int y, uint8_t v);
 
-	void print(std::string str, int x = INT32_MAX, int y = INT32_MAX, int c = INT32_MAX);
+	void print(std::string str);
+	void print(std::string str, int x, int y);
+	void print(std::string str, int x, int y, colour_t c);
 
 	int btn(int n, int player = 0);
 	int btnp(int n, int player = 0);
