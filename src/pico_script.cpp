@@ -49,12 +49,6 @@ static std::string firmware = R"(
 		return 0
 	end
 
-	function rectfill()
-	end
-
-	function circfill()
-	end
-
 )";
 
 static void init_scripting() {
@@ -267,6 +261,108 @@ static int impl_clip(lua_State* ls) {
 	return 0;
 }
 
+static int impl_rectfill(lua_State* ls) {
+	auto x0 = luaL_checknumber(ls, 1);
+	auto y0 = luaL_checknumber(ls, 2);
+	auto x1 = luaL_checknumber(ls, 3);
+	auto y1 = luaL_checknumber(ls, 4);
+
+	if (lua_gettop(ls) == 4) {
+		pico_api::rectfill(x0, y0, x1, y1);
+		return 0;
+	}
+
+	if (lua_isnil(ls, 5)) {
+		pico_api::rectfill(x0, y0, x1, y1, 0);
+	} else {
+		auto c = luaL_checknumber(ls, 5);
+		pico_api::rectfill(x0, y0, x1, y1, c);
+	}
+
+	return 0;
+}
+
+static int impl_rect(lua_State* ls) {
+	auto x0 = luaL_checknumber(ls, 1);
+	auto y0 = luaL_checknumber(ls, 2);
+	auto x1 = luaL_checknumber(ls, 3);
+	auto y1 = luaL_checknumber(ls, 4);
+
+	if (lua_gettop(ls) == 4) {
+		pico_api::rectfill(x0, y0, x1, y1);
+		return 0;
+	}
+
+	if (lua_isnil(ls, 5)) {
+		pico_api::rectfill(x0, y0, x1, y1, 0);
+	} else {
+		auto c = luaL_checknumber(ls, 5);
+		pico_api::rectfill(x0, y0, x1, y1, c);
+	}
+
+	return 0;
+}
+
+static int impl_circfill(lua_State* ls) {
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+	auto r = luaL_checknumber(ls, 3);
+
+	if (lua_gettop(ls) == 3) {
+		pico_api::circfill(x, y, r);
+		return 0;
+	}
+
+	if (lua_isnil(ls, 4)) {
+		pico_api::circfill(x, y, r, 0);
+	} else {
+		auto c = luaL_checknumber(ls, 4);
+		pico_api::circfill(x, y, r, c);
+	}
+
+	return 0;
+}
+
+static int impl_circ(lua_State* ls) {
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+	auto r = luaL_checknumber(ls, 3);
+
+	if (lua_gettop(ls) == 3) {
+		pico_api::circ(x, y, r);
+		return 0;
+	}
+
+	if (lua_isnil(ls, 4)) {
+		pico_api::circ(x, y, r, 0);
+	} else {
+		auto c = luaL_checknumber(ls, 4);
+		pico_api::circ(x, y, r, c);
+	}
+
+	return 0;
+}
+
+static int impl_line(lua_State* ls) {
+	auto x0 = luaL_checknumber(ls, 1);
+	auto y0 = luaL_checknumber(ls, 2);
+	auto x1 = luaL_checknumber(ls, 3);
+	auto y1 = luaL_checknumber(ls, 4);
+
+	if (lua_gettop(ls) == 4) {
+		pico_api::line(x0, y0, x1, y1);
+		return 0;
+	}
+
+	if (lua_isnil(ls, 5)) {
+		pico_api::line(x0, y0, x1, y1, 0);
+	} else {
+		auto c = luaL_checknumber(ls, 5);
+		pico_api::line(x0, y0, x1, y1, c);
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -289,6 +385,11 @@ static void register_cfuncs() {
 	register_cfunc("pget", impl_pget);
 	register_cfunc("pset", impl_pset);
 	register_cfunc("clip", impl_clip);
+	register_cfunc("rectfill", impl_rectfill);
+	register_cfunc("rect", impl_rect);
+	register_cfunc("circfill", impl_circfill);
+	register_cfunc("circ", impl_circ);
+	register_cfunc("line", impl_line);
 }
 
 namespace pico_script {

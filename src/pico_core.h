@@ -23,6 +23,19 @@ namespace pico_api {
 	void pset(int x, int y);
 	void pset(int x, int y, colour_t colour);
 
+	void rect(int x0, int y0, int x1, int y1);
+	void rect(int x0, int y0, int x1, int y1, colour_t c);
+	void rectfill(int x0, int y0, int x1, int y1);
+	void rectfill(int x0, int y0, int x1, int y1, colour_t c);
+
+	void circ(int x, int y, int r);
+	void circ(int x, int y, int r, colour_t c);
+	void circfill(int x, int y, int r);
+	void circfill(int x, int y, int r, colour_t c);
+
+	void line(int x0, int y0, int x1, int y1);
+	void line(int x0, int y0, int x1, int y1, colour_t c);
+
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer = 0);
 	uint8_t mget(int x, int y);
 	void mset(int x, int y, uint8_t v);

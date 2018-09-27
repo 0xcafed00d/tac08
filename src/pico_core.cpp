@@ -213,6 +213,60 @@ namespace pico_api {
 		*pix = currentGraphicsState->palette[colour & 0x0f];
 	}
 
+	void rect(int x0, int y0, int x1, int y1) {
+		rect(x0, y0, x1, y1, currentGraphicsState->fg);
+	}
+	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+	}
+
+	void rectfill(int x0, int y0, int x1, int y1) {
+		rectfill(x0, y0, x1, y1, currentGraphicsState->fg);
+	}
+
+	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
+		if (x0 < currentGraphicsState->clip_x1)
+			x0 = currentGraphicsState->clip_x1;
+
+		if (y0 < currentGraphicsState->clip_y1)
+			y0 = currentGraphicsState->clip_y1;
+
+		if (x1 >= currentGraphicsState->clip_x2)
+			x1 = currentGraphicsState->clip_x2 - 1;
+
+		if (y1 >= currentGraphicsState->clip_y2)
+			y1 = currentGraphicsState->clip_y2 - 1;
+
+		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
+		for (int y = y0; y <= y1; y++) {
+			for (int x = x0; x <= x1; x++) {
+				pix[x] = currentGraphicsState->palette[c & 0x0f];
+			}
+			pix += backbuffer_pitch / sizeof(pixel_t);
+		}
+	}
+
+	void circ(int x, int y, int r) {
+		circ(x, y, r, currentGraphicsState->fg);
+	}
+
+	void circ(int x, int y, int r, colour_t c) {
+	}
+
+	void circfill(int x, int y, int r) {
+		circfill(x, y, r, currentGraphicsState->fg);
+	}
+
+	void circfill(int x, int y, int r, colour_t c) {
+		rectfill(x, y, x + r, y + r, c);
+	}
+
+	void line(int x0, int y0, int x1, int y1) {
+		line(x0, y0, x1, y1, currentGraphicsState->fg);
+	}
+
+	void line(int x0, int y0, int x1, int y1, colour_t c) {
+	}
+
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
