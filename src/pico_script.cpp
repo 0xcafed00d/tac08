@@ -16,6 +16,8 @@ static void throw_error(int err) {
 }
 
 static std::string firmware = R"(
+	printh = print
+
 	function all(a)
 		local i = 0
 		local n = #a
@@ -28,9 +30,17 @@ static std::string firmware = R"(
 	end
 
 	sub = string.sub
-
-	function add(a, b)
+	add = table.insert
+	function del(a, val)
+		for k, v in ipairs(a) do
+			if val == v then
+				table.remove(a, k)
+				return
+			end
+		end
 	end
+
+	-- TODO: implement these functions:
 
 	function sfx(a, b)
 	end
@@ -38,6 +48,16 @@ static std::string firmware = R"(
 	function stat() 
 		return 0
 	end
+
+	function clip()
+	end
+
+	function rectfill()
+	end
+
+	function circfill()
+	end
+
 )";
 
 static void init_scripting() {
@@ -59,7 +79,7 @@ static void register_cfunc(const char* name, lua_CFunction cf) {
 // ------------------------------------------------------------------
 static int impl_cartdata(lua_State* ls) {
 	auto s = luaL_checkstring(ls, 1);
-
+	// TODO: implement
 	return 0;
 }
 
@@ -77,18 +97,40 @@ static int impl_cls(lua_State* ls) {
 static int impl_poke(lua_State* ls) {
 	auto a = luaL_checknumber(ls, 1);
 	auto v = luaL_checknumber(ls, 2);
+	// TODO: implement
 	return 0;
 }
 
 static int impl_dget(lua_State* ls) {
 	auto a = luaL_checknumber(ls, 1);
 	lua_pushnumber(ls, 0);
+	// TODO: implement
 	return 1;
 }
 
-static int impl_btn(lua_State* ls) {
+static int impl_dset(lua_State* ls) {
 	auto a = luaL_checknumber(ls, 1);
-	lua_pushboolean(ls, false);
+	// TODO: implement
+	return 0;
+}
+
+static int impl_btn(lua_State* ls) {
+	auto n = luaL_checknumber(ls, 1);
+	auto p = luaL_optnumber(ls, 2, 0);
+
+	auto val = pico_api::btn(n, p);
+
+	lua_pushboolean(ls, val);
+	return 1;
+}
+
+static int impl_btnp(lua_State* ls) {
+	auto n = luaL_checknumber(ls, 1);
+	auto p = luaL_optnumber(ls, 2, 0);
+
+	auto val = pico_api::btnp(n, p);
+
+	lua_pushboolean(ls, val);
 	return 1;
 }
 
@@ -145,15 +187,51 @@ static int impl_spr(lua_State* ls) {
 	auto n = luaL_checknumber(ls, 1);
 	auto x = luaL_checknumber(ls, 2);
 	auto y = luaL_checknumber(ls, 3);
-	auto w = luaL_checknumber(ls, 4);
-	auto h = luaL_checknumber(ls, 5);
+	auto w = luaL_optnumber(ls, 4, 1);
+	auto h = luaL_optnumber(ls, 5, 1);
 
 	pico_api::spr(n, x, y, w, h);
 
 	return 0;
 }
 
+static int impl_sspr(lua_State* ls) {
+	auto sx = luaL_checknumber(ls, 1);
+	auto sy = luaL_checknumber(ls, 2);
+	auto sw = luaL_checknumber(ls, 3);
+	auto sh = luaL_checknumber(ls, 4);
+	auto dx = luaL_checknumber(ls, 5);
+	auto dy = luaL_checknumber(ls, 6);
+
+	pico_api::sspr(sx, sy, sw, sh, dx, dy);
+
+	return 0;
+}
+
 static int impl_print(lua_State* ls) {
+	auto s = luaL_tolstring(ls, 1, nullptr);
+	auto x = luaL_optnumber(ls, 2, INT32_MAX);
+	auto y = luaL_optnumber(ls, 3, INT32_MAX);
+	auto c = luaL_optnumber(ls, 4, INT32_MAX);
+
+	pico_api::print(s, x, y, c);
+	return 0;
+}
+
+static int impl_pget(lua_State* ls) {
+	auto a = luaL_checknumber(ls, 1);
+	lua_pushnumber(ls, 0);
+	// TODO: implement
+	return 1;
+}
+
+static int impl_pset(lua_State* ls) {
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+	auto c = luaL_checknumber(ls, 3);
+
+	pico_api::pset(x, y, c);
+
 	return 0;
 }
 
@@ -164,7 +242,9 @@ static void register_cfuncs() {
 	register_cfunc("cls", impl_cls);
 	register_cfunc("poke", impl_poke);
 	register_cfunc("dget", impl_dget);
+	register_cfunc("dset", impl_dset);
 	register_cfunc("btn", impl_btn);
+	register_cfunc("btnp", impl_btnp);
 	register_cfunc("mget", impl_mget);
 	register_cfunc("mset", impl_mset);
 	register_cfunc("fget", impl_fget);
@@ -172,7 +252,10 @@ static void register_cfuncs() {
 	register_cfunc("map", impl_map);
 	register_cfunc("pal", impl_pal);
 	register_cfunc("spr", impl_spr);
+	register_cfunc("sspr", impl_sspr);
 	register_cfunc("print", impl_print);
+	register_cfunc("pget", impl_pget);
+	register_cfunc("pset", impl_pset);
 }
 
 namespace pico_script {
