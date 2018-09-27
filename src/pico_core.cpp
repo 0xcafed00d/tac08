@@ -12,6 +12,10 @@ struct GraphicsState {
 	pico_api::colour_t bg = 0;
 	int text_x = 0;
 	int text_y = 0;
+	int clip_x1 = 0;
+	int clip_y1 = 0;
+	int clip_x2 = 128;
+	int clip_y2 = 128;
 	pixel_t palette[16];
 	bool transparent[16];
 };
@@ -70,8 +74,8 @@ namespace pico_private {
 
 	static void
 	blitter(SpriteSheet& sprites, int scr_x, int scr_y, int spr_x, int spr_y, int w, int h) {
-		clip_axis(scr_x, spr_x, w, 0, 128);
-		clip_axis(scr_y, spr_y, h, 0, 128);
+		clip_axis(scr_x, spr_x, w, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
+		clip_axis(scr_y, spr_y, h, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
 
 		pixel_t* pix = backbuffer + scr_y * backbuffer_pitch / sizeof(pixel_t) + scr_x;
 		colour_t* spr = sprites.sprite_data + spr_y * 128 + spr_x;
@@ -188,7 +192,8 @@ namespace pico_api {
 	}
 
 	void pset(int x, int y, int colour) {
-		if (x < 0 || x > 127 || y < 0 || y > 127) {
+		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
+		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
 		}
 
@@ -275,4 +280,16 @@ namespace pico_api {
 	int btnp(int n, int player) {
 		return (input_state[player] >> n) & 1;
 	}
+
+	void clip(int x, int y, int w, int h) {
+		currentGraphicsState->clip_x1 = x;
+		currentGraphicsState->clip_y1 = y;
+		currentGraphicsState->clip_x2 = x + w;
+		currentGraphicsState->clip_y2 = y + h;
+	}
+
+	void clip() {
+		clip(0, 0, 128, 128);
+	}
+
 }  // namespace pico_api

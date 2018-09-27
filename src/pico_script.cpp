@@ -235,6 +235,21 @@ static int impl_pset(lua_State* ls) {
 	return 0;
 }
 
+static int impl_clip(lua_State* ls) {
+	if (lua_gettop(ls) == 0) {
+		pico_api::clip();
+	} else {
+		auto x = luaL_checknumber(ls, 1);
+		auto y = luaL_checknumber(ls, 2);
+		auto w = luaL_checknumber(ls, 3);
+		auto h = luaL_checknumber(ls, 4);
+
+		pico_api::clip(x, y, w, h);
+	}
+
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -256,6 +271,7 @@ static void register_cfuncs() {
 	register_cfunc("print", impl_print);
 	register_cfunc("pget", impl_pget);
 	register_cfunc("pset", impl_pset);
+	register_cfunc("clip", impl_clip);
 }
 
 namespace pico_script {

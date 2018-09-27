@@ -25,6 +25,9 @@ namespace pico_api {
 	int btn(int n, int player = 0);
 	int btnp(int n, int player = 0);
 
+	void clip(int x, int y, int w, int h);
+	void clip();
+
 }  // namespace pico_api
 
 namespace pico_control {
