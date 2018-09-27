@@ -49,9 +49,6 @@ static std::string firmware = R"(
 		return 0
 	end
 
-	function clip()
-	end
-
 	function rectfill()
 	end
 
@@ -86,11 +83,10 @@ static int impl_cartdata(lua_State* ls) {
 static int impl_cls(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::cls();
-		return 0;
+	} else {
+		auto n = luaL_checknumber(ls, 1);
+		pico_api::cls(n);
 	}
-
-	auto n = luaL_checknumber(ls, 1);
-	pico_api::cls(n);
 	return 0;
 }
 
@@ -187,10 +183,24 @@ static int impl_spr(lua_State* ls) {
 	auto n = luaL_checknumber(ls, 1);
 	auto x = luaL_checknumber(ls, 2);
 	auto y = luaL_checknumber(ls, 3);
-	auto w = luaL_optnumber(ls, 4, 1);
-	auto h = luaL_optnumber(ls, 5, 1);
 
-	pico_api::spr(n, x, y, w, h);
+	if (lua_gettop(ls) == 3) {
+		pico_api::spr(n, x, y);
+		return 0;
+	}
+
+	auto w = luaL_checknumber(ls, 4);
+	auto h = luaL_checknumber(ls, 5);
+
+	if (lua_gettop(ls) == 5) {
+		pico_api::spr(n, x, y, w, h);
+		return 0;
+	}
+
+	auto flip_x = lua_toboolean(ls, 6);
+	auto flip_y = lua_toboolean(ls, 7);
+
+	pico_api::spr(n, x, y, w, h, flip_x, flip_y);
 
 	return 0;
 }

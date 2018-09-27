@@ -9,10 +9,16 @@ namespace pico_api {
 	void cls(colour_t c);
 	void cls();
 
-	void pal(colour_t c0 = 255, colour_t c1 = 255);
-	void palt(colour_t col = 255, bool t = false);
+	void pal(colour_t c0, colour_t c1);
+	void pal();
 
-	void spr(int n, int x, int y, int w = 1, int h = 1, bool flip_x = false, bool flip_y = false);
+	void palt(colour_t col, bool t);
+	void palt();
+
+	void spr(int n, int x, int y);
+	void spr(int n, int x, int y, int w, int h);
+	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y);
+
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy);
 	void pset(int x, int y, int colour = INT32_MAX);
 

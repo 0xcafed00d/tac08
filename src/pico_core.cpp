@@ -181,6 +181,14 @@ namespace pico_api {
 		cls(0);
 	}
 
+	void spr(int n, int x, int y) {
+		spr(n, x, y, 1, 1, false, false);
+	}
+
+	void spr(int n, int x, int y, int w, int h) {
+		spr(n, x, y, w, h, false, false);
+	}
+
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y) {
 		int spr_x = (n % 16) * 8;
 		int spr_y = (n / 16) * 8;
@@ -223,22 +231,22 @@ namespace pico_api {
 	}
 
 	void pal(colour_t c0, colour_t c1) {
-		if (c0 == 255) {
-			pico_private::restore_palette();
-			pico_private::restore_transparency();
-			return;
-		}
 		currentGraphicsState->palette[c0] = base_palette[c1];
 		currentGraphicsState->bg = 0;
 		currentGraphicsState->fg = 7;
 	}
 
+	void pal() {
+		pico_private::restore_palette();
+		pico_private::restore_transparency();
+	}
+
 	void palt(colour_t col, bool t) {
-		if (col == 255) {
-			pico_private::restore_transparency();
-			return;
-		}
 		currentGraphicsState->transparent[col] = t;
+	}
+
+	void palt() {
+		pico_private::restore_transparency();
 	}
 
 	void print(std::string str, int x, int y, int c) {

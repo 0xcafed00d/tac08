@@ -109,7 +109,6 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		if (ev.type == SDL_KEYUP) {
 			state = state & (~mask);
 		}
-		std::cout << std::hex << (int)state << std::endl;
 	}
 }
 
