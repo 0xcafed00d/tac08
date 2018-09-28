@@ -135,12 +135,14 @@ namespace pico_control {
 			}
 		}
 
+		i = 0;
 		for (size_t n = 0; n < flags.length(); n++) {
 			char buf[3] = {0};
 
 			if (flags[n] > ' ') {
 				buf[0] = flags[n++];
 				buf[1] = flags[n];
+
 				currentSprData->flags[i++] = strtol(buf, nullptr, 16);
 			}
 		}
