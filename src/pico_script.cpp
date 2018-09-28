@@ -125,21 +125,36 @@ static int impl_btnp(lua_State* ls) {
 }
 
 static int impl_mget(lua_State* ls) {
-	auto a = luaL_checknumber(ls, 1);
-	lua_pushnumber(ls, 0);
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+
+	lua_pushnumber(ls, pico_api::mget(x, y));
 	return 1;
 }
 
 static int impl_mset(lua_State* ls) {
-	auto a = luaL_checknumber(ls, 1);
-	auto v = luaL_checknumber(ls, 2);
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+	auto v = luaL_checknumber(ls, 3);
+
+	pico_api::mset(x, y, v);
 	return 0;
 }
 
 static int impl_fget(lua_State* ls) {
-	auto a = luaL_checknumber(ls, 1);
-	lua_pushnumber(ls, 0);
+	auto n = luaL_checknumber(ls, 1);
+	if (lua_gettop(ls) == 1) {
+		lua_pushnumber(ls, pico_api::fget(n));
+	} else {
+		auto index = luaL_checknumber(ls, 2);
+		lua_pushboolean(ls, pico_api::fget(n, index));
+	}
 	return 1;
+}
+
+static int impl_fset(lua_State* ls) {
+	auto n = luaL_checknumber(ls, 1);
+	return 0;
 }
 
 static int impl_palt(lua_State* ls) {
@@ -376,6 +391,7 @@ static void register_cfuncs() {
 	register_cfunc("mget", impl_mget);
 	register_cfunc("mset", impl_mset);
 	register_cfunc("fget", impl_fget);
+	register_cfunc("fset", impl_fset);
 	register_cfunc("palt", impl_palt);
 	register_cfunc("map", impl_map);
 	register_cfunc("pal", impl_pal);

@@ -1,5 +1,6 @@
 {
 	"files.associations": {
-		"stdexcept": "cpp"
+		"stdexcept": "cpp",
+		"functional": "cpp"
 	}
 }

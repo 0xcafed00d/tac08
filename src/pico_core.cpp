@@ -25,7 +25,7 @@ static GraphicsState* currentGraphicsState = &graphicsState;
 
 struct SpriteSheet {
 	pico_api::colour_t sprite_data[128 * 128];
-	uint8_t flags;
+	uint8_t flags[256];
 };
 
 static SpriteSheet fontSheet;
@@ -134,6 +134,16 @@ namespace pico_control {
 				currentSprData->sprite_data[i++] = strtol(buf, nullptr, 16);
 			}
 		}
+
+		for (size_t n = 0; n < flags.length(); n++) {
+			char buf[3] = {0};
+
+			if (flags[n] > ' ') {
+				buf[0] = flags[n++];
+				buf[1] = flags[n];
+				currentSprData->flags[i++] = strtol(buf, nullptr, 16);
+			}
+		}
 	}
 
 	void set_font_data(std::string data) {
@@ -179,6 +189,14 @@ namespace pico_api {
 
 	void cls() {
 		cls(0);
+	}
+
+	int fget(int n) {
+		return currentSprData->flags[n & 0xff];
+	}
+
+	bool fget(int n, int bit) {
+		return (fget(n) >> bit) & 1;
 	}
 
 	void spr(int n, int x, int y) {
