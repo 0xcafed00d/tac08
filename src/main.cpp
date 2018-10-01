@@ -5,19 +5,25 @@ extern "C" {
 }
 
 #include "hal_core.h"
+#include "pico_cart.h"
 #include "pico_core.h"
 #include "pico_data.h"
 #include "pico_script.h"
 
 #include "game.h"
 
-int safe_main(int, char**) {
+int safe_main(int argc, char** argv) {
 	GFX_Init(512, 512);
 	GFX_CreateBackBuffer(128, 128);
 	pico_control::init(128, 128);
-	pico_data::load_test_data();
 	pico_data::load_font_data();
-	pico_data::load_script();
+
+	if (argc > 1) {
+		pico_cart::load(argv[1]);
+	} else {
+		std::cerr << "no cart specified" << std::endl;
+		return 1;
+	}
 
 	bool init = false;
 
@@ -69,6 +75,8 @@ int main(int argc, char** argv) {
 	} catch (gfx_exception& err) {
 		std::cerr << err.what() << std::endl;
 	} catch (pico_script::error& err) {
+		std::cerr << err.what() << std::endl;
+	} catch (pico_cart::error& err) {
 		std::cerr << err.what() << std::endl;
 	}
 }
