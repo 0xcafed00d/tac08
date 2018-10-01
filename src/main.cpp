@@ -10,8 +10,6 @@ extern "C" {
 #include "pico_data.h"
 #include "pico_script.h"
 
-#include "game.h"
-
 int safe_main(int argc, char** argv) {
 	GFX_Init(512, 512);
 	GFX_CreateBackBuffer(128, 128);
@@ -48,13 +46,10 @@ int safe_main(int argc, char** argv) {
 				pico_control::set_input_state(INP_GetInputState());
 
 				if (!init) {
-					// pico_init();
 					pico_script::run("_init");
 					init = true;
 				}
 
-				// pico_update();
-				// pico_draw();
 				pico_script::run("_update");
 				pico_script::run("_draw");
 

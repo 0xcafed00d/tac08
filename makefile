@@ -38,5 +38,5 @@ clean:
 	rm *.o && rm $(EXE)
 	
 run: all
-	./$(EXE) ../pico-8/jetdude/jetdude.p8 
+	./$(EXE) ../pico-8/gridbug/gridbug.p8 
 

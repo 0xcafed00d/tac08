@@ -49,6 +49,9 @@ static std::string firmware = R"(
 		return 0
 	end
 
+	function menuitem()
+	end
+
 )";
 
 static void init_scripting() {
