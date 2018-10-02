@@ -90,6 +90,69 @@ namespace pico_private {
 			spr += 128;
 		}
 	}
+
+	static int clip_rect(int& x0, int& y0, int& x1, int& y1) {
+		int flags = 0;
+
+		if (x0 < currentGraphicsState->clip_x1) {
+			x0 = currentGraphicsState->clip_x1;
+			flags |= 1;
+		}
+		if (y0 < currentGraphicsState->clip_y1) {
+			y0 = currentGraphicsState->clip_y1;
+			flags |= 2;
+		}
+		if (x1 >= currentGraphicsState->clip_x2) {
+			x1 = currentGraphicsState->clip_x2 - 1;
+			flags |= 4;
+		}
+		if (y1 >= currentGraphicsState->clip_y2) {
+			y1 = currentGraphicsState->clip_y2 - 1;
+			flags |= 8;
+		}
+		return 0;
+	}
+
+	template <typename T>
+	T limit(T n, T min, T max) {
+		if (n < min)
+			return min;
+		if (n > max)
+			return max;
+		return n;
+	}
+
+	void hline(int x0, int x1, int y, colour_t c) {
+		if (y < 0 || y > 127) {
+			return;
+		}
+		x0 = limit(x0, 0, 127);
+		x1 = limit(x1, 0, 127);
+
+		pixel_t* pix = backbuffer + y * backbuffer_pitch / sizeof(pixel_t);
+		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+
+		for (int x = x0; x <= x1; x++) {
+			pix[x] = p;
+		}
+	}
+
+	void vline(int y0, int y1, int x, colour_t c) {
+		if (x < 0 || x > 127) {
+			return;
+		}
+		y0 = limit(y0, 0, 127);
+		y1 = limit(y1, 0, 127);
+
+		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
+		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+
+		for (int y = y0; y <= y1; y++) {
+			pix[x] = p;
+			pix += backbuffer_pitch / sizeof(pixel_t);
+		}
+	}
+
 }  // namespace pico_private
 
 namespace pico_control {
@@ -236,7 +299,12 @@ namespace pico_api {
 	void rect(int x0, int y0, int x1, int y1) {
 		rect(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
+
 	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::hline(x0, x1, y0, c);
+		pico_private::hline(x0, x1, y1, c);
+		pico_private::vline(y0, y1, x0, c);
+		pico_private::vline(y0, y1, x1, c);
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1) {
@@ -244,22 +312,13 @@ namespace pico_api {
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
-		if (x0 < currentGraphicsState->clip_x1)
-			x0 = currentGraphicsState->clip_x1;
-
-		if (y0 < currentGraphicsState->clip_y1)
-			y0 = currentGraphicsState->clip_y1;
-
-		if (x1 >= currentGraphicsState->clip_x2)
-			x1 = currentGraphicsState->clip_x2 - 1;
-
-		if (y1 >= currentGraphicsState->clip_y2)
-			y1 = currentGraphicsState->clip_y2 - 1;
-
+		pico_private::clip_rect(x0, y0, x1, y1);
 		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
+		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+
 		for (int y = y0; y <= y1; y++) {
 			for (int x = x0; x <= x1; x++) {
-				pix[x] = currentGraphicsState->palette[c & 0x0f];
+				pix[x] = p;
 			}
 			pix += backbuffer_pitch / sizeof(pixel_t);
 		}
@@ -352,7 +411,7 @@ namespace pico_api {
 		currentGraphicsState->text_y = y + 6;
 
 		currentGraphicsState->palette[7] = old;
-	}  // namespace pico_api
+	}
 
 	int btn(int n, int player) {
 		return (input_state[player] >> n) & 1;

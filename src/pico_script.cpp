@@ -307,15 +307,15 @@ static int impl_rect(lua_State* ls) {
 	auto y1 = luaL_checknumber(ls, 4);
 
 	if (lua_gettop(ls) == 4) {
-		pico_api::rectfill(x0, y0, x1, y1);
+		pico_api::rect(x0, y0, x1, y1);
 		return 0;
 	}
 
 	if (lua_isnil(ls, 5)) {
-		pico_api::rectfill(x0, y0, x1, y1, 0);
+		pico_api::rect(x0, y0, x1, y1, 0);
 	} else {
 		auto c = luaL_checknumber(ls, 5);
-		pico_api::rectfill(x0, y0, x1, y1, c);
+		pico_api::rect(x0, y0, x1, y1, c);
 	}
 
 	return 0;
