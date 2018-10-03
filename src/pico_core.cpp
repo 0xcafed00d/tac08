@@ -5,7 +5,55 @@ static int backbuffer_pitch;
 static int buffer_size_x;
 static int buffer_size_y;
 static pixel_t base_palette[16];
-static int input_state[4] = {0, 0, 0, 0};
+
+struct InputState {
+	uint8_t old = 0;
+	uint8_t current = 0;
+	uint8_t repcnt = 0;
+
+	void set(int state) {
+		old = current;
+		current = state;
+
+		if (justPressed()) {
+			repcnt = 16;
+		}
+
+		repcnt--;
+		if (repcnt == 0)
+			repcnt = 4;
+	}
+
+	bool isPressed(uint8_t key) {
+		return ((current >> key) & 1) == 1;
+	}
+
+	uint8_t isPressed() {
+		return current;
+	}
+
+	bool justPressed(uint8_t key) {
+		return (justPressed() >> key) & 1;
+	}
+
+	uint8_t justPressed() {
+		return ~old & current;
+	}
+
+	bool justPressedRpt(uint8_t key) {
+		return justPressed(key) || (isPressed(key) && (repcnt == 1));
+	}
+
+	uint8_t justReleased() {
+		return old & ~current;
+	}
+
+	bool justReleased(uint8_t key) {
+		return (justReleased() >> key) & 1;
+	}
+};
+
+static InputState inputState[4];
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
@@ -232,7 +280,7 @@ namespace pico_control {
 	}
 
 	void set_input_state(int state, int player) {
-		input_state[player] = state;
+		inputState[player].set(state);
 	}
 
 }  // namespace pico_control
@@ -414,11 +462,11 @@ namespace pico_api {
 	}
 
 	int btn(int n, int player) {
-		return (input_state[player] >> n) & 1;
+		return inputState[player].isPressed(n);
 	}
 
 	int btnp(int n, int player) {
-		return (input_state[player] >> n) & 1;
+		return inputState[player].justPressedRpt(n);
 	}
 
 	void clip(int x, int y, int w, int h) {
