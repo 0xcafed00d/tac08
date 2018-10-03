@@ -331,6 +331,22 @@ namespace pico_api {
 		pico_private::blitter(*currentSprData, dx, dy, sx, sy, sw, sh);
 	}
 
+	colour_t sget(int x, int y) {
+		y &= 0x7f;
+		x &= 0x7f;
+		return currentSprData->sprite_data[y * 128 + x];
+	}
+
+	void sset(int x, int y) {
+		sset(x, y, currentGraphicsState->fg);
+	}
+
+	void sset(int x, int y, colour_t c) {
+		y &= 0x7f;
+		x &= 0x7f;
+		currentSprData->sprite_data[y * 128 + x] = c;
+	}
+
 	void pset(int x, int y) {
 		pset(x, y, currentGraphicsState->fg);
 	}

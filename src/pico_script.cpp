@@ -40,9 +40,22 @@ static std::string firmware = R"(
 		end
 	end
 
+	function count(a)
+		return #a
+	end
+
+	function foreach(a, f)
+		for v in all(a) do
+			f(v)
+		end
+	end
+
 	-- TODO: implement these functions:
 
 	function sfx(a, b)
+	end
+
+	function music()
 	end
 
 	function stat() 
@@ -50,6 +63,9 @@ static std::string firmware = R"(
 	end
 
 	function menuitem()
+	end
+
+	function camera()
 	end
 
 )";
@@ -230,6 +246,29 @@ static int impl_sspr(lua_State* ls) {
 	return 0;
 }
 
+static int impl_sset(lua_State* ls) {
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+
+	if (lua_gettop(ls) == 2) {
+		pico_api::sset(x, y);
+		return 0;
+	}
+
+	auto c = luaL_checknumber(ls, 3);
+	pico_api::sset(x, y, c);
+
+	return 0;
+}
+
+static int impl_sget(lua_State* ls) {
+	auto x = luaL_checknumber(ls, 1);
+	auto y = luaL_checknumber(ls, 2);
+
+	lua_pushnumber(ls, pico_api::sget(x, y));
+	return 1;
+}
+
 static int impl_print(lua_State* ls) {
 	auto s = luaL_tolstring(ls, 1, nullptr);
 	if (lua_gettop(ls) == 1) {
@@ -408,6 +447,8 @@ static void register_cfuncs() {
 	register_cfunc("palt", impl_palt);
 	register_cfunc("map", impl_map);
 	register_cfunc("pal", impl_pal);
+	register_cfunc("sget", impl_sget);
+	register_cfunc("sset", impl_sset);
 	register_cfunc("spr", impl_spr);
 	register_cfunc("sspr", impl_sspr);
 	register_cfunc("print", impl_print);
