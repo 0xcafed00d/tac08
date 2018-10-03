@@ -58,6 +58,7 @@ static InputState inputState[4];
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
 	pico_api::colour_t bg = 0;
+	uint16_t pattern = 0;
 	int text_x = 0;
 	int text_y = 0;
 	int clip_x1 = 0;
@@ -362,11 +363,14 @@ namespace pico_api {
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
 		pico_private::clip_rect(x0, y0, x1, y1);
 		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
-		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+		pixel_t p1 = currentGraphicsState->palette[c & 0x0f];
+		pixel_t p2 = currentGraphicsState->palette[(c >> 4) & 0x0f];
+
+		uint16_t pat = currentGraphicsState->pattern;
 
 		for (int y = y0; y <= y1; y++) {
 			for (int x = x0; x <= x1; x++) {
-				pix[x] = p;
+				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
 			}
 			pix += backbuffer_pitch / sizeof(pixel_t);
 		}
@@ -481,6 +485,7 @@ namespace pico_api {
 	}
 
 	void fillp(int pattern) {
+		currentGraphicsState->pattern = pattern;
 	}
 
 	void fillp() {
