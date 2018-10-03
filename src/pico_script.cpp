@@ -381,6 +381,16 @@ static int impl_line(lua_State* ls) {
 	return 0;
 }
 
+static int impl_fillp(lua_State* ls) {
+	if (lua_gettop(ls) == 0) {
+		pico_api::fillp();
+	} else {
+		auto n = luaL_checknumber(ls, 1);
+		pico_api::fillp(n);
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -409,6 +419,7 @@ static void register_cfuncs() {
 	register_cfunc("circfill", impl_circfill);
 	register_cfunc("circ", impl_circ);
 	register_cfunc("line", impl_line);
+	register_cfunc("fillp", impl_fillp);
 }
 
 namespace pico_script {

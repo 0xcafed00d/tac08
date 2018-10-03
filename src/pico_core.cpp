@@ -480,4 +480,11 @@ namespace pico_api {
 		clip(0, 0, 128, 128);
 	}
 
+	void fillp(int pattern) {
+	}
+
+	void fillp() {
+		fillp(0);
+	}
+
 }  // namespace pico_api

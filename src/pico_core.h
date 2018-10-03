@@ -53,6 +53,9 @@ namespace pico_api {
 	void clip(int x, int y, int w, int h);
 	void clip();
 
+	void fillp(int pattern);
+	void fillp();
+
 }  // namespace pico_api
 
 namespace pico_control {
