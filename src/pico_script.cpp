@@ -5,6 +5,8 @@
 #include "z8lua/lua.h"
 #include "z8lua/lualib.h"
 
+#include <iostream>
+
 static lua_State* lstate = nullptr;
 
 static void throw_error(int err) {
@@ -47,6 +49,14 @@ static std::string firmware = R"(
 	function foreach(a, f)
 		for v in all(a) do
 			f(v)
+		end
+	end
+
+	__assert = assert
+	function assert(cond, msg) 
+		if not cond then
+			printh("assertion failed:")
+			__assert (false, msg)
 		end
 	end
 
@@ -174,12 +184,12 @@ static int impl_fget(lua_State* ls) {
 static int impl_fset(lua_State* ls) {
 	auto n = luaL_checknumber(ls, 1);
 	if (lua_gettop(ls) > 2) {
-		auto val = luaL_checknumber(ls, 2);
-		pico_api::fset(n, val);
-	} else {
 		auto index = luaL_checknumber(ls, 2);
 		auto val = lua_toboolean(ls, 3);
 		pico_api::fset(n, index, val);
+	} else {
+		auto val = luaL_checknumber(ls, 2);
+		pico_api::fset(n, val);
 	}
 
 	return 0;
@@ -280,10 +290,13 @@ static int impl_sget(lua_State* ls) {
 
 static int impl_print(lua_State* ls) {
 	auto s = luaL_tolstring(ls, 1, nullptr);
+	lua_remove(ls, -1);
+
 	if (lua_gettop(ls) == 1) {
 		pico_api::print(s);
 		return 0;
 	}
+
 	auto x = luaL_checknumber(ls, 2);
 	auto y = luaL_checknumber(ls, 3);
 	if (lua_gettop(ls) == 3) {
