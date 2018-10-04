@@ -196,9 +196,13 @@ static int impl_fset(lua_State* ls) {
 }
 
 static int impl_palt(lua_State* ls) {
-	auto a = luaL_checknumber(ls, 1);
-	auto f = lua_toboolean(ls, 2);  // TODO: check boolean conversion
-	pico_api::palt(a, f);
+	if (lua_gettop(ls) == 0) {
+		pico_api::palt();
+	} else {
+		auto a = luaL_checknumber(ls, 1);
+		auto f = lua_toboolean(ls, 2);  // TODO: check boolean conversion
+		pico_api::palt(a, f);
+	}
 	return 0;
 }
 
