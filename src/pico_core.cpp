@@ -305,12 +305,23 @@ namespace pico_api {
 		cls(0);
 	}
 
-	int fget(int n) {
+	uint8_t fget(int n) {
 		return currentSprData->flags[n & 0xff];
 	}
 
 	bool fget(int n, int bit) {
 		return (fget(n) >> bit) & 1;
+	}
+
+	void fset(int n, uint8_t val) {
+		currentSprData->flags[n & 0xff] = val;
+	}
+
+	void fset(int n, int bit, bool val) {
+		if (val)
+			fset(n, fget(n) | (1 << bit));
+		else
+			fset(n, fget(n) & ~(1 << bit));
 	}
 
 	void spr(int n, int x, int y) {

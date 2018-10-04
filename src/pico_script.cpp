@@ -173,6 +173,15 @@ static int impl_fget(lua_State* ls) {
 
 static int impl_fset(lua_State* ls) {
 	auto n = luaL_checknumber(ls, 1);
+	if (lua_gettop(ls) > 2) {
+		auto val = luaL_checknumber(ls, 2);
+		pico_api::fset(n, val);
+	} else {
+		auto index = luaL_checknumber(ls, 2);
+		auto val = lua_toboolean(ls, 3);
+		pico_api::fset(n, index, val);
+	}
+
 	return 0;
 }
 
