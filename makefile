@@ -5,14 +5,15 @@ CXX = g++
 SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
 LUA_LIB =  -Lsrc/z8lua -llua 
 SDL_INCLUDE = -I/usr/local/include
-# You may need to change -std=c++11 to -std=c++0x if your compiler is a bit older
-CXXFLAGS = -Wall -Wno-unused-variable -Wno-unused-but-set-variable -c -std=c++11 $(SDL_INCLUDE)
+UTF8_UTIL_BASE = src/utf8-util/utf8-util
+
+CXXFLAGS = -Wall -Wno-unused-variable -Wno-unused-but-set-variable -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
 LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
 EXE = thing
 
 all: $(EXE)
 
-$(EXE): main.o hal_core.o pico_core.o pico_data.o pico_script.o pico_cart.o
+$(EXE): main.o hal_core.o pico_core.o pico_data.o pico_script.o pico_cart.o utf8-util.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 	@cowsay "Built All The Things!!!"
 
@@ -32,6 +33,9 @@ pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 pico_script.o: src/pico_script.cpp src/pico_script.h
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:

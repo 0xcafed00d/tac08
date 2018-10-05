@@ -474,6 +474,12 @@ namespace pico_api {
 	void palt() {
 		pico_private::restore_transparency();
 	}
+
+	void color(uint8_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
+	}
+
 	void print(std::string str) {
 		print(str, currentGraphicsState->text_x, currentGraphicsState->text_y);
 	}
@@ -484,14 +490,22 @@ namespace pico_api {
 
 	void print(std::string str, int x, int y, colour_t c) {
 		pixel_t old = currentGraphicsState->palette[7];
+		bool oldt = currentGraphicsState->transparent[0];
+
 		currentGraphicsState->palette[7] = base_palette[c & 0xf];
+		currentGraphicsState->transparent[0] = true;
 
 		for (size_t n = 0; n < str.length(); n++) {
-			char ch = str[n];
-			if (ch >= ' ') {
+			uint8_t ch = str[n];
+			if (ch >= 0x20 && ch < 0x80) {
 				int index = ch - 32;
 				pico_private::blitter(fontSheet, x, y, (index % 32) * 4, (index / 32) * 6, 4, 5);
 				x += 4;
+			} else if (ch >= 0x80 && ch <= 0x99) {
+				int index = ch - 0x80;
+				pico_private::blitter(fontSheet, x, y, (index % 16) * 8, (index / 16) * 6 + 18, 8,
+				                      5);
+				x += 8;
 			} else if (ch == '\n') {
 				x = 0;
 				y += 6;
@@ -502,6 +516,9 @@ namespace pico_api {
 		currentGraphicsState->text_y = y + 6;
 
 		currentGraphicsState->palette[7] = old;
+		currentGraphicsState->transparent[0] = oldt;
+
+		currentGraphicsState->fg = c & 0xf;
 	}
 
 	int btn(int n, int player) {

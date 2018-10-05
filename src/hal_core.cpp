@@ -115,3 +115,7 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 uint8_t INP_GetInputState() {
 	return state;
 }
+
+uint32_t TIME_GetTicks() {
+	return SDL_GetTicks();
+}

@@ -1,4 +1,5 @@
 #include "pico_script.h"
+#include "hal_core.h"
 #include "pico_core.h"
 
 #include "z8lua/lauxlib.h"
@@ -18,6 +19,7 @@ static void throw_error(int err) {
 }
 
 static std::string firmware = R"(
+	
 	printh = print
 
 	function all(a)
@@ -59,6 +61,7 @@ static std::string firmware = R"(
 			__assert (false, msg)
 		end
 	end
+
 
 	-- TODO: implement these functions:
 
@@ -472,6 +475,19 @@ static int impl_fillp(lua_State* ls) {
 	return 0;
 }
 
+static int impl_time(lua_State* ls) {
+	float t = TIME_GetTicks();
+	t = t / 1000.0f;
+	lua_pushnumber(ls, t);
+	return 1;
+}
+
+static int impl_color(lua_State* ls) {
+	auto c = luaL_checknumber(ls, 1);
+	pico_api::color(c);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -503,6 +519,9 @@ static void register_cfuncs() {
 	register_cfunc("circ", impl_circ);
 	register_cfunc("line", impl_line);
 	register_cfunc("fillp", impl_fillp);
+	register_cfunc("time", impl_time);
+	register_cfunc("t", impl_time);
+	register_cfunc("color", impl_color);
 }
 
 namespace pico_script {

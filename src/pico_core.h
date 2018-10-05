@@ -15,6 +15,8 @@ namespace pico_api {
 	void palt(colour_t col, bool t);
 	void palt();
 
+	void color(uint8_t c);
+
 	uint8_t fget(int n);
 	bool fget(int n, int bit);
 	void fset(int n, uint8_t val);
