@@ -207,15 +207,31 @@ static int impl_palt(lua_State* ls) {
 }
 
 static int impl_map(lua_State* ls) {
+	auto count = lua_gettop(ls);
+
 	auto cell_x = luaL_checknumber(ls, 1);
 	auto cell_y = luaL_checknumber(ls, 2);
+	if (count == 2) {
+		pico_api::map(cell_x, cell_y);
+		return 0;
+	}
+
 	auto screen_x = luaL_checknumber(ls, 3);
 	auto screen_y = luaL_checknumber(ls, 4);
+	if (count == 4) {
+		pico_api::map(cell_x, cell_y, screen_x, screen_y);
+		return 0;
+	}
+
 	auto cell_w = luaL_checknumber(ls, 5);
 	auto cell_h = luaL_checknumber(ls, 6);
+	if (count == 6) {
+		pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_y);
+		return 0;
+	}
 
-	pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h);
-
+	auto layer = luaL_checknumber(ls, 7);
+	pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h, layer);
 	return 0;
 }
 

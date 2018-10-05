@@ -425,6 +425,18 @@ namespace pico_api {
 	void line(int x0, int y0, int x1, int y1, colour_t c) {
 	}
 
+	void map(int cell_x, int cell_y) {
+		map(cell_x, cell_y, 0, 0);
+	}
+
+	void map(int cell_x, int cell_y, int scr_x, int scr_y) {
+		map(cell_x, cell_y, scr_x, scr_y, 16, 16);
+	}
+
+	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h) {
+		map(cell_x, cell_y, scr_x, scr_y, cell_w, cell_h, 0);
+	}
+
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
