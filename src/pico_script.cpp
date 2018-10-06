@@ -65,6 +65,13 @@ static std::string firmware = R"(
 		end
 	end
 
+	-- constants for input/buttons
+	⬇️ = 3
+	⬅️ = 0
+	➡️ = 1
+	⬆️ = 2
+	🅾 = 4
+	❎ = 5
 
 	-- TODO: implement these functions:
 
@@ -74,18 +81,11 @@ static std::string firmware = R"(
 	function music()
 	end
 
-
 	function menuitem()
 	end
 
-	⬇️ = 3
-	⬅️ = 0
-	➡️ = 1
-	⬆️ = 2
-
 	function flip() 
 	end
-
 )";
 
 static void init_scripting() {
