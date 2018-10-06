@@ -66,10 +66,10 @@ static std::string firmware = R"(
 	end
 
 	-- constants for input/buttons
-	⬇️ = 3
 	⬅️ = 0
 	➡️ = 1
 	⬆️ = 2
+	⬇️ = 3
 	🅾 = 4
 	❎ = 5
 
@@ -87,6 +87,17 @@ static std::string firmware = R"(
 	function flip() 
 	end
 )";
+
+static void dump_func(lua_State* ls, const char* funcname) {
+	std::cout << funcname + 5 << "(";
+	int params = lua_gettop(ls);
+	for (int n = 1; n <= params; n++) {
+		auto s = luaL_tolstring(ls, n, nullptr);
+		std::cout << s << ",";
+		lua_remove(ls, -1);
+	}
+	std::cout << ")" << std::endl;
+}
 
 static void init_scripting() {
 	if (lstate) {
@@ -109,12 +120,14 @@ static void register_cfunc(const char* name, lua_CFunction cf) {
 
 // ------------------------------------------------------------------
 static int impl_cartdata(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto s = luaL_checkstring(ls, 1);
 	// TODO: implement
 	return 0;
 }
 
 static int impl_cls(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		pico_api::cls();
 	} else {
@@ -125,6 +138,7 @@ static int impl_cls(lua_State* ls) {
 }
 
 static int impl_poke(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto a = luaL_checknumber(ls, 1);
 	auto v = luaL_checknumber(ls, 2);
 	// TODO: implement
@@ -132,6 +146,7 @@ static int impl_poke(lua_State* ls) {
 }
 
 static int impl_peek(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto a = luaL_checknumber(ls, 1);
 	lua_pushnumber(ls, 0);
 
@@ -140,6 +155,7 @@ static int impl_peek(lua_State* ls) {
 }
 
 static int impl_dget(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto a = luaL_checknumber(ls, 1);
 	lua_pushnumber(ls, 0);
 	// TODO: implement
@@ -147,12 +163,14 @@ static int impl_dget(lua_State* ls) {
 }
 
 static int impl_dset(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto a = luaL_checknumber(ls, 1);
 	// TODO: implement
 	return 0;
 }
 
 static int impl_btn(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		auto val = pico_api::btn();
 		lua_pushnumber(ls, val);
@@ -169,6 +187,7 @@ static int impl_btn(lua_State* ls) {
 }
 
 static int impl_btnp(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		auto val = pico_api::btnp();
 		lua_pushnumber(ls, val);
@@ -185,6 +204,7 @@ static int impl_btnp(lua_State* ls) {
 }
 
 static int impl_mget(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 
@@ -193,6 +213,7 @@ static int impl_mget(lua_State* ls) {
 }
 
 static int impl_mset(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 	auto v = luaL_checknumber(ls, 3);
@@ -202,6 +223,7 @@ static int impl_mset(lua_State* ls) {
 }
 
 static int impl_fget(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto n = luaL_checknumber(ls, 1);
 	if (lua_gettop(ls) == 1) {
 		lua_pushnumber(ls, pico_api::fget(n));
@@ -213,6 +235,7 @@ static int impl_fget(lua_State* ls) {
 }
 
 static int impl_fset(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto n = luaL_checknumber(ls, 1);
 	if (lua_gettop(ls) > 2) {
 		auto index = luaL_checknumber(ls, 2);
@@ -227,6 +250,7 @@ static int impl_fset(lua_State* ls) {
 }
 
 static int impl_palt(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		pico_api::palt();
 	} else {
@@ -238,6 +262,7 @@ static int impl_palt(lua_State* ls) {
 }
 
 static int impl_map(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto count = lua_gettop(ls);
 
 	auto cell_x = luaL_checknumber(ls, 1);
@@ -257,7 +282,7 @@ static int impl_map(lua_State* ls) {
 	auto cell_w = luaL_checknumber(ls, 5);
 	auto cell_h = luaL_checknumber(ls, 6);
 	if (count == 6) {
-		pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_y);
+		pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h);
 		return 0;
 	}
 
@@ -267,6 +292,7 @@ static int impl_map(lua_State* ls) {
 }
 
 static int impl_pal(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 2) {
 		auto a = luaL_checknumber(ls, 1);
 		auto b = luaL_checknumber(ls, 2);
@@ -278,6 +304,7 @@ static int impl_pal(lua_State* ls) {
 }
 
 static int impl_spr(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto n = luaL_checknumber(ls, 1);
 	auto x = luaL_checknumber(ls, 2);
 	auto y = luaL_checknumber(ls, 3);
@@ -304,6 +331,7 @@ static int impl_spr(lua_State* ls) {
 }
 
 static int impl_sspr(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto sx = luaL_checknumber(ls, 1);
 	auto sy = luaL_checknumber(ls, 2);
 	auto sw = luaL_checknumber(ls, 3);
@@ -317,6 +345,7 @@ static int impl_sspr(lua_State* ls) {
 }
 
 static int impl_sset(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 
@@ -332,6 +361,7 @@ static int impl_sset(lua_State* ls) {
 }
 
 static int impl_sget(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 
@@ -340,26 +370,32 @@ static int impl_sget(lua_State* ls) {
 }
 
 static int impl_print(lua_State* ls) {
-	auto s = luaL_tolstring(ls, 1, nullptr);
-	lua_remove(ls, -1);
+	dump_func(ls, __FUNCTION__);
 
 	if (lua_gettop(ls) == 1) {
+		auto s = luaL_tolstring(ls, 1, nullptr);
 		pico_api::print(s);
+		lua_remove(ls, -1);
 		return 0;
 	}
 
 	auto x = luaL_checknumber(ls, 2);
 	auto y = luaL_checknumber(ls, 3);
 	if (lua_gettop(ls) == 3) {
+		auto s = luaL_tolstring(ls, 1, nullptr);
 		pico_api::print(s, x, y);
+		lua_remove(ls, -1);
 		return 0;
 	}
 	auto c = luaL_checknumber(ls, 4);
+	auto s = luaL_tolstring(ls, 1, nullptr);
 	pico_api::print(s, x, y, c);
+	lua_remove(ls, -1);
 	return 0;
 }
 
 static int impl_pget(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto a = luaL_checknumber(ls, 1);
 	lua_pushnumber(ls, 0);
 	// TODO: implement
@@ -367,6 +403,7 @@ static int impl_pget(lua_State* ls) {
 }
 
 static int impl_pset(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 
@@ -381,6 +418,7 @@ static int impl_pset(lua_State* ls) {
 }
 
 static int impl_clip(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		pico_api::clip();
 	} else {
@@ -396,6 +434,7 @@ static int impl_clip(lua_State* ls) {
 }
 
 static int impl_rectfill(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x0 = luaL_checknumber(ls, 1);
 	auto y0 = luaL_checknumber(ls, 2);
 	auto x1 = luaL_checknumber(ls, 3);
@@ -417,6 +456,7 @@ static int impl_rectfill(lua_State* ls) {
 }
 
 static int impl_rect(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x0 = luaL_checknumber(ls, 1);
 	auto y0 = luaL_checknumber(ls, 2);
 	auto x1 = luaL_checknumber(ls, 3);
@@ -438,6 +478,7 @@ static int impl_rect(lua_State* ls) {
 }
 
 static int impl_circfill(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 	auto r = luaL_checknumber(ls, 3);
@@ -458,6 +499,7 @@ static int impl_circfill(lua_State* ls) {
 }
 
 static int impl_circ(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
 	auto r = luaL_checknumber(ls, 3);
@@ -478,6 +520,7 @@ static int impl_circ(lua_State* ls) {
 }
 
 static int impl_line(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto x0 = luaL_checknumber(ls, 1);
 	auto y0 = luaL_checknumber(ls, 2);
 	auto x1 = luaL_checknumber(ls, 3);
@@ -498,6 +541,7 @@ static int impl_line(lua_State* ls) {
 }
 
 static int impl_fillp(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		pico_api::fillp();
 	} else {
@@ -508,6 +552,7 @@ static int impl_fillp(lua_State* ls) {
 }
 
 static int impl_time(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	float t = TIME_GetTicks();
 	t = t / 1000.0f;
 	lua_pushnumber(ls, t);
@@ -515,12 +560,14 @@ static int impl_time(lua_State* ls) {
 }
 
 static int impl_color(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto c = luaL_checknumber(ls, 1);
 	pico_api::color(c);
 	return 0;
 }
 
 static int impl_camera(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	if (lua_gettop(ls) == 0) {
 		pico_api::camera();
 	} else {
@@ -532,6 +579,7 @@ static int impl_camera(lua_State* ls) {
 }
 
 static int impl_stat(lua_State* ls) {
+	dump_func(ls, __FUNCTION__);
 	auto k = luaL_checknumber(ls, 1);
 
 	std::string s;

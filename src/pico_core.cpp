@@ -1,5 +1,7 @@
 #include "pico_core.h"
 
+#include <iostream>
+
 static pixel_t* backbuffer;
 static int backbuffer_pitch;
 static int buffer_size_x;
@@ -440,9 +442,13 @@ namespace pico_api {
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, uint8_t layer) {
+		std::cout << cell_x << " " << cell_y << " " << scr_x << " " << scr_y << " " << cell_w << " "
+		          << cell_h << " " << 0 << std::endl;
+
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
 				uint8_t cell = mget(cell_x + x, cell_y + y);
+				spr(cell, scr_x + x * 8, scr_y + y * 8);
 				if (cell && ((layer == 0) || ((fget(cell) & layer) == layer))) {
 					spr(cell, scr_x + x * 8, scr_y + y * 8);
 				}
@@ -459,9 +465,7 @@ namespace pico_api {
 	}
 
 	void pal(colour_t c0, colour_t c1) {
-		currentGraphicsState->palette[c0] = base_palette[c1];
-		currentGraphicsState->bg = 0;
-		currentGraphicsState->fg = 7;
+		currentGraphicsState->palette[c0 & 0xf] = base_palette[c1 & 0xf];
 	}
 
 	void pal() {
@@ -526,6 +530,7 @@ namespace pico_api {
 	int btn() {
 		return inputState[0].current;
 	}
+
 	int btn(int n, int player) {
 		return inputState[player].isPressed(n);
 	}
@@ -533,6 +538,7 @@ namespace pico_api {
 	int btnp() {
 		return inputState[0].justPressed();  // TODO: impl repeat on this
 	}
+
 	int btnp(int n, int player) {
 		return inputState[player].justPressedRpt(n);
 	}
