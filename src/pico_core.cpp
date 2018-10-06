@@ -437,11 +437,11 @@ namespace pico_api {
 		map(cell_x, cell_y, scr_x, scr_y, cell_w, cell_h, 0);
 	}
 
-	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer) {
+	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, uint8_t layer) {
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
 				uint8_t cell = mget(cell_x + x, cell_y + y);
-				if (cell) {
+				if (cell && ((layer == 0) || ((fget(cell) & layer) == layer))) {
 					spr(cell, scr_x + x * 8, scr_y + y * 8);
 				}
 			}

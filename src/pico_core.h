@@ -50,7 +50,7 @@ namespace pico_api {
 	void map(int cell_x, int cell_y);
 	void map(int cell_x, int cell_y, int scr_x, int scr_y);
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h);
-	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, int layer);
+	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, uint8_t layer);
 	uint8_t mget(int x, int y);
 	void mset(int x, int y, uint8_t v);
 
