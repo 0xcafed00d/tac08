@@ -61,11 +61,16 @@ namespace pico_api {
 	int btn(int n, int player = 0);
 	int btnp(int n, int player = 0);
 
+	void camera();
+	void camera(int x, int y);
+
 	void clip(int x, int y, int w, int h);
 	void clip();
 
 	void fillp(int pattern);
 	void fillp();
+
+	int stat(int key, std::string& sval, int& ival);
 
 }  // namespace pico_api
 

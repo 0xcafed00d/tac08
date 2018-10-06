@@ -65,6 +65,8 @@ struct GraphicsState {
 	int clip_y1 = 0;
 	int clip_x2 = 128;
 	int clip_y2 = 128;
+	int camera_x = 0;
+	int camera_y = 0;
 	pixel_t palette[16];
 	bool transparent[16];
 };
@@ -540,12 +542,25 @@ namespace pico_api {
 		clip(0, 0, 128, 128);
 	}
 
+	void camera() {
+		camera(0, 0);
+	}
+
+	void camera(int x, int y) {
+		currentGraphicsState->camera_x = x;
+		currentGraphicsState->camera_y = y;
+	}
+
 	void fillp(int pattern) {
 		currentGraphicsState->pattern = pattern;
 	}
 
 	void fillp() {
 		fillp(0);
+	}
+
+	int stat(int key, std::string& sval, int& ival) {
+		return 0;
 	}
 
 }  // namespace pico_api

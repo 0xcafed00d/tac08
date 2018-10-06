@@ -71,14 +71,8 @@ static std::string firmware = R"(
 	function music()
 	end
 
-	function stat() 
-		return 0
-	end
 
 	function menuitem()
-	end
-
-	function camera()
 	end
 
 )";
@@ -488,6 +482,35 @@ static int impl_color(lua_State* ls) {
 	return 0;
 }
 
+static int impl_camera(lua_State* ls) {
+	if (lua_gettop(ls) == 0) {
+		pico_api::camera();
+	} else {
+		auto x = luaL_checknumber(ls, 1);
+		auto y = luaL_checknumber(ls, 2);
+		pico_api::camera(x, y);
+	}
+	return 0;
+}
+
+static int impl_stat(lua_State* ls) {
+	auto k = luaL_checknumber(ls, 1);
+
+	std::string s;
+	int i;
+
+	auto v = pico_api::stat(k, s, i);
+
+	if (v == 1)
+		lua_pushstring(ls, s.c_str());
+	else if (v == 2)
+		lua_pushnumber(ls, i);
+	else
+		lua_pushnil(ls);
+
+	return 1;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -522,6 +545,8 @@ static void register_cfuncs() {
 	register_cfunc("time", impl_time);
 	register_cfunc("t", impl_time);
 	register_cfunc("color", impl_color);
+	register_cfunc("camera", impl_camera);
+	register_cfunc("stat", impl_stat);
 }
 
 namespace pico_script {
