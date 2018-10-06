@@ -11,6 +11,8 @@ namespace pico_cart {
 	};
 
 	void load(std::string filename);
+
+	std::string convert_emojis(std::string& lua);
 }  // namespace pico_cart
 
 #endif /* PICO_CART_H */

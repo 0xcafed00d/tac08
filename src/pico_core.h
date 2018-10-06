@@ -58,7 +58,10 @@ namespace pico_api {
 	void print(std::string str, int x, int y);
 	void print(std::string str, int x, int y, colour_t c);
 
+	int btn();
 	int btn(int n, int player = 0);
+
+	int btnp();
 	int btnp(int n, int player = 0);
 
 	void camera();

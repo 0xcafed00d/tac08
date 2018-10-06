@@ -32,7 +32,7 @@ pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h src/pico_script.h
 pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_script.o: src/pico_script.cpp src/pico_script.h
+pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_cart.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp

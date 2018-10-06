@@ -523,10 +523,16 @@ namespace pico_api {
 		currentGraphicsState->fg = c & 0xf;
 	}
 
+	int btn() {
+		return inputState[0].current;
+	}
 	int btn(int n, int player) {
 		return inputState[player].isPressed(n);
 	}
 
+	int btnp() {
+		return inputState[0].justPressed();  // TODO: impl repeat on this
+	}
 	int btnp(int n, int player) {
 		return inputState[player].justPressedRpt(n);
 	}
@@ -551,16 +557,17 @@ namespace pico_api {
 		currentGraphicsState->camera_y = y;
 	}
 
-	void fillp(int pattern) {
-		currentGraphicsState->pattern = pattern;
-	}
-
 	void fillp() {
 		fillp(0);
 	}
 
+	void fillp(int pattern) {
+		currentGraphicsState->pattern = pattern;
+	}
+
 	int stat(int key, std::string& sval, int& ival) {
-		return 0;
+		ival = 0;
+		return 2;
 	}
 
 }  // namespace pico_api

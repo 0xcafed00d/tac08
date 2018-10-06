@@ -38,7 +38,7 @@ namespace pico_cart {
 		}
 	}
 
-	static std::string convert_emojis(std::string& lua) {
+	std::string convert_emojis(std::string& lua) {
 		std::string res;
 		for (char32_t codepoint : utf8::CodepointIterator(lua)) {
 			if (codepoint < 0x80) {

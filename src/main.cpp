@@ -46,12 +46,12 @@ int safe_main(int argc, char** argv) {
 				pico_control::set_input_state(INP_GetInputState());
 
 				if (!init) {
-					pico_script::run("_init");
+					pico_script::run("_init", true);
 					init = true;
 				}
 
-				pico_script::run("_update");
-				pico_script::run("_draw");
+				pico_script::run("_update", true);
+				pico_script::run("_draw", true);
 
 				GFX_UnlockBackBuffer();
 

@@ -1,5 +1,6 @@
 #include "pico_script.h"
 #include "hal_core.h"
+#include "pico_cart.h"
 #include "pico_core.h"
 
 #include "z8lua/lauxlib.h"
@@ -23,6 +24,8 @@ static std::string firmware = R"(
 	printh = print
 
 	function all(a)
+		if (a == nil) return function() end
+
 		local i = 0
 		local n = #a
 		return function()
@@ -75,6 +78,14 @@ static std::string firmware = R"(
 	function menuitem()
 	end
 
+	⬇️ = 3
+	⬅️ = 0
+	➡️ = 1
+	⬆️ = 2
+
+	function flip() 
+	end
+
 )";
 
 static void init_scripting() {
@@ -84,7 +95,10 @@ static void init_scripting() {
 
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
-	throw_error(luaL_loadbuffer(lstate, firmware.c_str(), firmware.size(), "firmware"));
+
+	std::string fw = pico_cart::convert_emojis(firmware);
+
+	throw_error(luaL_loadbuffer(lstate, fw.c_str(), fw.size(), "firmware"));
 	throw_error(lua_pcall(lstate, 0, 0, 0));
 }
 
@@ -117,6 +131,14 @@ static int impl_poke(lua_State* ls) {
 	return 0;
 }
 
+static int impl_peek(lua_State* ls) {
+	auto a = luaL_checknumber(ls, 1);
+	lua_pushnumber(ls, 0);
+
+	// TODO: implement
+	return 1;
+}
+
 static int impl_dget(lua_State* ls) {
 	auto a = luaL_checknumber(ls, 1);
 	lua_pushnumber(ls, 0);
@@ -131,6 +153,12 @@ static int impl_dset(lua_State* ls) {
 }
 
 static int impl_btn(lua_State* ls) {
+	if (lua_gettop(ls) == 0) {
+		auto val = pico_api::btn();
+		lua_pushnumber(ls, val);
+		return 1;
+	}
+
 	auto n = luaL_checknumber(ls, 1);
 	auto p = luaL_optnumber(ls, 2, 0);
 
@@ -141,6 +169,12 @@ static int impl_btn(lua_State* ls) {
 }
 
 static int impl_btnp(lua_State* ls) {
+	if (lua_gettop(ls) == 0) {
+		auto val = pico_api::btnp();
+		lua_pushnumber(ls, val);
+		return 1;
+	}
+
 	auto n = luaL_checknumber(ls, 1);
 	auto p = luaL_optnumber(ls, 2, 0);
 
@@ -335,10 +369,14 @@ static int impl_pget(lua_State* ls) {
 static int impl_pset(lua_State* ls) {
 	auto x = luaL_checknumber(ls, 1);
 	auto y = luaL_checknumber(ls, 2);
+
+	if (lua_gettop(ls) == 2) {
+		pico_api::pset(x, y);
+		return 0;
+	}
+
 	auto c = luaL_checknumber(ls, 3);
-
 	pico_api::pset(x, y, c);
-
 	return 0;
 }
 
@@ -517,6 +555,7 @@ static void register_cfuncs() {
 	register_cfunc("cartdata", impl_cartdata);
 	register_cfunc("cls", impl_cls);
 	register_cfunc("poke", impl_poke);
+	register_cfunc("peek", impl_peek);
 	register_cfunc("dget", impl_dget);
 	register_cfunc("dset", impl_dset);
 	register_cfunc("btn", impl_btn);
@@ -562,10 +601,13 @@ namespace pico_script {
 	void reset() {
 	}
 
-	void run(std::string function) {
+	void run(std::string function, bool optional) {
 		lua_getglobal(lstate, function.c_str());
 		if (!lua_isfunction(lstate, -1)) {
-			throw pico_script::error(function + " not found");
+			if (optional)
+				return;
+			else
+				throw pico_script::error(function + " not found");
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}
