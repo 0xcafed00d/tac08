@@ -15,6 +15,14 @@ namespace pico_api {
 	void palt(colour_t col, bool t);
 	void palt();
 
+	uint8_t peek(uint16_t a);
+	uint32_t peek4(uint16_t a);
+	void poke(uint16_t a, uint8_t v);
+	void poke4(uint16_t a, uint32_t v);
+
+	uint32_t dget(uint16_t a);
+	void dset(uint16_t a, uint32_t v);
+
 	void color(uint8_t c);
 
 	uint8_t fget(int n);

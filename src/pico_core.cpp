@@ -305,6 +305,27 @@ namespace pico_api {
 		currentGraphicsState->text_y = 0;
 	}
 
+	uint8_t peek(uint16_t a) {
+		return 0;
+	}
+
+	uint32_t peek4(uint16_t a) {
+		return 0;
+	}
+
+	void poke(uint16_t a, uint8_t v) {
+	}
+
+	void poke4(uint16_t a, uint32_t v) {
+	}
+
+	uint32_t dget(uint16_t a) {
+		return 0;
+	}
+
+	void dset(uint16_t a, uint32_t v) {
+	}
+
 	void cls() {
 		cls(0);
 	}
