@@ -1,4 +1,5 @@
 #include "pico_core.h"
+#include "pico_memory.h"
 
 #include <iostream>
 
@@ -92,8 +93,30 @@ struct MapSheet {
 static MapSheet mapSheet;
 static MapSheet* currentMapData = &mapSheet;
 
-namespace pico_private {
+static pico_ram::RAM ram;
+static pico_ram::SplitNibbleMemoryArea mem_gfx(spriteSheet.sprite_data,
+                                               pico_ram::MEM_GFX_ADDR,
+                                               pico_ram::MEM_GFX_SIZE);
+static pico_ram::SplitNibbleMemoryArea mem_gfx2(spriteSheet.sprite_data + 128 * 64,
+                                                pico_ram::MEM_GFX2_MAP2_ADDR,
+                                                pico_ram::MEM_GFX2_MAP2_SIZE);
+static pico_ram::LinearMemoryArea mem_map2(mapSheet.map_data + 128 * 32,
+                                           pico_ram::MEM_GFX2_MAP2_ADDR,
+                                           pico_ram::MEM_GFX2_MAP2_SIZE);
+static pico_ram::DualMemoryArea mem_gfx2_map2(&mem_map2,
+                                              &mem_gfx2);  // shared memory between gfx2 & map2
+static pico_ram::LinearMemoryArea mem_map(mapSheet.map_data,
+                                          pico_ram::MEM_MAP_ADDR,
+                                          pico_ram::MEM_MAP_SIZE);
+static pico_ram::LinearMemoryArea mem_flags(spriteSheet.flags,
+                                            pico_ram::MEM_GFX_PROPS_ADDR,
+                                            pico_ram::MEM_GFX_PROPS_SIZE);
 
+// static pico_ram::SplitNibbleMemoryArea mem_screen();
+
+static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0x2000);
+
+namespace pico_private {
 	using namespace pico_api;
 
 	static void restore_palette() {
@@ -209,7 +232,6 @@ namespace pico_private {
 }  // namespace pico_private
 
 namespace pico_control {
-
 	void init(int x, int y) {
 		buffer_size_x = x;
 		buffer_size_y = y;
@@ -233,6 +255,12 @@ namespace pico_control {
 
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
+
+		ram.addMemoryArea(&mem_gfx);
+		ram.addMemoryArea(&mem_gfx2_map2);
+		ram.addMemoryArea(&mem_map);
+		ram.addMemoryArea(&mem_flags);
+		ram.addMemoryArea(&mem_font);
 	}
 
 	void set_buffer(pixel_t* buffer, int pitch) {
@@ -240,48 +268,35 @@ namespace pico_control {
 		backbuffer_pitch = pitch;
 	}
 
-	void set_sprite_data(std::string data, std::string flags) {
-		size_t i = 0;
+	void copy_data_to_ram(uint16_t addr, const std::string& data, bool gfx = true) {
 		for (size_t n = 0; n < data.length(); n++) {
-			char buf[2] = {0};
-
-			if (data[n] > ' ') {
-				buf[0] = data[n];
-				currentSprData->sprite_data[i++] = strtol(buf, nullptr, 16);
-			}
-		}
-
-		i = 0;
-		for (size_t n = 0; n < flags.length(); n++) {
 			char buf[3] = {0};
 
-			if (flags[n] > ' ') {
-				buf[0] = flags[n++];
-				buf[1] = flags[n];
-
-				currentSprData->flags[i++] = strtol(buf, nullptr, 16);
+			if (data[n] > ' ') {
+				if (gfx) {
+					buf[1] = data[n++];
+					buf[0] = data[n];
+				} else {
+					buf[0] = data[n++];
+					buf[1] = data[n];
+				}
+				pico_api::poke(addr++, strtol(buf, nullptr, 16));
 			}
 		}
+	}
+
+	void set_sprite_data(std::string data, std::string flags) {
+		copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data);
+		copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
 	}
 
 	void set_font_data(std::string data) {
-		SpriteSheet* old = currentSprData;
-		currentSprData = &fontSheet;
-		set_sprite_data(data, "");
-		currentSprData = old;
+		copy_data_to_ram(0x8000, data);
 	}
 
 	void set_map_data(std::string data) {
-		size_t i = 0;
-		for (size_t n = 0; n < data.length(); n++) {
-			char buf[3] = {0};
-
-			if (data[n] > ' ') {
-				buf[0] = data[n++];
-				buf[1] = data[n];
-				currentMapData->map_data[i++] = strtol(buf, nullptr, 16);
-			}
-		}
+		copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
+		ram.dump(0x0000, 0x4000);
 	}
 
 	void set_input_state(int state, int player) {
@@ -291,7 +306,6 @@ namespace pico_control {
 }  // namespace pico_control
 
 namespace pico_api {
-
 	void cls(colour_t c) {
 		pixel_t p = currentGraphicsState->palette[c];
 		pixel_t* pix = backbuffer;
@@ -306,7 +320,7 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
-		return 0;
+		return ram.peek(a);
 	}
 
 	uint32_t peek4(uint16_t a) {
@@ -314,6 +328,7 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
+		ram.poke(a, v);
 	}
 
 	void poke4(uint16_t a, uint32_t v) {

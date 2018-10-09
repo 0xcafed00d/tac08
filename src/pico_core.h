@@ -92,6 +92,8 @@ namespace pico_control {
 	void set_map_data(std::string data);
 	void set_font_data(std::string data);
 	void set_input_state(int state, int player = 0);
+	void copy_shared_data();
+
 }  // namespace pico_control
 
 #endif /* PICO_CORE_H */

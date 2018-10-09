@@ -451,7 +451,7 @@ static int impl_clip(lua_State* ls) {
 }
 
 static int impl_rectfill(lua_State* ls) {
-	DEBUG_DUMP_FUNCTION;
+	// DEBUG_DUMP_FUNCTION;
 	auto x0 = luaL_checknumber(ls, 1);
 	auto y0 = luaL_checknumber(ls, 2);
 	auto x1 = luaL_checknumber(ls, 3);
