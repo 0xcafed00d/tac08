@@ -296,7 +296,7 @@ namespace pico_control {
 
 	void set_map_data(std::string data) {
 		copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
-		ram.dump(0x0000, 0x4000);
+		// ram.dump(0x0000, 0x4000);
 	}
 
 	void set_input_state(int state, int player) {
