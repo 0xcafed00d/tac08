@@ -198,6 +198,11 @@ namespace pico_private {
 		return n;
 	}
 
+	inline void normalise_coords(int& c0, int& c1) {
+		if (c0 > c1)
+			std::swap(c0, c1);
+	}
+
 	void hline(int x0, int x1, int y, colour_t c) {
 		if (y < 0 || y > 127) {
 			return;
@@ -426,6 +431,8 @@ namespace pico_api {
 	}
 
 	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::normalise_coords(x0, x1);
+		pico_private::normalise_coords(y0, y1);
 		pico_private::hline(x0, x1, y0, c);
 		pico_private::hline(x0, x1, y1, c);
 		pico_private::vline(y0, y1, x0, c);
@@ -437,6 +444,9 @@ namespace pico_api {
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::normalise_coords(x0, x1);
+		pico_private::normalise_coords(y0, y1);
+
 		pico_private::clip_rect(x0, y0, x1, y1);
 		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
 		pixel_t p1 = currentGraphicsState->palette[c & 0x0f];
@@ -472,6 +482,8 @@ namespace pico_api {
 	}
 
 	void line(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::normalise_coords(x0, x1);
+		pico_private::normalise_coords(y0, y1);
 	}
 
 	void map(int cell_x, int cell_y) {
