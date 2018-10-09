@@ -26,6 +26,7 @@ void GFX_Init(int x, int y) {
 	if (sdlRen == nullptr) {
 		throw_error("SDL_CreateRenderer Error: ");
 	}
+	SDL_ShowCursor(SDL_DISABLE);
 }
 
 void GFX_End() {
@@ -118,4 +119,17 @@ uint8_t INP_GetInputState() {
 
 uint32_t TIME_GetTicks() {
 	return SDL_GetTicks();
+}
+
+MouseState INP_GetMouseState() {  // TODO: add mouse wheel
+	MouseState ms;
+	int b = SDL_GetMouseState(&ms.x, &ms.y);
+	ms.buttons = (b & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
+	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 2 : 0;
+	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_MIDDLE)) ? 4 : 0;
+
+	ms.x /= 4;  // TODO: scale based on window size
+	ms.y /= 4;
+	ms.wheel = 0;
+	return ms;
 }

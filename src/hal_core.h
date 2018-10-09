@@ -27,4 +27,13 @@ uint8_t INP_GetInputState();
 
 uint32_t TIME_GetTicks();
 
+struct MouseState {
+	int x;
+	int y;
+	int buttons;
+	int wheel;
+};
+
+MouseState INP_GetMouseState();
+
 #endif /* GFX_CORE_H */

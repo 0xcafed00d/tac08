@@ -44,6 +44,7 @@ int safe_main(int argc, char** argv) {
 				GFX_LockBackBuffer(&pixels, &pitch);
 				pico_control::set_buffer(pixels, pitch);
 				pico_control::set_input_state(INP_GetInputState());
+				pico_control::set_mouse_state(INP_GetMouseState());
 
 				if (!init) {
 					pico_script::run("_init", true);

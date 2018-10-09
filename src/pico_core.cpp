@@ -57,6 +57,7 @@ struct InputState {
 };
 
 static InputState inputState[4];
+static MouseState mouseState;
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
@@ -308,6 +309,9 @@ namespace pico_control {
 		inputState[player].set(state);
 	}
 
+	void set_mouse_state(const MouseState& ms) {
+		mouseState = ms;
+	}
 }  // namespace pico_control
 
 namespace pico_api {
@@ -625,6 +629,21 @@ namespace pico_api {
 	}
 
 	int stat(int key, std::string& sval, int& ival) {
+		switch (key) {
+			case 32:
+				ival = mouseState.x;
+				return 2;
+			case 33:
+				ival = mouseState.y;
+				return 2;
+			case 34:
+				ival = mouseState.buttons;
+				return 2;
+			case 36:
+				ival = mouseState.wheel;
+				return 2;
+		}
+
 		ival = 0;
 		return 2;
 	}
