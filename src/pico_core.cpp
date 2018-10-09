@@ -324,7 +324,12 @@ namespace pico_api {
 	}
 
 	uint32_t peek4(uint16_t a) {
-		return 0;
+		uint32_t v = 0;
+		v = peek(a);
+		v |= uint32_t(peek(a + 1)) << 4;
+		v |= uint32_t(peek(a + 2)) << 8;
+		v |= uint32_t(peek(a + 3)) << 12;
+		return v;
 	}
 
 	void poke(uint16_t a, uint8_t v) {
@@ -332,6 +337,10 @@ namespace pico_api {
 	}
 
 	void poke4(uint16_t a, uint32_t v) {
+		ram.poke(a, v);
+		ram.poke(a + 1, v >> 4);
+		ram.poke(a + 2, v >> 8);
+		ram.poke(a + 3, v >> 12);
 	}
 
 	uint32_t dget(uint16_t a) {
