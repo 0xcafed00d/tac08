@@ -111,6 +111,9 @@ static pico_ram::LinearMemoryArea mem_map(mapSheet.map_data,
 static pico_ram::LinearMemoryArea mem_flags(spriteSheet.flags,
                                             pico_ram::MEM_GFX_PROPS_ADDR,
                                             pico_ram::MEM_GFX_PROPS_SIZE);
+static pico_ram::SplitNibbleMemoryArea mem_screen(backbuffer,
+                                                  pico_ram::MEM_SCREEN_ADDR,
+                                                  pico_ram::MEM_SCREEN_SIZE);
 
 // static pico_ram::SplitNibbleMemoryArea mem_screen();
 
@@ -248,6 +251,7 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_gfx2_map2);
 		ram.addMemoryArea(&mem_map);
 		ram.addMemoryArea(&mem_flags);
+		ram.addMemoryArea(&mem_screen);
 		ram.addMemoryArea(&mem_font);
 	}
 
