@@ -39,10 +39,6 @@ int safe_main(int argc, char** argv) {
 			using namespace pico_api;
 
 			if ((SDL_GetTicks() - ticks) > 20) {
-				pixel_t* pixels;
-				int pitch;
-				GFX_LockBackBuffer(&pixels, &pitch);
-				pico_control::set_buffer(pixels, pitch);
 				pico_control::set_input_state(INP_GetInputState());
 				pico_control::set_mouse_state(INP_GetMouseState());
 
@@ -54,7 +50,10 @@ int safe_main(int argc, char** argv) {
 				pico_script::run("_update", true);
 				pico_script::run("_draw", true);
 
-				GFX_UnlockBackBuffer();
+				int buffer_w;
+				int buffer_h;
+				pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
+				GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
 
 				ticks = SDL_GetTicks();
 			}

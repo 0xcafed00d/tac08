@@ -3,11 +3,10 @@
 
 #include <iostream>
 
-static pixel_t* backbuffer;
-static int backbuffer_pitch;
-static int buffer_size_x;
-static int buffer_size_y;
-static pixel_t base_palette[16];
+static pico_api::colour_t backbuffer[128 * 128];
+static int buffer_size_x = 128;
+static int buffer_size_y = 128;
+// static pixel_t base_palette[16];
 
 struct InputState {
 	uint8_t old = 0;
@@ -71,7 +70,7 @@ struct GraphicsState {
 	int clip_y2 = 128;
 	int camera_x = 0;
 	int camera_y = 0;
-	pixel_t palette[16];
+	pico_api::colour_t palette_map[16];
 	bool transparent[16];
 };
 
@@ -121,8 +120,8 @@ namespace pico_private {
 	using namespace pico_api;
 
 	static void restore_palette() {
-		for (size_t n = 0; n < 16; n++) {
-			currentGraphicsState->palette[n] = base_palette[n];
+		for (colour_t n = 0; n < 16; n++) {
+			currentGraphicsState->palette_map[n] = n;
 		}
 	}
 
@@ -154,16 +153,16 @@ namespace pico_private {
 		clip_axis(scr_x, spr_x, w, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 		clip_axis(scr_y, spr_y, h, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
 
-		pixel_t* pix = backbuffer + scr_y * backbuffer_pitch / sizeof(pixel_t) + scr_x;
+		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
 		colour_t* spr = sprites.sprite_data + spr_y * 128 + spr_x;
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				colour_t c = spr[x];
 				if (!currentGraphicsState->transparent[c]) {
-					pix[x] = currentGraphicsState->palette[c];
+					pix[x] = currentGraphicsState->palette_map[c];
 				}
 			}
-			pix += backbuffer_pitch / sizeof(pixel_t);
+			pix += buffer_size_x;
 			spr += 128;
 		}
 	}
@@ -211,8 +210,8 @@ namespace pico_private {
 		x0 = limit(x0, 0, 127);
 		x1 = limit(x1, 0, 127);
 
-		pixel_t* pix = backbuffer + y * backbuffer_pitch / sizeof(pixel_t);
-		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+		colour_t* pix = backbuffer + y * buffer_size_x;
+		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
 
 		for (int x = x0; x <= x1; x++) {
 			pix[x] = p;
@@ -226,12 +225,12 @@ namespace pico_private {
 		y0 = limit(y0, 0, 127);
 		y1 = limit(y1, 0, 127);
 
-		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
-		pixel_t p = currentGraphicsState->palette[c & 0x0f];
+		colour_t* pix = backbuffer + y0 * buffer_size_x;
+		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
 
 		for (int y = y0; y <= y1; y++) {
 			pix[x] = p;
-			pix += backbuffer_pitch / sizeof(pixel_t);
+			pix += buffer_size_x;
 		}
 	}
 
@@ -241,23 +240,6 @@ namespace pico_control {
 	void init(int x, int y) {
 		buffer_size_x = x;
 		buffer_size_y = y;
-
-		base_palette[0] = GFX_GetPixel(0, 0, 0);
-		base_palette[1] = GFX_GetPixel(29, 43, 83);
-		base_palette[2] = GFX_GetPixel(126, 37, 83);
-		base_palette[3] = GFX_GetPixel(0, 135, 81);
-		base_palette[4] = GFX_GetPixel(171, 82, 54);
-		base_palette[5] = GFX_GetPixel(95, 87, 79);
-		base_palette[6] = GFX_GetPixel(194, 195, 199);
-		base_palette[7] = GFX_GetPixel(255, 241, 232);
-		base_palette[8] = GFX_GetPixel(255, 0, 77);
-		base_palette[9] = GFX_GetPixel(255, 163, 0);
-		base_palette[10] = GFX_GetPixel(255, 240, 36);
-		base_palette[11] = GFX_GetPixel(0, 231, 86);
-		base_palette[12] = GFX_GetPixel(41, 173, 255);
-		base_palette[13] = GFX_GetPixel(131, 118, 156);
-		base_palette[14] = GFX_GetPixel(255, 119, 168);
-		base_palette[15] = GFX_GetPixel(255, 204, 170);
 
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
@@ -269,9 +251,10 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_font);
 	}
 
-	void set_buffer(pixel_t* buffer, int pitch) {
-		backbuffer = buffer;
-		backbuffer_pitch = pitch;
+	pico_api::colour_t* get_buffer(int& width, int& height) {
+		width = buffer_size_x;
+		height = buffer_size_y;
+		return backbuffer;
 	}
 
 	void copy_data_to_ram(uint16_t addr, const std::string& data, bool gfx = true) {
@@ -316,14 +299,9 @@ namespace pico_control {
 
 namespace pico_api {
 	void cls(colour_t c) {
-		pixel_t p = currentGraphicsState->palette[c];
-		pixel_t* pix = backbuffer;
-		for (int y = 0; y < buffer_size_y; y++) {
-			for (int x = 0; x < buffer_size_x; x++) {
-				pix[x] = p;
-			}
-			pix += backbuffer_pitch / sizeof(pixel_t);
-		}
+		colour_t p = currentGraphicsState->palette_map[c];
+		memset(backbuffer, p, buffer_size_x * buffer_size_y);
+
 		currentGraphicsState->text_x = 0;
 		currentGraphicsState->text_y = 0;
 	}
@@ -426,8 +404,8 @@ namespace pico_api {
 			return;
 		}
 
-		pixel_t* pix = backbuffer + y * backbuffer_pitch / sizeof(pixel_t) + x;
-		*pix = currentGraphicsState->palette[colour & 0x0f];
+		colour_t* pix = backbuffer + y * buffer_size_x + x;
+		*pix = currentGraphicsState->palette_map[colour & 0x0f];
 	}
 
 	void rect(int x0, int y0, int x1, int y1) {
@@ -452,9 +430,9 @@ namespace pico_api {
 		pico_private::normalise_coords(y0, y1);
 
 		pico_private::clip_rect(x0, y0, x1, y1);
-		pixel_t* pix = backbuffer + y0 * backbuffer_pitch / sizeof(pixel_t);
-		pixel_t p1 = currentGraphicsState->palette[c & 0x0f];
-		pixel_t p2 = currentGraphicsState->palette[(c >> 4) & 0x0f];
+		colour_t* pix = backbuffer + y0 * buffer_size_x;
+		colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
+		colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
 
 		uint16_t pat = currentGraphicsState->pattern;
 
@@ -462,7 +440,7 @@ namespace pico_api {
 			for (int x = x0; x <= x1; x++) {
 				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
 			}
-			pix += backbuffer_pitch / sizeof(pixel_t);
+			pix += buffer_size_x;
 		}
 	}
 
@@ -522,7 +500,7 @@ namespace pico_api {
 	}
 
 	void pal(colour_t c0, colour_t c1) {
-		currentGraphicsState->palette[c0 & 0xf] = base_palette[c1 & 0xf];
+		currentGraphicsState->palette_map[c0 & 0xf] = c1 & 0xf;
 	}
 
 	void pal() {
@@ -552,10 +530,10 @@ namespace pico_api {
 	}
 
 	void print(std::string str, int x, int y, colour_t c) {
-		pixel_t old = currentGraphicsState->palette[7];
+		colour_t old = currentGraphicsState->palette_map[7];
 		bool oldt = currentGraphicsState->transparent[0];
 
-		currentGraphicsState->palette[7] = base_palette[c & 0xf];
+		currentGraphicsState->palette_map[7] = c & 0xf;
 		currentGraphicsState->transparent[0] = true;
 
 		for (size_t n = 0; n < str.length(); n++) {
@@ -578,7 +556,7 @@ namespace pico_api {
 		currentGraphicsState->text_x = 0;
 		currentGraphicsState->text_y = y + 6;
 
-		currentGraphicsState->palette[7] = old;
+		currentGraphicsState->palette_map[7] = old;
 		currentGraphicsState->transparent[0] = oldt;
 
 		currentGraphicsState->fg = c & 0xf;

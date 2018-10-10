@@ -6,6 +6,7 @@ static SDL_Window* sdlWin = nullptr;
 static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
 static SDL_PixelFormat* sdlPixFmt = nullptr;
+static pixel_t palette[256] = {0};
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -52,20 +53,44 @@ void GFX_CreateBackBuffer(int x, int y) {
 	}
 
 	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
+	palette[0] = GFX_GetPixel(0, 0, 0);
+	palette[1] = GFX_GetPixel(29, 43, 83);
+	palette[2] = GFX_GetPixel(126, 37, 83);
+	palette[3] = GFX_GetPixel(0, 135, 81);
+	palette[4] = GFX_GetPixel(171, 82, 54);
+	palette[5] = GFX_GetPixel(95, 87, 79);
+	palette[6] = GFX_GetPixel(194, 195, 199);
+	palette[7] = GFX_GetPixel(255, 241, 232);
+	palette[8] = GFX_GetPixel(255, 0, 77);
+	palette[9] = GFX_GetPixel(255, 163, 0);
+	palette[10] = GFX_GetPixel(255, 240, 36);
+	palette[11] = GFX_GetPixel(0, 231, 86);
+	palette[12] = GFX_GetPixel(41, 173, 255);
+	palette[13] = GFX_GetPixel(131, 118, 156);
+	palette[14] = GFX_GetPixel(255, 119, 168);
+	palette[15] = GFX_GetPixel(255, 204, 170);
 }
 
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
 	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
 }
 
-void GFX_LockBackBuffer(pixel_t** pixels, int* pitch) {
-	int res = SDL_LockTexture(sdlTex, NULL, (void**)pixels, pitch);
+void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
+	pixel_t* pixels;
+	int pitch;
+
+	int res = SDL_LockTexture(sdlTex, NULL, (void**)&pixels, &pitch);
 	if (res < 0) {
 		throw_error("SDL_LockTexture Error: ");
 	}
-}
+	for (int y = 0; y < buffer_h; y++) {  // TODO:: optimise loop???
+		for (int x = 0; x < buffer_w; x++) {
+			pixels[x] = palette[buffer[x]];
+		}
+		pixels += pitch / sizeof(pixel_t);
+		buffer += buffer_w;
+	}
 
-void GFX_UnlockBackBuffer() {
 	SDL_UnlockTexture(sdlTex);
 }
 

@@ -87,7 +87,7 @@ namespace pico_api {
 
 namespace pico_control {
 	void init(int x, int y);
-	void set_buffer(pixel_t* buffer, int pitch);
+	pico_api::colour_t* get_buffer(int& width, int& height);
 	void set_sprite_data(std::string data, std::string flags);
 	void set_map_data(std::string data);
 	void set_font_data(std::string data);

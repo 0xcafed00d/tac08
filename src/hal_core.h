@@ -17,8 +17,7 @@ void GFX_End();
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b);
 
 void GFX_CreateBackBuffer(int x, int y);
-void GFX_LockBackBuffer(pixel_t** pixels, int* pitch);
-void GFX_UnlockBackBuffer();
+void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h);
 
 void GFX_Flip();
 
