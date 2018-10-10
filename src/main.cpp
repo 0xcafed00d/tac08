@@ -32,7 +32,7 @@ int safe_main(int argc, char** argv) {
 		if (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				break;
-			} else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+			} else {
 				INP_ProcessInputEvents(e);
 			}
 		} else {

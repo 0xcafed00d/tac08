@@ -76,40 +76,45 @@ void GFX_Flip() {
 }
 
 static uint8_t state = 0;
+static int mouseWheel = 0;
 
 void INP_ProcessInputEvents(const SDL_Event& ev) {
-	int mask = -1;
-	switch (ev.key.keysym.sym) {
-		case SDLK_LEFT:
-			mask = 1;
-			break;
-		case SDLK_RIGHT:
-			mask = 2;
-			break;
-		case SDLK_UP:
-			mask = 4;
-			break;
-		case SDLK_DOWN:
-			mask = 8;
-			break;
-		case SDLK_z:
-			mask = 16;
-			break;
-		case SDLK_x:
-			mask = 32;
-			break;
-		case SDLK_p:
-			mask = 64;
-			break;
-	}
+	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
+		int mask = -1;
+		switch (ev.key.keysym.sym) {
+			case SDLK_LEFT:
+				mask = 1;
+				break;
+			case SDLK_RIGHT:
+				mask = 2;
+				break;
+			case SDLK_UP:
+				mask = 4;
+				break;
+			case SDLK_DOWN:
+				mask = 8;
+				break;
+			case SDLK_z:
+				mask = 16;
+				break;
+			case SDLK_x:
+				mask = 32;
+				break;
+			case SDLK_p:
+				mask = 64;
+				break;
+		}
 
-	if (mask != -1) {
-		if (ev.type == SDL_KEYDOWN) {
-			state = state | mask;
+		if (mask != -1) {
+			if (ev.type == SDL_KEYDOWN) {
+				state = state | mask;
+			}
+			if (ev.type == SDL_KEYUP) {
+				state = state & (~mask);
+			}
 		}
-		if (ev.type == SDL_KEYUP) {
-			state = state & (~mask);
-		}
+	} else if (ev.type == SDL_MOUSEWHEEL) {
+		mouseWheel += ev.wheel.y;
 	}
 }
 
@@ -121,7 +126,7 @@ uint32_t TIME_GetTicks() {
 	return SDL_GetTicks();
 }
 
-MouseState INP_GetMouseState() {  // TODO: add mouse wheel
+MouseState INP_GetMouseState() {
 	MouseState ms;
 	int b = SDL_GetMouseState(&ms.x, &ms.y);
 	ms.buttons = (b & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
@@ -130,6 +135,7 @@ MouseState INP_GetMouseState() {  // TODO: add mouse wheel
 
 	ms.x /= 4;  // TODO: scale based on window size
 	ms.y /= 4;
-	ms.wheel = 0;
+	ms.wheel = mouseWheel;
+	mouseWheel = 0;
 	return ms;
 }
