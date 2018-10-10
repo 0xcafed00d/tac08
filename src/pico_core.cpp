@@ -6,7 +6,6 @@
 static pico_api::colour_t backbuffer[128 * 128];
 static int buffer_size_x = 128;
 static int buffer_size_y = 128;
-// static pixel_t base_palette[16];
 
 struct InputState {
 	uint8_t old = 0;

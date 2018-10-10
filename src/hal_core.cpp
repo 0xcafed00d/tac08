@@ -6,6 +6,7 @@ static SDL_Window* sdlWin = nullptr;
 static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
 static SDL_PixelFormat* sdlPixFmt = nullptr;
+static SDL_Joystick* joystick = nullptr;
 static pixel_t palette[256] = {0};
 
 static void throw_error(std::string msg) {
@@ -14,7 +15,7 @@ static void throw_error(std::string msg) {
 }
 
 void GFX_Init(int x, int y) {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
 		throw_error("SDL_Init Error: ");
 	}
 
@@ -28,6 +29,15 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_CreateRenderer Error: ");
 	}
 	SDL_ShowCursor(SDL_DISABLE);
+
+	if (SDL_NumJoysticks() > 0) {
+		joystick = SDL_JoystickOpen(0);
+		if (joystick) {
+			std::cout << "name: " << SDL_JoystickName(joystick) << std::endl;
+			std::cout << "buttons: " << SDL_JoystickNumButtons(joystick) << std::endl;
+			std::cout << "axis: " << SDL_JoystickNumAxes(joystick) << std::endl;
+		}
+	}
 }
 
 void GFX_End() {
@@ -100,51 +110,48 @@ void GFX_Flip() {
 	SDL_RenderPresent(sdlRen);
 }
 
-static uint8_t state = 0;
+static uint8_t keyState = 0;
+static uint8_t joyState = 0;
 static int mouseWheel = 0;
+
+static inline void set_state_bit(uint8_t& state, uint8_t bit, bool condition, bool value) {
+	if (condition) {
+		if (value) {
+			state |= (1 << bit);
+		} else {
+			state &= ~(1 << bit);
+		}
+	}
+}
 
 void INP_ProcessInputEvents(const SDL_Event& ev) {
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
-		int mask = -1;
-		switch (ev.key.keysym.sym) {
-			case SDLK_LEFT:
-				mask = 1;
-				break;
-			case SDLK_RIGHT:
-				mask = 2;
-				break;
-			case SDLK_UP:
-				mask = 4;
-				break;
-			case SDLK_DOWN:
-				mask = 8;
-				break;
-			case SDLK_z:
-				mask = 16;
-				break;
-			case SDLK_x:
-				mask = 32;
-				break;
-			case SDLK_p:
-				mask = 64;
-				break;
-		}
-
-		if (mask != -1) {
-			if (ev.type == SDL_KEYDOWN) {
-				state = state | mask;
-			}
-			if (ev.type == SDL_KEYUP) {
-				state = state & (~mask);
-			}
-		}
+		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 2, ev.key.keysym.sym == SDLK_UP, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 3, ev.key.keysym.sym == SDLK_DOWN, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 4, ev.key.keysym.sym == SDLK_z, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 5, ev.key.keysym.sym == SDLK_x, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 6, ev.key.keysym.sym == SDLK_p, ev.type == SDL_KEYDOWN);
 	} else if (ev.type == SDL_MOUSEWHEEL) {
 		mouseWheel += ev.wheel.y;
+	} else if (ev.type == SDL_JOYAXISMOTION) {
+		// std::cout << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value << std::endl;
+		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -500);
+		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 500);
+		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -500);
+		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 500);
+	} else if (ev.type == SDL_JOYBUTTONDOWN || ev.type == SDL_JOYBUTTONUP) {
+		// std::cout << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state <<
+		// std::endl;
+		set_state_bit(joyState, 4, ev.jbutton.button == 1, (bool)ev.jbutton.state);
+		set_state_bit(joyState, 5, ev.jbutton.button == 0, (bool)ev.jbutton.state);
+		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);
 	}
 }
 
 uint8_t INP_GetInputState() {
-	return state;
+	return keyState | joyState;
 }
 
 uint32_t TIME_GetTicks() {
