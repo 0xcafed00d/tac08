@@ -65,6 +65,33 @@ static std::string firmware = R"(
 		end
 	end
 
+	if (debug_coroutines) then 
+		function cocreate(c)
+			printh("cocreate")
+			return coroutine.create(c)
+		end
+
+		function costatus(c) 
+			printh("costatus")
+			return coroutine.status(c)
+		end
+
+		function coresume(c) 
+			printh("coresume")
+			return coroutine.resume(c)
+		end
+
+		function yield(c) 
+			printh("yield")
+			return coroutine.yield(c)
+		end
+	else
+		yield = coroutine.yield
+		cocreate = coroutine.create
+		coresume = coroutine.resume
+		costatus = coroutine.status
+	end
+
 	-- constants for input/buttons
 	⬅️ = 0
 	➡️ = 1
@@ -584,7 +611,7 @@ static int impl_time(lua_State* ls) {
 
 static int impl_color(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto c = luaL_checknumber(ls, 1);
+	auto c = luaL_optnumber(ls, 1, 0);
 	pico_api::color(c);
 	return 0;
 }
