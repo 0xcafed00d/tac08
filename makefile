@@ -13,36 +13,36 @@ EXE = thing
 
 all: $(EXE)
 
-$(EXE): main.o hal_core.o pico_core.o pico_memory.o pico_data.o pico_script.o pico_cart.o utf8-util.o
+$(EXE): bin/main.o bin/hal_core.o bin/pico_core.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 	@cowsay "Built All The Things!!!"
 
-main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/pico_script.h src/pico_cart.h 
+bin/main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/pico_script.h src/pico_cart.h 
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-hal_core.o: src/hal_core.cpp src/hal_core.h
+bin/hal_core.o: src/hal_core.cpp src/hal_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_core.o: src/pico_core.cpp src/pico_core.h src/hal_core.h src/pico_memory.h
+bin/pico_core.o: src/pico_core.cpp src/pico_core.h src/hal_core.h src/pico_memory.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h src/pico_script.h
+bin/pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h src/pico_script.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_memory.o: src/pico_memory.cpp src/pico_memory.h 
+bin/pico_memory.o: src/pico_memory.cpp src/pico_memory.h 
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h
+bin/pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_cart.h
+bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_cart.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp
+bin/utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
-	rm *.o && rm $(EXE)
+	rm bin/*.o && rm $(EXE)
 	
 run: all
 	./$(EXE) ../pico-8/gridbug/gridbug.p8 

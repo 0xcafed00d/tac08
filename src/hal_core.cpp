@@ -105,7 +105,7 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 }
 
 void GFX_Flip() {
-	SDL_RenderClear(sdlRen);
+	// SDL_RenderClear(sdlRen);
 	SDL_RenderCopy(sdlRen, sdlTex, NULL, NULL);
 	SDL_RenderPresent(sdlRen);
 }
