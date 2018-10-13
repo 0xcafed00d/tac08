@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-static pico_api::colour_t backbuffer[128 * 128];
+static pico_api::colour_t backbuffer[128 * 128 * 2];
 static int buffer_size_x = 128;
 static int buffer_size_y = 128;
 
@@ -114,8 +114,6 @@ static pico_ram::SplitNibbleMemoryArea mem_screen(backbuffer,
                                                   pico_ram::MEM_SCREEN_ADDR,
                                                   pico_ram::MEM_SCREEN_SIZE);
 
-// static pico_ram::SplitNibbleMemoryArea mem_screen();
-
 static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0x2000);
 
 namespace pico_private {
@@ -207,11 +205,11 @@ namespace pico_private {
 
 	void hline(int x0, int x1, int y, colour_t c) {
 		normalise_coords(x0, x1);
-		if (y < 0 || y > 127) {
+		if (y < currentGraphicsState->clip_y1 || y > currentGraphicsState->clip_y2) {
 			return;
 		}
-		x0 = limit(x0, 0, 127);
-		x1 = limit(x1, 0, 127);
+		x0 = limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2 - 1);
+		x1 = limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2 - 1);
 
 		colour_t* pix = backbuffer + y * buffer_size_x;
 		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
@@ -402,14 +400,23 @@ namespace pico_api {
 		pset(x, y, currentGraphicsState->fg);
 	}
 
-	void pset(int x, int y, colour_t colour) {
+	void pset(int x, int y, colour_t c) {
 		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
 		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
 		}
 
 		colour_t* pix = backbuffer + y * buffer_size_x + x;
-		*pix = currentGraphicsState->palette_map[colour & 0x0f];
+		uint16_t pat = currentGraphicsState->pattern;
+		if (pat == 0) {
+			*pix = currentGraphicsState->palette_map[c & 0x0f];
+		} else if (pat == 0xff) {
+			*pix = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
+		} else {
+			colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
+			colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
+			*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
+		}
 	}
 
 	void rect(int x0, int y0, int x1, int y1) {
