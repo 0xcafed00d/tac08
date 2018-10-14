@@ -94,6 +94,7 @@ namespace pico_control {
 	void set_input_state(int state, int player = 0);
 	void set_mouse_state(const MouseState& ms);
 	void copy_shared_data();
+	void test_integrity();
 
 }  // namespace pico_control
 

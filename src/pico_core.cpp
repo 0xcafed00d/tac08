@@ -1,9 +1,14 @@
 #include "pico_core.h"
 #include "pico_memory.h"
 
+#include <assert.h>
 #include <iostream>
 
-static pico_api::colour_t backbuffer[128 * 128 * 2];
+static pico_api::colour_t backbuffer_store[128 * 256];
+static pico_api::colour_t* backbuffer = &backbuffer_store[128 * 64];
+static pico_api::colour_t* backbuffer_guard1 = &backbuffer_store[0];
+static pico_api::colour_t* backbuffer_guard2 = &backbuffer_store[128 * 192];
+
 static int buffer_size_x = 128;
 static int buffer_size_y = 128;
 
@@ -119,6 +124,20 @@ static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0
 namespace pico_private {
 	using namespace pico_api;
 
+	void init_guards() {
+		for (size_t i = 0; i < 128 * 64; i++) {
+			backbuffer_guard1[i] = i;
+			backbuffer_guard2[i] = i;
+		}
+	}
+
+	void check_guards() {
+		for (size_t i = 0; i < 128 * 64; i++) {
+			assert(backbuffer_guard1[i] == (i & 0xff));
+			assert(backbuffer_guard2[i] == (i & 0xff));
+		}
+	}
+
 	static void restore_palette() {
 		for (colour_t n = 0; n < 16; n++) {
 			currentGraphicsState->palette_map[n] = n;
@@ -139,7 +158,7 @@ namespace pico_private {
 			dest_pos = min;
 		}
 
-		if ((dest_pos + len) > max) {
+		if ((dest_pos + len) >= max) {
 			len = len - (dest_pos + len - max);
 		}
 
@@ -205,16 +224,16 @@ namespace pico_private {
 
 	void hline(int x0, int x1, int y, colour_t c) {
 		normalise_coords(x0, x1);
-		if (y < currentGraphicsState->clip_y1 || y > currentGraphicsState->clip_y2) {
+		if (y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
 		}
-		x0 = limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2 - 1);
-		x1 = limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2 - 1);
+		x0 = limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
+		x1 = limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 
 		colour_t* pix = backbuffer + y * buffer_size_x;
 		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
 
-		for (int x = x0; x <= x1; x++) {
+		for (int x = x0; x < x1; x++) {
 			pix[x] = p;
 		}
 	}
@@ -251,11 +270,14 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_flags);
 		ram.addMemoryArea(&mem_screen);
 		ram.addMemoryArea(&mem_font);
+
+		pico_private::init_guards();
 	}
 
 	pico_api::colour_t* get_buffer(int& width, int& height) {
 		width = buffer_size_x;
 		height = buffer_size_y;
+		//		pico_private::check_guards();
 		return backbuffer;
 	}
 
@@ -296,6 +318,10 @@ namespace pico_control {
 
 	void set_mouse_state(const MouseState& ms) {
 		mouseState = ms;
+	}
+
+	void test_integrity() {
+		pico_private::check_guards();
 	}
 }  // namespace pico_control
 

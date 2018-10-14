@@ -129,7 +129,9 @@ static void dump_func(lua_State* ls, const char* funcname) {
 //#define API_TRACE
 
 #ifdef API_TRACE
-#define DEBUG_DUMP_FUNCTION dump_func(ls, __FUNCTION__);
+#define DEBUG_DUMP_FUNCTION         \
+	pico_control::test_integrity(); \
+	dump_func(ls, __FUNCTION__);
 #else
 #define DEBUG_DUMP_FUNCTION
 #endif
