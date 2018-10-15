@@ -224,6 +224,7 @@ namespace pico_private {
 
 	void hline(int x0, int x1, int y, colour_t c) {
 		normalise_coords(x0, x1);
+		x1++;
 		if (y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
 		}
@@ -277,7 +278,7 @@ namespace pico_control {
 	pico_api::colour_t* get_buffer(int& width, int& height) {
 		width = buffer_size_x;
 		height = buffer_size_y;
-		//		pico_private::check_guards();
+		pico_private::check_guards();
 		return backbuffer;
 	}
 
@@ -486,18 +487,20 @@ namespace pico_api {
 	}
 
 	void circ(int xm, int ym, int r, colour_t c) {
-		int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
-		do {
-			pset(xm - x, ym + y, c); /*   I. Quadrant */
-			pset(xm - y, ym - x, c); /*  II. Quadrant */
-			pset(xm + x, ym - y, c); /* III. Quadrant */
-			pset(xm + y, ym + x, c); /*  IV. Quadrant */
-			r = err;
-			if (r > x)
-				err += ++x * 2 + 1; /* e_xy+e_x > 0 */
-			if (r <= y)
-				err += ++y * 2 + 1; /* e_xy+e_y < 0 */
-		} while (x < 0);
+		if (r >= 0) {
+			int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
+			do {
+				pset(xm - x, ym + y, c); /*   I. Quadrant */
+				pset(xm - y, ym - x, c); /*  II. Quadrant */
+				pset(xm + x, ym - y, c); /* III. Quadrant */
+				pset(xm + y, ym + x, c); /*  IV. Quadrant */
+				r = err;
+				if (r > x)
+					err += ++x * 2 + 1; /* e_xy+e_x > 0 */
+				if (r <= y)
+					err += ++y * 2 + 1; /* e_xy+e_y < 0 */
+			} while (x < 0);
+		}
 	}
 
 	void circfill(int x, int y, int r) {
@@ -505,16 +508,24 @@ namespace pico_api {
 	}
 
 	void circfill(int xm, int ym, int r, colour_t c) {
-		int x = -r, y = 0, err = 2 - 2 * r;
-		do {
-			pico_private::hline(xm - x, xm + x, ym + y, c);
-			pico_private::hline(xm - x, xm + x, ym - y, c);
-			r = err;
-			if (r > x)
-				err += ++x * 2 + 1;
-			if (r <= y)
-				err += ++y * 2 + 1;
-		} while (x < 0);
+		if (r == 0) {
+			pset(xm, ym, c);
+		} else if (r == 1) {
+			pset(xm, ym - 1, c);
+			pico_private::hline(xm - 1, xm + 1, ym, c);
+			pset(xm, ym + 1, c);
+		} else if (r > 0) {
+			int x = -r, y = 0, err = 2 - 2 * r;
+			do {
+				pico_private::hline(xm - x, xm + x, ym + y, c);
+				pico_private::hline(xm - x, xm + x, ym - y, c);
+				r = err;
+				if (r > x)
+					err += ++x * 2 + 1;
+				if (r <= y)
+					err += ++y * 2 + 1;
+			} while (x < 0);
+		}
 	}
 
 	void line(int x0, int y0, int x1, int y1) {

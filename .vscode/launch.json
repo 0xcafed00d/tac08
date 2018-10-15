@@ -10,7 +10,7 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/thing",
 			"args": [
-				"../pico-8/geomtest.p8"
+				"tests/geomtest.p8"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

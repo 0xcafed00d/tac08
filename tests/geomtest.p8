@@ -1,16 +1,15 @@
 pico-8 cartridge // http://www.pico-8.com
 version 16
 __lua__
+
+tests = {}
 function _init() 
-	tests = {
-		test1,
-		test2,
-		test3,
-		test4
-	}
-	
 	current_test = 1
 end
+
+x = 64
+y = 64
+r = 64
 
 function _update() 
 	if btnp(❎) then
@@ -18,7 +17,29 @@ function _update()
 		if current_test > #tests then
 			current_test = 1
 		end
-	end	
+	end
+
+	if btnp(0) then
+		if btn(4) then 
+			r -= 1
+		else
+			x -= 1
+		end
+	end
+	if btnp(1) then
+		if btn(4) then 
+			r += 1
+		else
+			x += 1
+		end
+	end
+	if btnp(2) then
+		y -= 1
+	end
+	if btnp(3) then
+		y += 1
+	end
+	
 end
 
 function _draw() 
@@ -26,29 +47,59 @@ function _draw()
 	clip()
 	pal()
 	tests[current_test]()
+	print (current_test, 120, 1, 0)
 end
 
+function draw_circ()
+	circfill(x, y, r, 9)
+	clip()
+	print ("x:"..x.." y:"..y.." r:"..r, 1,1,0);
+end
 
-function test1()
+function draw_circl()
+	circ(x, y, r, 9)
+	clip()
+	print ("x:"..x.." y:"..y.." r:"..r, 1,1,0);
+end
+
+add(tests, function ()
 	cls(7)
-	circfill(64, 64, 63, 9)
-end
+	draw_circ()
+end)
 
-function test2()
-	cls(7)
-	circfill(64, 64, 70, 9)
-end
-
-function test3()
+add(tests, 
+function()
 	cls(7)
 	clip(1,1,127,127)
-	circfill(64, 64, 70, 9)
-end
+	draw_circ()
+end)
 
 
-function test4()
+add(tests, 
+function()
 	cls(7)
 	clip(4,4,120,120)
-	circfill(64, 64, 70, 9)
-end
+	draw_circ()
+end)
+
+add(tests, function ()
+	cls(7)
+	draw_circl()
+end)
+
+add(tests, 
+function()
+	cls(7)
+	clip(1,1,127,127)
+	draw_circl()
+end)
+
+
+add(tests, 
+function()
+	cls(7)
+	clip(4,4,120,120)
+	draw_circl()
+end)
+
 
