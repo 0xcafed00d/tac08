@@ -222,7 +222,19 @@ namespace pico_private {
 			std::swap(c0, c1);
 	}
 
-	void hline(int x0, int x1, int y, colour_t c) {
+	/*		uint16_t pat = currentGraphicsState->pattern;
+	        if (pat == 0) {
+	            *pix = currentGraphicsState->palette_map[c & 0x0f];
+	        } else if (pat == 0xffff) {
+	            *pix = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
+	        } else {
+	            colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
+	            colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
+	            *pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
+	        }
+	*/
+
+	void hline(int x0, int x1, int y) {
 		normalise_coords(x0, x1);
 		x1++;
 		if (y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
@@ -231,21 +243,31 @@ namespace pico_private {
 		x0 = limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 		x1 = limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 
-		colour_t* pix = backbuffer + y * buffer_size_x;
-		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
+		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
+		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
 
-		for (int x = x0; x < x1; x++) {
-			pix[x] = p;
+		colour_t* pix = backbuffer + y * buffer_size_x;
+		uint16_t pat = currentGraphicsState->pattern;
+
+		if (pat == 0) {
+			memset(pix + x0, fg, x1 - x0);
+		} else if (pat == 0xffff) {
+			memset(pix + x0, bg, x1 - x0);
+		} else {
+			for (int x = x0; x < x1; x++) {
+				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+			}
 		}
 	}
 
-	void vline(int y0, int y1, int x, colour_t c) {
+	void vline(int y0, int y1, int x) {
 		if (x < 0 || x > 127) {
 			return;
 		}
 		y0 = limit(y0, 0, 127);
 		y1 = limit(y1, 0, 127);
 
+		colour_t c = 7;
 		colour_t* pix = backbuffer + y0 * buffer_size_x;
 		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
 
@@ -428,6 +450,8 @@ namespace pico_api {
 	}
 
 	void pset(int x, int y, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
 		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
@@ -437,7 +461,7 @@ namespace pico_api {
 		uint16_t pat = currentGraphicsState->pattern;
 		if (pat == 0) {
 			*pix = currentGraphicsState->palette_map[c & 0x0f];
-		} else if (pat == 0xff) {
+		} else if (pat == 0xffff) {
 			*pix = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
 		} else {
 			colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
@@ -451,12 +475,14 @@ namespace pico_api {
 	}
 
 	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		pico_private::normalise_coords(x0, x1);
 		pico_private::normalise_coords(y0, y1);
-		pico_private::hline(x0, x1, y0, c);
-		pico_private::hline(x0, x1, y1, c);
-		pico_private::vline(y0, y1, x0, c);
-		pico_private::vline(y0, y1, x1, c);
+		pico_private::hline(x0, x1, y0);
+		pico_private::hline(x0, x1, y1);
+		pico_private::vline(y0, y1, x0);
+		pico_private::vline(y0, y1, x1);
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1) {
@@ -464,6 +490,8 @@ namespace pico_api {
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		pico_private::normalise_coords(x0, x1);
 		pico_private::normalise_coords(y0, y1);
 
@@ -487,6 +515,8 @@ namespace pico_api {
 	}
 
 	void circ(int xm, int ym, int r, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		if (r >= 0) {
 			int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
 			do {
@@ -508,17 +538,19 @@ namespace pico_api {
 	}
 
 	void circfill(int xm, int ym, int r, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		if (r == 0) {
 			pset(xm, ym, c);
 		} else if (r == 1) {
 			pset(xm, ym - 1, c);
-			pico_private::hline(xm - 1, xm + 1, ym, c);
+			pico_private::hline(xm - 1, xm + 1, ym);
 			pset(xm, ym + 1, c);
 		} else if (r > 0) {
 			int x = -r, y = 0, err = 2 - 2 * r;
 			do {
-				pico_private::hline(xm - x, xm + x, ym + y, c);
-				pico_private::hline(xm - x, xm + x, ym - y, c);
+				pico_private::hline(xm - x, xm + x, ym + y);
+				pico_private::hline(xm - x, xm + x, ym - y);
 				r = err;
 				if (r > x)
 					err += ++x * 2 + 1;
@@ -533,6 +565,8 @@ namespace pico_api {
 	}
 
 	void line(int x0, int y0, int x1, int y1, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
 		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
 		int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
 		int err = dx + dy, e2; /* error value e_xy */
@@ -615,6 +649,9 @@ namespace pico_api {
 	}
 
 	void print(std::string str, int x, int y, colour_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
+
 		colour_t old = currentGraphicsState->palette_map[7];
 		bool oldt = currentGraphicsState->transparent[0];
 

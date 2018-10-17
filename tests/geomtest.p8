@@ -11,6 +11,8 @@ x = 64
 y = 64
 r = 64
 
+f = 0;
+
 function _update() 
 	if btnp(❎) then
 		current_test += 1
@@ -18,6 +20,8 @@ function _update()
 			current_test = 1
 		end
 	end
+
+	f += 1
 
 	if btnp(0) then
 		if btn(4) then 
@@ -39,13 +43,14 @@ function _update()
 	if btnp(3) then
 		y += 1
 	end
-	
+
 end
 
 function _draw() 
 	camera()
 	clip()
 	pal()
+	fillp(f)
 	tests[current_test]()
 	print (current_test, 120, 1, 0)
 end
