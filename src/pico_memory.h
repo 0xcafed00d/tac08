@@ -15,6 +15,10 @@ namespace pico_ram {
 	const uint16_t MEM_MAP_SIZE = 0x1000;
 	const uint16_t MEM_GFX_PROPS_ADDR = 0x3000;
 	const uint16_t MEM_GFX_PROPS_SIZE = 0x0100;
+	const uint16_t MEM_SCRATCH_ADDR = 0x4300;
+	const uint16_t MEM_SCRATCH_SIZE = 0x1b00;
+	const uint16_t MEM_CART_DATA_ADDR = 0x5e00;
+	const uint16_t MEM_CART_DATA_SIZE = 0x0100;
 	const uint16_t MEM_SCREEN_ADDR = 0x6000;
 	const uint16_t MEM_SCREEN_SIZE = 0x2000;
 

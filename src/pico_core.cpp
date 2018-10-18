@@ -94,6 +94,9 @@ struct MapSheet {
 	uint8_t map_data[128 * 64];
 };
 
+static uint8_t cart_data[pico_ram::MEM_CART_DATA_SIZE] = {0};
+static uint8_t scratch_data[pico_ram::MEM_SCRATCH_SIZE] = {0};
+
 static MapSheet mapSheet;
 static MapSheet* currentMapData = &mapSheet;
 
@@ -120,6 +123,14 @@ static pico_ram::SplitNibbleMemoryArea mem_screen(backbuffer,
                                                   pico_ram::MEM_SCREEN_SIZE);
 
 static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0x2000);
+
+static pico_ram::LinearMemoryArea mem_cart_data(cart_data,
+                                                pico_ram::MEM_CART_DATA_ADDR,
+                                                pico_ram::MEM_CART_DATA_SIZE);
+
+static pico_ram::LinearMemoryArea mem_scratch_data(scratch_data,
+                                                   pico_ram::MEM_SCRATCH_ADDR,
+                                                   pico_ram::MEM_SCRATCH_SIZE);
 
 namespace pico_private {
 	using namespace pico_api;
@@ -289,6 +300,8 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_flags);
 		ram.addMemoryArea(&mem_screen);
 		ram.addMemoryArea(&mem_font);
+		ram.addMemoryArea(&mem_cart_data);
+		ram.addMemoryArea(&mem_scratch_data);
 
 		pico_private::init_guards();
 	}
@@ -358,11 +371,10 @@ namespace pico_api {
 	}
 
 	uint32_t peek4(uint16_t a) {
-		uint32_t v = 0;
-		v = peek(a);
-		v |= uint32_t(peek(a + 1)) << 4;
-		v |= uint32_t(peek(a + 2)) << 8;
-		v |= uint32_t(peek(a + 3)) << 12;
+		uint32_t v = peek(a);
+		v |= uint32_t(peek(a + 1)) << 8;
+		v |= uint32_t(peek(a + 2)) << 16;
+		v |= uint32_t(peek(a + 3)) << 24;
 		return v;
 	}
 
@@ -372,16 +384,17 @@ namespace pico_api {
 
 	void poke4(uint16_t a, uint32_t v) {
 		ram.poke(a, v);
-		ram.poke(a + 1, v >> 4);
-		ram.poke(a + 2, v >> 8);
-		ram.poke(a + 3, v >> 12);
+		ram.poke(a + 1, v >> 8);
+		ram.poke(a + 2, v >> 16);
+		ram.poke(a + 3, v >> 24);
 	}
 
 	uint32_t dget(uint16_t a) {
-		return 0;
+		return peek4(pico_ram::MEM_CART_DATA_ADDR + ((a * 4) & 0xff));
 	}
 
 	void dset(uint16_t a, uint32_t v) {
+		poke4(pico_ram::MEM_CART_DATA_ADDR + ((a * 4) & 0xff), v);
 	}
 
 	void cls() {
