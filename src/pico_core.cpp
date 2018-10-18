@@ -268,6 +268,11 @@ namespace pico_private {
 		}
 	}
 
+	void apply_camera(int& x, int& y) {
+		x = x - currentGraphicsState->camera_x;
+		y = y - currentGraphicsState->camera_y;
+	}
+
 }  // namespace pico_private
 
 namespace pico_control {
@@ -411,12 +416,15 @@ namespace pico_api {
 	}
 
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y) {
+		pico_private::apply_camera(x, y);
+
 		int spr_x = (n % 16) * 8;
 		int spr_y = (n / 16) * 8;
 		pico_private::blitter(*currentSprData, x, y, spr_x, spr_y, w * 8, h * 8);
 	}
 
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy) {
+		pico_private::apply_camera(dx, dy);
 		pico_private::blitter(*currentSprData, dx, dy, sx, sy, sw, sh);
 	}
 
@@ -466,6 +474,8 @@ namespace pico_api {
 	}
 
 	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::apply_camera(x0, y0);
+		pico_private::apply_camera(x1, y1);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 		pico_private::normalise_coords(x0, x1);
@@ -481,6 +491,8 @@ namespace pico_api {
 	}
 
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::apply_camera(x0, y0);
+		pico_private::apply_camera(x1, y1);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 		pico_private::normalise_coords(x0, x1);
@@ -506,6 +518,7 @@ namespace pico_api {
 	}
 
 	void circ(int xm, int ym, int r, colour_t c) {
+		pico_private::apply_camera(xm, ym);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 		if (r >= 0) {
@@ -529,6 +542,7 @@ namespace pico_api {
 	}
 
 	void circfill(int xm, int ym, int r, colour_t c) {
+		pico_private::apply_camera(xm, ym);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 		if (r == 0) {
@@ -556,6 +570,8 @@ namespace pico_api {
 	}
 
 	void line(int x0, int y0, int x1, int y1, colour_t c) {
+		pico_private::apply_camera(x0, y0);
+		pico_private::apply_camera(x1, y1);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
@@ -591,6 +607,7 @@ namespace pico_api {
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, uint8_t layer) {
+		pico_private::apply_camera(scr_x, scr_y);
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
 				uint8_t cell = mget(cell_x + x, cell_y + y);
@@ -640,6 +657,7 @@ namespace pico_api {
 	}
 
 	void print(std::string str, int x, int y, colour_t c) {
+		pico_private::apply_camera(x, y);
 		currentGraphicsState->fg = c & 0xf;
 		currentGraphicsState->bg = c >> 4;
 
