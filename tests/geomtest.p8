@@ -67,6 +67,18 @@ function draw_circl()
 	print ("x:"..x.." y:"..y.." r:"..r, 1,1,0);
 end
 
+function draw_rect()
+	rectfill(x-r, y-r, x+r, y+r, 9)
+	clip()
+	print ("x:"..x.." y:"..y.." r:"..r, 1,1,0);
+end
+
+function draw_rectl()
+	rect(x-r, y-r, x+r, y+r, 9)
+	clip()
+	print ("x:"..x.." y:"..y.." r:"..r, 1,1,0);
+end
+
 add(tests, function ()
 	cls(7)
 	draw_circ()
@@ -105,6 +117,32 @@ function()
 	cls(7)
 	clip(4,4,120,120)
 	draw_circl()
+end)
+
+add(tests, 
+function()
+	cls(7)
+	draw_rect()
+end)
+
+add(tests, 
+function()
+	cls(7)
+	draw_rectl()
+end)
+
+add(tests, 
+function()
+	cls(7)
+	clip(1,1,126,126)
+	draw_rect()
+end)
+
+add(tests, 
+function()
+	cls(7)
+	clip(1,1,126,126)
+	draw_rectl()
 end)
 
 

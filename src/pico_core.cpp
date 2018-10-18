@@ -222,18 +222,6 @@ namespace pico_private {
 			std::swap(c0, c1);
 	}
 
-	/*		uint16_t pat = currentGraphicsState->pattern;
-	        if (pat == 0) {
-	            *pix = currentGraphicsState->palette_map[c & 0x0f];
-	        } else if (pat == 0xffff) {
-	            *pix = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
-	        } else {
-	            colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
-	            colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
-	            *pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
-	        }
-	*/
-
 	void hline(int x0, int x1, int y) {
 		normalise_coords(x0, x1);
 		x1++;
@@ -261,18 +249,21 @@ namespace pico_private {
 	}
 
 	void vline(int y0, int y1, int x) {
-		if (x < 0 || x > 127) {
+		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2) {
 			return;
 		}
-		y0 = limit(y0, 0, 127);
-		y1 = limit(y1, 0, 127);
 
-		colour_t c = 7;
+		y0 = limit(y0, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+		y1 = limit(y1, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+
 		colour_t* pix = backbuffer + y0 * buffer_size_x;
-		colour_t p = currentGraphicsState->palette_map[c & 0x0f];
 
-		for (int y = y0; y <= y1; y++) {
-			pix[x] = p;
+		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
+		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
+		uint16_t pat = currentGraphicsState->pattern;
+
+		for (int y = y0; y < y1; y++) {
+			pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
 			pix += buffer_size_x;
 		}
 	}
