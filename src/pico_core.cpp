@@ -279,6 +279,26 @@ namespace pico_private {
 		}
 	}
 
+	void pset(int x, int y) {
+		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
+		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
+			return;
+		}
+
+		colour_t* pix = backbuffer + y * buffer_size_x + x;
+		uint16_t pat = currentGraphicsState->pattern;
+		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
+		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
+
+		if (pat == 0) {
+			*pix = fg;
+		} else if (pat == 0xffff) {
+			*pix = bg;
+		} else {
+			*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+		}
+	}
+
 	void apply_camera(int& x, int& y) {
 		x = x - currentGraphicsState->camera_x;
 		y = y - currentGraphicsState->camera_y;
@@ -469,22 +489,8 @@ namespace pico_api {
 
 	void pset(int x, int y, colour_t c) {
 		color(c);
-		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
-		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
-			return;
-		}
-
-		colour_t* pix = backbuffer + y * buffer_size_x + x;
-		uint16_t pat = currentGraphicsState->pattern;
-		if (pat == 0) {
-			*pix = currentGraphicsState->palette_map[c & 0x0f];
-		} else if (pat == 0xffff) {
-			*pix = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
-		} else {
-			colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
-			colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
-			*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
-		}
+		pico_private::apply_camera(x, y);
+		pico_private::pset(x, y);
 	}
 
 	void rect(int x0, int y0, int x1, int y1) {
@@ -539,10 +545,10 @@ namespace pico_api {
 		if (r >= 0) {
 			int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
 			do {
-				pset(xm - x, ym + y, c); /*   I. Quadrant */
-				pset(xm - y, ym - x, c); /*  II. Quadrant */
-				pset(xm + x, ym - y, c); /* III. Quadrant */
-				pset(xm + y, ym + x, c); /*  IV. Quadrant */
+				pico_private::pset(xm - x, ym + y); /*   I. Quadrant */
+				pico_private::pset(xm - y, ym - x); /*  II. Quadrant */
+				pico_private::pset(xm + x, ym - y); /* III. Quadrant */
+				pico_private::pset(xm + y, ym + x); /*  IV. Quadrant */
 				r = err;
 				if (r > x)
 					err += ++x * 2 + 1; /* e_xy+e_x > 0 */
@@ -560,11 +566,11 @@ namespace pico_api {
 		pico_private::apply_camera(xm, ym);
 		color(c);
 		if (r == 0) {
-			pset(xm, ym, c);
+			pico_private::pset(xm, ym);
 		} else if (r == 1) {
-			pset(xm, ym - 1, c);
+			pico_private::pset(xm, ym - 1);
 			pico_private::hline(xm - 1, xm + 1, ym);
-			pset(xm, ym + 1, c);
+			pico_private::pset(xm, ym + 1);
 		} else if (r > 0) {
 			int x = -r, y = 0, err = 2 - 2 * r;
 			do {
@@ -592,7 +598,7 @@ namespace pico_api {
 		int err = dx + dy, e2; /* error value e_xy */
 
 		for (;;) { /* loop */
-			pset(x0, y0, c);
+			pico_private::pset(x0, y0);
 			if (x0 == x1 && y0 == y1)
 				break;
 			e2 = 2 * err;

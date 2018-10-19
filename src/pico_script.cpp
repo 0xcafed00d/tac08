@@ -39,18 +39,22 @@ static std::string firmware = R"(
 	sub = string.sub
 
 	function add(a, val)
-		table.insert(a, val)
+		if a != nil then 
+			table.insert(a, val)
+		end
 		return val
 	end
 
 	function del(a, val)
-		for k, v in ipairs(a) do
-			if val == v then
-				table.remove(a, k)
-				return
+		if a != nil then
+			for k, v in ipairs(a) do
+				if val == v then
+					table.remove(a, k)
+					return
+				end
 			end
 		end
-		return val
+		return
 	end
 
 	function count(a)
