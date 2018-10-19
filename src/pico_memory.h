@@ -63,6 +63,24 @@ namespace pico_ram {
 		}
 	};
 
+	struct LinearMemoryAreaDF : public MemoryArea {
+		using MemoryArea::MemoryArea;
+		bool m_isDirty = false;
+
+		virtual uint8_t peek(uint16_t addr) {
+			return m_data[addr];
+		}
+
+		virtual void poke(uint16_t addr, uint8_t val) {
+			m_data[addr] = val;
+			m_isDirty = true;
+		}
+
+		void clearDirty() {
+			m_isDirty = false;
+		}
+	};
+
 	struct All0MemoryArea : public MemoryArea {
 		using MemoryArea::MemoryArea;
 

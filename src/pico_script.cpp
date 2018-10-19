@@ -37,7 +37,12 @@ static std::string firmware = R"(
 	end
 
 	sub = string.sub
-	add = table.insert
+
+	function add(a, val)
+		table.insert(a, val)
+		return val
+	end
+
 	function del(a, val)
 		for k, v in ipairs(a) do
 			if val == v then
@@ -45,6 +50,7 @@ static std::string firmware = R"(
 				return
 			end
 		end
+		return val
 	end
 
 	function count(a)

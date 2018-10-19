@@ -124,9 +124,9 @@ static pico_ram::SplitNibbleMemoryArea mem_screen(backbuffer,
 
 static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0x2000);
 
-static pico_ram::LinearMemoryArea mem_cart_data(cart_data,
-                                                pico_ram::MEM_CART_DATA_ADDR,
-                                                pico_ram::MEM_CART_DATA_SIZE);
+static pico_ram::LinearMemoryAreaDF mem_cart_data(cart_data,
+                                                  pico_ram::MEM_CART_DATA_ADDR,
+                                                  pico_ram::MEM_CART_DATA_SIZE);
 
 static pico_ram::LinearMemoryArea mem_scratch_data(scratch_data,
                                                    pico_ram::MEM_SCRATCH_ADDR,
@@ -358,6 +358,12 @@ namespace pico_control {
 }  // namespace pico_control
 
 namespace pico_api {
+
+	void color(uint8_t c) {
+		currentGraphicsState->fg = c & 0xf;
+		currentGraphicsState->bg = c >> 4;
+	}
+
 	void cls(colour_t c) {
 		colour_t p = currentGraphicsState->palette_map[c];
 		memset(backbuffer, p, buffer_size_x * buffer_size_y);
@@ -462,8 +468,7 @@ namespace pico_api {
 	}
 
 	void pset(int x, int y, colour_t c) {
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		if (x < currentGraphicsState->clip_x1 || x >= currentGraphicsState->clip_x2 ||
 		    y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
@@ -489,8 +494,7 @@ namespace pico_api {
 	void rect(int x0, int y0, int x1, int y1, colour_t c) {
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		pico_private::normalise_coords(x0, x1);
 		pico_private::normalise_coords(y0, y1);
 		pico_private::hline(x0, x1, y0);
@@ -506,8 +510,7 @@ namespace pico_api {
 	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		pico_private::normalise_coords(x0, x1);
 		pico_private::normalise_coords(y0, y1);
 
@@ -532,8 +535,7 @@ namespace pico_api {
 
 	void circ(int xm, int ym, int r, colour_t c) {
 		pico_private::apply_camera(xm, ym);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		if (r >= 0) {
 			int x = -r, y = 0, err = 2 - 2 * r; /* II. Quadrant */
 			do {
@@ -556,8 +558,7 @@ namespace pico_api {
 
 	void circfill(int xm, int ym, int r, colour_t c) {
 		pico_private::apply_camera(xm, ym);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		if (r == 0) {
 			pset(xm, ym, c);
 		} else if (r == 1) {
@@ -585,8 +586,7 @@ namespace pico_api {
 	void line(int x0, int y0, int x1, int y1, colour_t c) {
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
 		int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
 		int err = dx + dy, e2; /* error value e_xy */
@@ -620,7 +620,6 @@ namespace pico_api {
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h, uint8_t layer) {
-		pico_private::apply_camera(scr_x, scr_y);
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
 				uint8_t cell = mget(cell_x + x, cell_y + y);
@@ -656,11 +655,6 @@ namespace pico_api {
 		pico_private::restore_transparency();
 	}
 
-	void color(uint8_t c) {
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
-	}
-
 	void print(std::string str) {
 		print(str, currentGraphicsState->text_x, currentGraphicsState->text_y);
 	}
@@ -671,8 +665,7 @@ namespace pico_api {
 
 	void print(std::string str, int x, int y, colour_t c) {
 		pico_private::apply_camera(x, y);
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+		color(c);
 
 		colour_t old = currentGraphicsState->palette_map[7];
 		bool oldt = currentGraphicsState->transparent[0];
