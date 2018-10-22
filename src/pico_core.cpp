@@ -234,22 +234,21 @@ namespace pico_private {
 	                            int scr_h,
 	                            bool flip_x = false,
 	                            bool flip_y = false) {
-		int dx = int(float(spr_w) / float(scr_w << 16));
-		int dy = int(float(spr_h) / float(scr_h << 16));
+		int dx = (spr_w << 16) / scr_w;
+		int dy = (spr_h << 16) / scr_h;
 
-		colour_t* spr = sprites.sprite_data + spr_y * 128 + spr_x;
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
 
-		for (int y = 0; y < h; y++) {
-			for (int x = 0; x < w; x++) {
-				colour_t c = spr[x];
+		for (int y = 0; y < scr_h; y++) {
+			colour_t* spr = sprites.sprite_data + spr_y + (y * dy >> 16) * 128 + spr_x;
+
+			for (int x = 0; x < scr_w; x++) {
+				colour_t c = spr[x * dx >> 16];
 				if (!currentGraphicsState->transparent[c]) {
 					pix[x] = currentGraphicsState->palette_map[c];
 				}
 			}
-
 			pix += buffer_size_x;
-			spr += spr_dy;
 		}
 	}
 
