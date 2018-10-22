@@ -223,6 +223,19 @@ namespace pico_private {
 		}
 	}
 
+	static void stretch_blitter(SpriteSheet& sprites,
+	                            int spr_x,
+	                            int spr_y,
+	                            int spr_w,
+	                            int spr_h,
+	                            int scr_x,
+	                            int scr_y,
+	                            int scr_w,
+	                            int scr_h,
+	                            bool flip_x = false,
+	                            bool flip_y = false) {
+	}
+
 	static int clip_rect(int& x0, int& y0, int& x1, int& y1) {
 		int flags = 0;
 
@@ -491,6 +504,18 @@ namespace pico_api {
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy) {
 		pico_private::apply_camera(dx, dy);
 		pico_private::blitter(*currentSprData, dx, dy, sx, sy, sw, sh);
+	}
+
+	void sspr(int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh) {
+		pico_private::apply_camera(dx, dy);
+		pico_private::stretch_blitter(*currentSprData, sx, sy, sw, sh, dx, dy, dw, dh);
+	}
+
+	void
+	sspr(int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh, bool flip_x, bool flip_y) {
+		pico_private::apply_camera(dx, dy);
+		pico_private::stretch_blitter(*currentSprData, sx, sy, sw, sh, dx, dy, dw, dh, flip_x,
+		                              flip_y);
 	}
 
 	colour_t sget(int x, int y) {

@@ -401,7 +401,16 @@ static int impl_sspr(lua_State* ls) {
 	auto dx = luaL_checknumber(ls, 5);
 	auto dy = luaL_checknumber(ls, 6);
 
-	pico_api::sspr(sx, sy, sw, sh, dx, dy);
+	if (lua_gettop(ls) == 6) {
+		pico_api::sspr(sx, sy, sw, sh, dx, dy);
+		return 0;
+	}
+
+	auto dw = luaL_checknumber(ls, 7);
+	auto dh = luaL_checknumber(ls, 8);
+	auto flip_x = lua_toboolean(ls, 9);
+	auto flip_y = lua_toboolean(ls, 10);
+	pico_api::sspr(sx, sy, sw, sh, dx, dy, dw, dh, flip_x, flip_y);
 
 	return 0;
 }
