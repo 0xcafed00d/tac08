@@ -1,8 +1,6 @@
 #include <iostream>
 
-extern "C" {
 #include <SDL2/SDL.h>
-}
 
 #include "hal_core.h"
 #include "pico_cart.h"

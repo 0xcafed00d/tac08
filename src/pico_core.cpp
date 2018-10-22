@@ -197,6 +197,51 @@ namespace pico_private {
 		}
 	}
 
+	static void blitter_flp(SpriteSheet& sprites,
+	                        int scr_x,
+	                        int scr_y,
+	                        int spr_x,
+	                        int spr_y,
+	                        int w,
+	                        int h,
+	                        bool flip_x,
+	                        bool flip_y) {
+		clip_axis(scr_x, spr_x, w, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
+		clip_axis(scr_y, spr_y, h, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+
+		colour_t* spr;
+		int spr_dy;
+		if (!flip_y) {
+			spr = sprites.sprite_data + spr_y * 128 + spr_x;
+			spr_dy = 128;
+		} else {
+			spr = sprites.sprite_data + (spr_y + h - 1) * 128 + spr_x;
+			spr_dy = -128;
+		}
+
+		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
+		for (int y = 0; y < h; y++) {
+			if (!flip_x) {
+				for (int x = 0; x < w; x++) {
+					colour_t c = spr[x];
+					if (!currentGraphicsState->transparent[c]) {
+						pix[x] = currentGraphicsState->palette_map[c];
+					}
+				}
+			} else {
+				for (int x = 0; x < w; x++) {
+					colour_t c = spr[h - x - 1];
+					if (!currentGraphicsState->transparent[c]) {
+						pix[x] = currentGraphicsState->palette_map[c];
+					}
+				}
+			}
+
+			pix += buffer_size_x;
+			spr += spr_dy;
+		}
+	}
+
 	static int clip_rect(int& x0, int& y0, int& x1, int& y1) {
 		int flags = 0;
 
@@ -459,7 +504,8 @@ namespace pico_api {
 
 		int spr_x = (n % 16) * 8;
 		int spr_y = (n / 16) * 8;
-		pico_private::blitter(*currentSprData, x, y, spr_x, spr_y, w * 8, h * 8);
+		pico_private::blitter_flp(*currentSprData, x, y, spr_x, spr_y, w * 8, h * 8, flip_x,
+		                          flip_y);
 	}
 
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy) {

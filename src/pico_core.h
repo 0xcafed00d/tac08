@@ -34,6 +34,9 @@ namespace pico_api {
 	void spr(int n, int x, int y, int w, int h);
 	void spr(int n, int x, int y, int w, int h, bool flip_x, bool flip_y);
 	void sspr(int sx, int sy, int sw, int sh, int dx, int dy);
+	void sspr(int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh);
+	void
+	sspr(int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh, bool flip_x, bool flip_y);
 
 	colour_t sget(int x, int y);
 	void sset(int x, int y);
