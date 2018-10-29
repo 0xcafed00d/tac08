@@ -178,6 +178,20 @@ namespace pico_private {
 		}
 	}
 
+	// test if rectangle is within cliping rectangle
+	static bool is_visible(int x, int y, int w, int h) {
+		if (x >= currentGraphicsState->clip_x2)
+			return false;
+		if (y >= currentGraphicsState->clip_y2)
+			return false;
+		if (x + w <= currentGraphicsState->clip_x1)
+			return false;
+		if (y + h <= currentGraphicsState->clip_y1)
+			return false;
+
+		return true;
+	}
+
 	static void blitter(SpriteSheet& sprites,
 	                    int scr_x,
 	                    int scr_y,
@@ -187,6 +201,9 @@ namespace pico_private {
 	                    int h,
 	                    bool flip_x = false,
 	                    bool flip_y = false) {
+		if (!is_visible(scr_x, scr_y, w, h))
+			return;
+
 		clip_axis(scr_x, spr_x, w, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 		clip_axis(scr_y, spr_y, h, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
 
@@ -234,8 +251,13 @@ namespace pico_private {
 	                            int scr_h,
 	                            bool flip_x = false,
 	                            bool flip_y = false) {
+		if (!is_visible(scr_x, scr_y, scr_w, scr_h))
+			return;
+
 		int dx = (spr_w << 16) / scr_w;
 		int dy = (spr_h << 16) / scr_h;
+
+		// if (scr_x + scr_w >= currentGraphicsState->clip_x2)
 
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
 
