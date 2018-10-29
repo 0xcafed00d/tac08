@@ -257,15 +257,44 @@ namespace pico_private {
 		int dx = (spr_w << 16) / scr_w;
 		int dy = (spr_h << 16) / scr_h;
 
-		// if (scr_x + scr_w >= currentGraphicsState->clip_x2)
+		spr_x = spr_x << 16;
+		spr_y = spr_y << 16;
+
+		// left clip
+		if (scr_x < currentGraphicsState->clip_x1) {
+			int nclip = currentGraphicsState->clip_x1 - scr_x;
+			scr_x = currentGraphicsState->clip_x1;
+			scr_w -= nclip;
+			spr_x += nclip * dx;
+		}
+
+		// right clip
+		if (scr_x + scr_w > currentGraphicsState->clip_x2) {
+			int nclip = (scr_x + scr_w) - currentGraphicsState->clip_x2;
+			scr_w -= nclip;
+		}
+
+		// top clip
+		if (scr_y < currentGraphicsState->clip_y1) {
+			int nclip = currentGraphicsState->clip_y1 - scr_y;
+			scr_y = currentGraphicsState->clip_y1;
+			scr_h -= nclip;
+			spr_y += nclip * dy;
+		}
+
+		// bottom clip
+		if (scr_y + scr_h > currentGraphicsState->clip_y2) {
+			int nclip = (scr_y + scr_h) - currentGraphicsState->clip_y2;
+			scr_h -= nclip;
+		}
 
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
 
 		for (int y = 0; y < scr_h; y++) {
-			colour_t* spr = sprites.sprite_data + spr_y + (y * dy >> 16) * 128 + spr_x;
+			colour_t* spr = sprites.sprite_data + ((spr_y + y * dy) >> 16) * 128;
 
 			for (int x = 0; x < scr_w; x++) {
-				colour_t c = spr[x * dx >> 16];
+				colour_t c = spr[(spr_x + x * dx) >> 16];
 				if (!currentGraphicsState->transparent[c]) {
 					pix[x] = currentGraphicsState->palette_map[c];
 				}
