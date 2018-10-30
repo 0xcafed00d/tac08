@@ -10,7 +10,7 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/thing",
 			"args": [
-				"../pico-8/jetdude/jetdude.p8"
+				"../pico-8/roadstorm.p8"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

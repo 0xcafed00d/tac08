@@ -188,6 +188,8 @@ namespace pico_private {
 			return false;
 		if (y + h <= currentGraphicsState->clip_y1)
 			return false;
+		if (w <= 0 || h <= 0)
+			return false;
 
 		return true;
 	}
@@ -291,10 +293,10 @@ namespace pico_private {
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
 
 		for (int y = 0; y < scr_h; y++) {
-			colour_t* spr = sprites.sprite_data + ((spr_y + y * dy) >> 16) * 128;
+			colour_t* spr = sprites.sprite_data + (((spr_y + y * dy) >> 16) & 0x7f) * 128;
 
 			for (int x = 0; x < scr_w; x++) {
-				colour_t c = spr[(spr_x + x * dx) >> 16];
+				colour_t c = spr[((spr_x + x * dx) >> 16) & 0x7f];
 				if (!currentGraphicsState->transparent[c]) {
 					pix[x] = currentGraphicsState->palette_map[c];
 				}

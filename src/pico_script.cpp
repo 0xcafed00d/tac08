@@ -327,28 +327,28 @@ static int impl_map(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto count = lua_gettop(ls);
 
-	auto cell_x = luaL_checknumber(ls, 1);
-	auto cell_y = luaL_checknumber(ls, 2);
+	auto cell_x = lua_tonumber(ls, 1);
+	auto cell_y = lua_tonumber(ls, 2);
 	if (count == 2) {
 		pico_api::map(cell_x, cell_y);
 		return 0;
 	}
 
-	auto screen_x = luaL_checknumber(ls, 3);
-	auto screen_y = luaL_checknumber(ls, 4);
+	auto screen_x = lua_tonumber(ls, 3);
+	auto screen_y = lua_tonumber(ls, 4);
 	if (count == 4) {
 		pico_api::map(cell_x, cell_y, screen_x, screen_y);
 		return 0;
 	}
 
-	auto cell_w = luaL_checknumber(ls, 5);
-	auto cell_h = luaL_checknumber(ls, 6);
+	auto cell_w = lua_tonumber(ls, 5);
+	auto cell_h = lua_tonumber(ls, 6);
 	if (count == 6) {
 		pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h);
 		return 0;
 	}
 
-	auto layer = luaL_checknumber(ls, 7);
+	auto layer = lua_tonumber(ls, 7);
 	pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h, layer);
 	return 0;
 }
@@ -367,17 +367,17 @@ static int impl_pal(lua_State* ls) {
 
 static int impl_spr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto n = luaL_checknumber(ls, 1);
-	auto x = luaL_checknumber(ls, 2);
-	auto y = luaL_checknumber(ls, 3);
+	auto n = lua_tonumber(ls, 1);
+	auto x = lua_tonumber(ls, 2);
+	auto y = lua_tonumber(ls, 3);
 
 	if (lua_gettop(ls) == 3) {
 		pico_api::spr(n, x, y);
 		return 0;
 	}
 
-	auto w = luaL_checknumber(ls, 4);
-	auto h = luaL_checknumber(ls, 5);
+	auto w = lua_tonumber(ls, 4);
+	auto h = lua_tonumber(ls, 5);
 
 	if (lua_gettop(ls) == 5) {
 		pico_api::spr(n, x, y, w, h);
@@ -394,20 +394,20 @@ static int impl_spr(lua_State* ls) {
 
 static int impl_sspr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto sx = luaL_checknumber(ls, 1);
-	auto sy = luaL_checknumber(ls, 2);
-	auto sw = luaL_checknumber(ls, 3);
-	auto sh = luaL_checknumber(ls, 4);
-	auto dx = luaL_checknumber(ls, 5);
-	auto dy = luaL_checknumber(ls, 6);
+	auto sx = lua_tonumber(ls, 1);
+	auto sy = lua_tonumber(ls, 2);
+	auto sw = lua_tonumber(ls, 3);
+	auto sh = lua_tonumber(ls, 4);
+	auto dx = lua_tonumber(ls, 5);
+	auto dy = lua_tonumber(ls, 6);
 
 	if (lua_gettop(ls) == 6) {
 		pico_api::sspr(sx, sy, sw, sh, dx, dy);
 		return 0;
 	}
 
-	auto dw = luaL_checknumber(ls, 7);
-	auto dh = luaL_checknumber(ls, 8);
+	auto dw = lua_tonumber(ls, 7);
+	auto dh = lua_tonumber(ls, 8);
 	auto flip_x = lua_toboolean(ls, 9);
 	auto flip_y = lua_toboolean(ls, 10);
 	pico_api::sspr(sx, sy, sw, sh, dx, dy, dw, dh, flip_x, flip_y);
@@ -450,15 +450,15 @@ static int impl_print(lua_State* ls) {
 		return 0;
 	}
 
-	auto x = luaL_checknumber(ls, 2);
-	auto y = luaL_checknumber(ls, 3);
+	auto x = lua_tonumber(ls, 2);
+	auto y = lua_tonumber(ls, 3);
 	if (lua_gettop(ls) == 3) {
 		auto s = luaL_tolstring(ls, 1, nullptr);
 		pico_api::print(s, x, y);
 		lua_remove(ls, -1);
 		return 0;
 	}
-	auto c = luaL_checknumber(ls, 4);
+	auto c = lua_tonumber(ls, 4);
 	auto s = luaL_tolstring(ls, 1, nullptr);
 	pico_api::print(s, x, y, c);
 	lua_remove(ls, -1);
@@ -506,108 +506,86 @@ static int impl_clip(lua_State* ls) {
 
 static int impl_rectfill(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = luaL_checknumber(ls, 1);
-	auto y0 = luaL_checknumber(ls, 2);
-	auto x1 = luaL_checknumber(ls, 3);
-	auto y1 = luaL_checknumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1);
+	auto y0 = lua_tonumber(ls, 2);
+	auto x1 = lua_tonumber(ls, 3);
+	auto y1 = lua_tonumber(ls, 4);
 
-	if (lua_gettop(ls) == 4) {
+	if (lua_gettop(ls) <= 4) {
 		pico_api::rectfill(x0, y0, x1, y1);
 		return 0;
 	}
 
-	if (lua_isnil(ls, 5)) {
-		pico_api::rectfill(x0, y0, x1, y1, 0);
-	} else {
-		auto c = luaL_checknumber(ls, 5);
-		pico_api::rectfill(x0, y0, x1, y1, c);
-	}
+	auto c = lua_tonumber(ls, 5);
+	pico_api::rectfill(x0, y0, x1, y1, c);
 
 	return 0;
 }
 
 static int impl_rect(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = luaL_checknumber(ls, 1);
-	auto y0 = luaL_checknumber(ls, 2);
-	auto x1 = luaL_checknumber(ls, 3);
-	auto y1 = luaL_checknumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1);
+	auto y0 = lua_tonumber(ls, 2);
+	auto x1 = lua_tonumber(ls, 3);
+	auto y1 = lua_tonumber(ls, 4);
 
-	if (lua_gettop(ls) == 4) {
+	if (lua_gettop(ls) <= 4) {
 		pico_api::rect(x0, y0, x1, y1);
 		return 0;
 	}
-
-	if (lua_isnil(ls, 5)) {
-		pico_api::rect(x0, y0, x1, y1, 0);
-	} else {
-		auto c = luaL_checknumber(ls, 5);
-		pico_api::rect(x0, y0, x1, y1, c);
-	}
+	auto c = lua_tonumber(ls, 5);
+	pico_api::rect(x0, y0, x1, y1, c);
 
 	return 0;
 }
 
 static int impl_circfill(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = luaL_checknumber(ls, 1);
-	auto y = luaL_checknumber(ls, 2);
-	auto r = luaL_checknumber(ls, 3);
+	auto x = lua_tonumber(ls, 1);
+	auto y = lua_tonumber(ls, 2);
+	auto r = lua_tonumber(ls, 3);
 
-	if (lua_gettop(ls) == 3) {
+	if (lua_gettop(ls) <= 3) {
 		pico_api::circfill(x, y, r);
 		return 0;
 	}
 
-	if (lua_isnil(ls, 4)) {
-		pico_api::circfill(x, y, r, 0);
-	} else {
-		auto c = luaL_checknumber(ls, 4);
-		pico_api::circfill(x, y, r, c);
-	}
+	auto c = lua_tonumber(ls, 4);
+	pico_api::circfill(x, y, r, c);
 
 	return 0;
 }
 
 static int impl_circ(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = luaL_checknumber(ls, 1);
-	auto y = luaL_checknumber(ls, 2);
-	auto r = luaL_checknumber(ls, 3);
+	auto x = lua_tonumber(ls, 1);
+	auto y = lua_tonumber(ls, 2);
+	auto r = lua_tonumber(ls, 3);
 
-	if (lua_gettop(ls) == 3) {
+	if (lua_gettop(ls) <= 3) {
 		pico_api::circ(x, y, r);
 		return 0;
 	}
-
-	if (lua_isnil(ls, 4)) {
-		pico_api::circ(x, y, r, 0);
-	} else {
-		auto c = luaL_checknumber(ls, 4);
-		pico_api::circ(x, y, r, c);
-	}
+	auto c = lua_tonumber(ls, 4);
+	pico_api::circ(x, y, r, c);
 
 	return 0;
 }
 
 static int impl_line(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = luaL_checknumber(ls, 1);
-	auto y0 = luaL_checknumber(ls, 2);
-	auto x1 = luaL_checknumber(ls, 3);
-	auto y1 = luaL_checknumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1);
+	auto y0 = lua_tonumber(ls, 2);
+	auto x1 = lua_tonumber(ls, 3);
+	auto y1 = lua_tonumber(ls, 4);
 
-	if (lua_gettop(ls) == 4) {
+	if (lua_gettop(ls) <= 4) {
 		pico_api::line(x0, y0, x1, y1);
 		return 0;
 	}
 
-	if (lua_isnil(ls, 5)) {
-		pico_api::line(x0, y0, x1, y1, 0);
-	} else {
-		auto c = luaL_checknumber(ls, 5);
-		pico_api::line(x0, y0, x1, y1, c);
-	}
+	auto c = lua_tonumber(ls, 5);
+	pico_api::line(x0, y0, x1, y1, c);
 	return 0;
 }
 
