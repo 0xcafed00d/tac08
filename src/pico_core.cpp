@@ -230,7 +230,7 @@ namespace pico_private {
 				}
 			} else {
 				for (int x = 0; x < w; x++) {
-					colour_t c = spr[h - x - 1];
+					colour_t c = spr[w - x - 1];
 					if (!currentGraphicsState->transparent[c]) {
 						pix[x] = currentGraphicsState->palette_map[c];
 					}
@@ -513,14 +513,19 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
-		ram.poke(a, v);
+		if (a >= 0x5f00 && a <= 0x5f0f) {
+			pal(a - 0x5f00, v);
+			palt(a - 0x5f00, (v & 0x80) != 0);
+		} else {
+			ram.poke(a, v);
+		}
 	}
 
 	void poke4(uint16_t a, uint32_t v) {
-		ram.poke(a, v);
-		ram.poke(a + 1, v >> 8);
-		ram.poke(a + 2, v >> 16);
-		ram.poke(a + 3, v >> 24);
+		poke(a, v);
+		poke(a + 1, v >> 8);
+		poke(a + 2, v >> 16);
+		poke(a + 3, v >> 24);
 	}
 
 	uint32_t dget(uint16_t a) {
@@ -799,6 +804,8 @@ namespace pico_api {
 		currentGraphicsState->palette_map[7] = c & 0xf;
 		currentGraphicsState->transparent[0] = true;
 
+		currentGraphicsState->text_x = x;
+
 		for (size_t n = 0; n < str.length(); n++) {
 			uint8_t ch = str[n];
 			if (ch >= 0x20 && ch < 0x80) {
@@ -811,7 +818,7 @@ namespace pico_api {
 				                      5);
 				x += 8;
 			} else if (ch == '\n') {
-				x = 0;
+				x = currentGraphicsState->text_x;
 				y += 6;
 			}
 		}
