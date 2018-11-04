@@ -136,7 +136,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-//#define API_TRACE
+#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \

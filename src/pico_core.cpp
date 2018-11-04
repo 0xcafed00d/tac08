@@ -849,14 +849,16 @@ namespace pico_api {
 	}
 
 	void clip(int x, int y, int w, int h) {
-		currentGraphicsState->clip_x1 = x;
-		currentGraphicsState->clip_y1 = y;
-		currentGraphicsState->clip_x2 = x + w;
-		currentGraphicsState->clip_y2 = y + h;
+		using namespace pico_private;
+
+		currentGraphicsState->clip_x1 = limit(x, 0, buffer_size_x);
+		currentGraphicsState->clip_y1 = limit(y, 0, buffer_size_y);
+		currentGraphicsState->clip_x2 = limit(x + w, 0, buffer_size_x);
+		currentGraphicsState->clip_y2 = limit(y + h, 0, buffer_size_y);
 	}
 
 	void clip() {
-		clip(0, 0, 128, 128);
+		clip(0, 0, buffer_size_x, buffer_size_y);
 	}
 
 	void camera() {
