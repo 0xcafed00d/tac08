@@ -136,7 +136,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-#define API_TRACE
+//#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
@@ -465,6 +465,15 @@ static int impl_print(lua_State* ls) {
 	return 0;
 }
 
+static int impl_cursor(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+
+	auto x = lua_tonumber(ls, 1);
+	auto y = lua_tonumber(ls, 2);
+	pico_api::cursor(x, y);
+	return 0;
+}
+
 static int impl_pget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto a = luaL_checknumber(ls, 1);
@@ -671,6 +680,7 @@ static void register_cfuncs() {
 	register_cfunc("spr", impl_spr);
 	register_cfunc("sspr", impl_sspr);
 	register_cfunc("print", impl_print);
+	register_cfunc("cursor", impl_cursor);
 	register_cfunc("pget", impl_pget);
 	register_cfunc("pset", impl_pset);
 	register_cfunc("clip", impl_clip);

@@ -253,6 +253,11 @@ namespace pico_private {
 	                            int scr_h,
 	                            bool flip_x = false,
 	                            bool flip_y = false) {
+		if (spr_h == scr_h && spr_w == scr_w) {
+			blitter(sprites, scr_x, scr_y, spr_x, spr_y, scr_w, scr_h, flip_x, flip_y);
+			return;
+		}
+
 		if (!is_visible(scr_x, scr_y, scr_w, scr_h))
 			return;
 
@@ -295,10 +300,21 @@ namespace pico_private {
 		for (int y = 0; y < scr_h; y++) {
 			colour_t* spr = sprites.sprite_data + (((spr_y + y * dy) >> 16) & 0x7f) * 128;
 
-			for (int x = 0; x < scr_w; x++) {
-				colour_t c = spr[((spr_x + x * dx) >> 16) & 0x7f];
-				if (!currentGraphicsState->transparent[c]) {
-					pix[x] = currentGraphicsState->palette_map[c];
+			if (!flip_x) {
+				for (int x = 0; x < scr_w; x++) {
+					colour_t c = spr[((spr_x + x * dx) >> 16) & 0x7f];
+					if (!currentGraphicsState->transparent[c]) {
+						pix[x] = currentGraphicsState->palette_map[c];
+					}
+				}
+			} else {
+				for (int x = 0; x < scr_w; x++) {
+					// colour_t c = spr[w - x - 1];
+
+					colour_t c = spr[((spr_x + (spr_w << 16) - x * dx) >> 16) & 0x7f];
+					if (!currentGraphicsState->transparent[c]) {
+						pix[x] = currentGraphicsState->palette_map[c];
+					}
 				}
 			}
 			pix += buffer_size_x;
@@ -784,6 +800,11 @@ namespace pico_api {
 
 	void palt() {
 		pico_private::restore_transparency();
+	}
+
+	void cursor(int x, int y) {
+		currentGraphicsState->text_x = x;
+		currentGraphicsState->text_y = y;
 	}
 
 	void print(std::string str) {

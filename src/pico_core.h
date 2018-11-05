@@ -65,6 +65,7 @@ namespace pico_api {
 	uint8_t mget(int x, int y);
 	void mset(int x, int y, uint8_t v);
 
+	void cursor(int x, int y);
 	void print(std::string str);
 	void print(std::string str, int x, int y);
 	void print(std::string str, int x, int y, colour_t c);
