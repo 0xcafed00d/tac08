@@ -1,5 +1,7 @@
 #include "pico_script.h"
+
 #include "hal_core.h"
+#include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
 
