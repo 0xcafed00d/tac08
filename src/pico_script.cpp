@@ -114,12 +114,6 @@ static std::string firmware = R"(
 
 	-- TODO: implement these functions:
 
-	function sfx(a, b)
-	end
-
-	function music()
-	end
-
 	function menuitem()
 	end
 
@@ -657,6 +651,44 @@ static int impl_stat(lua_State* ls) {
 	return 1;
 }
 
+static int impl_music(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto nargs = lua_gettop(ls);
+	auto n = lua_tonumber(ls, 1);
+	auto fadems = lua_tonumber(ls, 2);
+	auto channelmask = lua_tonumber(ls, 3);
+
+	if (nargs == 1) {
+		pico_api::music(n);
+	} else if (nargs == 2) {
+		pico_api::music(n, fadems);
+	} else {
+		pico_api::music(n, fadems, channelmask);
+	}
+
+	return 0;
+}
+
+static int impl_sfx(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto nargs = lua_gettop(ls);
+	auto n = lua_tonumber(ls, 1);
+	auto channel = lua_tonumber(ls, 2);
+	auto offset = lua_tonumber(ls, 3);
+	auto length = lua_tonumber(ls, 4);
+
+	if (nargs == 1) {
+		pico_api::sfx(n);
+	} else if (nargs == 2) {
+		pico_api::sfx(n, channel);
+	} else if (nargs == 3) {
+		pico_api::sfx(n, channel, offset);
+	} else {
+		pico_api::sfx(n, channel, offset, length);
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -697,6 +729,8 @@ static void register_cfuncs() {
 	register_cfunc("color", impl_color);
 	register_cfunc("camera", impl_camera);
 	register_cfunc("stat", impl_stat);
+	register_cfunc("music", impl_music);
+	register_cfunc("sfx", impl_sfx);
 }
 
 namespace pico_script {
