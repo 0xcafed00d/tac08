@@ -162,22 +162,6 @@ namespace pico_private {
 		currentGraphicsState->transparent[0] = true;
 	}
 
-	static void clip_axis(int& dest_pos, int& src_pos, int& len, int min, int max) {
-		if (dest_pos < min) {
-			len = len - (min - dest_pos);
-			src_pos += (min - dest_pos);
-			dest_pos = min;
-		}
-
-		if ((dest_pos + len) >= max) {
-			len = len - (dest_pos + len - max);
-		}
-
-		if (len < 0) {
-			len = 0;
-		}
-	}
-
 	// test if rectangle is within cliping rectangle
 	static bool is_visible(int x, int y, int w, int h) {
 		if (x >= currentGraphicsState->clip_x2)
@@ -199,46 +183,78 @@ namespace pico_private {
 	                    int scr_y,
 	                    int spr_x,
 	                    int spr_y,
-	                    int w,
-	                    int h,
+	                    int spr_w,
+	                    int spr_h,
 	                    bool flip_x = false,
 	                    bool flip_y = false) {
-		if (!is_visible(scr_x, scr_y, w, h))
+		if (!is_visible(scr_x, scr_y, spr_w, spr_h))
 			return;
 
-		clip_axis(scr_x, spr_x, w, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
-		clip_axis(scr_y, spr_y, h, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+		int scr_w = spr_w;
+		int scr_h = spr_h;
 
-		colour_t* spr;
-		int spr_dy;
-		if (!flip_y) {
-			spr = sprites.sprite_data + spr_y * 128 + spr_x;
-			spr_dy = 128;
-		} else {
-			spr = sprites.sprite_data + (spr_y + h - 1) * 128 + spr_x;
-			spr_dy = -128;
+		// left clip
+		if (scr_x < currentGraphicsState->clip_x1) {
+			int nclip = currentGraphicsState->clip_x1 - scr_x;
+			scr_x = currentGraphicsState->clip_x1;
+			scr_w -= nclip;
+			if (!flip_x) {
+				spr_x += nclip;
+			} else {
+				spr_w -= nclip;
+			}
+		}
+
+		// right clip
+		if (scr_x + scr_w > currentGraphicsState->clip_x2) {
+			int nclip = (scr_x + scr_w) - currentGraphicsState->clip_x2;
+			scr_w -= nclip;
+		}
+
+		// top clip
+		if (scr_y < currentGraphicsState->clip_y1) {
+			int nclip = currentGraphicsState->clip_y1 - scr_y;
+			scr_y = currentGraphicsState->clip_y1;
+			scr_h -= nclip;
+			if (!flip_y) {
+				spr_y += nclip;
+			} else {
+				spr_h -= nclip;
+			}
+		}
+
+		// bottom clip
+		if (scr_y + scr_h > currentGraphicsState->clip_y2) {
+			int nclip = (scr_y + scr_h) - currentGraphicsState->clip_y2;
+			scr_h -= nclip;
+		}
+
+		int dy = 1;
+		if (flip_y) {
+			spr_y += spr_h - 1;
+			dy = -dy;
 		}
 
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
-		for (int y = 0; y < h; y++) {
+		for (int y = 0; y < scr_h; y++) {
+			colour_t* spr = sprites.sprite_data + ((spr_y + y * dy) & 0x7f) * 128;
+
 			if (!flip_x) {
-				for (int x = 0; x < w; x++) {
-					colour_t c = spr[x];
+				for (int x = 0; x < scr_w; x++) {
+					colour_t c = spr[(spr_x + x) & 0x7f];
 					if (!currentGraphicsState->transparent[c]) {
 						pix[x] = currentGraphicsState->palette_map[c];
 					}
 				}
 			} else {
-				for (int x = 0; x < w; x++) {
-					colour_t c = spr[w - x - 1];
+				for (int x = 0; x < scr_w; x++) {
+					colour_t c = spr[(spr_x + spr_w - x - 1) & 0x7f];
 					if (!currentGraphicsState->transparent[c]) {
 						pix[x] = currentGraphicsState->palette_map[c];
 					}
 				}
 			}
-
 			pix += buffer_size_x;
-			spr += spr_dy;
 		}
 	}
 
@@ -312,7 +328,6 @@ namespace pico_private {
 		}
 
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
-
 		for (int y = 0; y < scr_h; y++) {
 			colour_t* spr = sprites.sprite_data + (((spr_y + y * dy) >> 16) & 0x7f) * 128;
 

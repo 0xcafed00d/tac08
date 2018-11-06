@@ -4,10 +4,10 @@ __lua__
 function _init()
 end
 
-x = 0
-y = 0
-w = 32
-h = 32
+x = 120
+y = 120
+w = 8
+h = 8
 
 flipval = 0;
 
