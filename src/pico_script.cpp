@@ -355,12 +355,12 @@ static int impl_map(lua_State* ls) {
 
 static int impl_pal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	if (lua_gettop(ls) == 2) {
-		auto a = luaL_checknumber(ls, 1);
-		auto b = luaL_checknumber(ls, 2);
-		pico_api::pal(a, b);
-	} else {
+	if (lua_gettop(ls) == 0) {
 		pico_api::pal();
+	} else {
+		auto a = lua_tonumber(ls, 1);
+		auto b = lua_tonumber(ls, 2);
+		pico_api::pal(a, b);
 	}
 	return 0;
 }
