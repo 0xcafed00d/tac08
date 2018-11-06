@@ -254,6 +254,7 @@ namespace pico_private {
 	                            bool flip_x = false,
 	                            bool flip_y = false) {
 		if (spr_h == scr_h && spr_w == scr_w) {
+			// use faster non stretch blitter if sprite is not stretched
 			blitter(sprites, scr_x, scr_y, spr_x, spr_y, scr_w, scr_h, flip_x, flip_y);
 			return;
 		}
@@ -261,18 +262,24 @@ namespace pico_private {
 		if (!is_visible(scr_x, scr_y, scr_w, scr_h))
 			return;
 
-		int dx = (spr_w << 16) / scr_w;
-		int dy = (spr_h << 16) / scr_h;
-
 		spr_x = spr_x << 16;
 		spr_y = spr_y << 16;
+		spr_w = spr_w << 16;
+		spr_h = spr_h << 16;
+
+		int dx = spr_w / scr_w;
+		int dy = spr_h / scr_h;
 
 		// left clip
 		if (scr_x < currentGraphicsState->clip_x1) {
 			int nclip = currentGraphicsState->clip_x1 - scr_x;
 			scr_x = currentGraphicsState->clip_x1;
 			scr_w -= nclip;
-			spr_x += nclip * dx;
+			if (!flip_x) {
+				spr_x += nclip * dx;
+			} else {
+				spr_w -= nclip * dx;
+			}
 		}
 
 		// right clip
@@ -286,13 +293,22 @@ namespace pico_private {
 			int nclip = currentGraphicsState->clip_y1 - scr_y;
 			scr_y = currentGraphicsState->clip_y1;
 			scr_h -= nclip;
-			spr_y += nclip * dy;
+			if (!flip_y) {
+				spr_y += nclip * dy;
+			} else {
+				spr_h -= nclip * dy;
+			}
 		}
 
 		// bottom clip
 		if (scr_y + scr_h > currentGraphicsState->clip_y2) {
 			int nclip = (scr_y + scr_h) - currentGraphicsState->clip_y2;
 			scr_h -= nclip;
+		}
+
+		if (flip_y) {
+			spr_y += spr_h - 1 * dy;
+			dy = -dy;
 		}
 
 		colour_t* pix = backbuffer + scr_y * buffer_size_x + scr_x;
@@ -309,9 +325,7 @@ namespace pico_private {
 				}
 			} else {
 				for (int x = 0; x < scr_w; x++) {
-					// colour_t c = spr[w - x - 1];
-
-					colour_t c = spr[((spr_x + (spr_w << 16) - x * dx) >> 16) & 0x7f];
+					colour_t c = spr[((spr_x + spr_w - (x + 1) * dx) >> 16) & 0x7f];
 					if (!currentGraphicsState->transparent[c]) {
 						pix[x] = currentGraphicsState->palette_map[c];
 					}
