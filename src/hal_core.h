@@ -24,7 +24,12 @@ void GFX_Flip();
 void INP_ProcessInputEvents(const SDL_Event& ev);
 uint8_t INP_GetInputState();
 
-uint32_t TIME_GetTicks();
+uint32_t TIME_GetTime_ms();
+uint32_t TIME_GetElapsedTime_ms(uint32_t start);
+
+uint64_t TIME_GetProfileTime();
+uint64_t TIME_GetElapsedProfileTime_us(uint64_t start);
+uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start);
 
 struct MouseState {
 	int x;

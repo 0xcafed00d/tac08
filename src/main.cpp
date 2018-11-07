@@ -26,6 +26,10 @@ int safe_main(int argc, char** argv) {
 	uint32_t target_ticks = 20;
 	uint32_t ticks = 0;
 
+	uint32_t systemFrameCount = 0;
+	uint32_t gameFrameCount = 0;
+	uint32_t frameTimer = TIME_GetTime_ms();
+
 	while (true) {
 		SDL_Event e;
 		if (SDL_PollEvent(&e)) {
@@ -37,7 +41,7 @@ int safe_main(int argc, char** argv) {
 		} else {
 			using namespace pico_api;
 
-			if ((SDL_GetTicks() - ticks) > target_ticks) {
+			if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 				pico_control::set_input_state(INP_GetInputState());
 				pico_control::set_mouse_state(INP_GetMouseState());
 
@@ -59,8 +63,18 @@ int safe_main(int argc, char** argv) {
 				GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
 
 				ticks = SDL_GetTicks();
+				gameFrameCount++;
 			}
+			systemFrameCount++;
 			GFX_Flip();
+
+			if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
+				std::cout << gameFrameCount << " " << systemFrameCount << std::endl;
+
+				gameFrameCount = 0;
+				systemFrameCount = 0;
+				frameTimer = TIME_GetTime_ms();
+			}
 		}
 	}
 	GFX_End();

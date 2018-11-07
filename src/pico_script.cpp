@@ -132,7 +132,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-#define API_TRACE
+//#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
@@ -607,7 +607,7 @@ static int impl_fillp(lua_State* ls) {
 
 static int impl_time(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	float t = TIME_GetTicks();
+	float t = TIME_GetTime_ms();
 	t = t / 1000.0f;
 	lua_pushnumber(ls, t);
 	return 1;

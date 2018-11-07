@@ -154,8 +154,26 @@ uint8_t INP_GetInputState() {
 	return keyState | joyState;
 }
 
-uint32_t TIME_GetTicks() {
+uint32_t TIME_GetTime_ms() {
 	return SDL_GetTicks();
+}
+
+uint32_t TIME_GetElapsedTime_ms(uint32_t start) {
+	return SDL_GetTicks() - start;
+}
+
+uint64_t TIME_GetProfileTime() {
+	return SDL_GetPerformanceCounter();
+}
+
+uint64_t TIME_GetElapsedProfileTime_us(uint64_t start) {
+	uint64_t now = SDL_GetPerformanceCounter();
+	return ((now - start) * 1000000) / SDL_GetPerformanceFrequency();
+}
+
+uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start) {
+	uint64_t now = SDL_GetPerformanceCounter();
+	return ((now - start) * 1000) / SDL_GetPerformanceFrequency();
 }
 
 MouseState INP_GetMouseState() {
