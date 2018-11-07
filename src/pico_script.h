@@ -13,7 +13,7 @@ namespace pico_script {
 
 	void load(std::string script);
 	void reset();
-	void run(std::string function, bool optional);
+	bool run(std::string function, bool optional);
 
 }  // namespace pico_script
 

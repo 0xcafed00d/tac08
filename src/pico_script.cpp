@@ -132,7 +132,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-//#define API_TRACE
+#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
@@ -174,7 +174,7 @@ static int impl_cls(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::cls();
 	} else {
-		auto n = luaL_checknumber(ls, 1);
+		auto n = lua_tonumber(ls, 1);
 		pico_api::cls(n);
 	}
 	return 0;
@@ -625,8 +625,8 @@ static int impl_camera(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::camera();
 	} else {
-		auto x = luaL_checknumber(ls, 1);
-		auto y = luaL_checknumber(ls, 2);
+		auto x = lua_tonumber(ls, 1);
+		auto y = lua_tonumber(ls, 2);
 		pico_api::camera(x, y);
 	}
 	return 0;
@@ -746,15 +746,16 @@ namespace pico_script {
 	void reset() {
 	}
 
-	void run(std::string function, bool optional) {
+	bool run(std::string function, bool optional) {
 		lua_getglobal(lstate, function.c_str());
 		if (!lua_isfunction(lstate, -1)) {
 			if (optional)
-				return;
+				return false;
 			else
 				throw pico_script::error(function + " not found");
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
+		return true;
 	}
 
 }  // namespace pico_script

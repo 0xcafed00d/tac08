@@ -23,6 +23,7 @@ int safe_main(int argc, char** argv) {
 
 	bool init = false;
 
+	uint32_t target_ticks = 20;
 	uint32_t ticks = 0;
 
 	while (true) {
@@ -36,7 +37,7 @@ int safe_main(int argc, char** argv) {
 		} else {
 			using namespace pico_api;
 
-			if ((SDL_GetTicks() - ticks) > 20) {
+			if ((SDL_GetTicks() - ticks) > target_ticks) {
 				pico_control::set_input_state(INP_GetInputState());
 				pico_control::set_mouse_state(INP_GetMouseState());
 
@@ -45,7 +46,11 @@ int safe_main(int argc, char** argv) {
 					init = true;
 				}
 
-				pico_script::run("_update", true);
+				if (!pico_script::run("_update", true)) {
+					if (pico_script::run("_update60", true)) {
+						target_ticks = 1;
+					}
+				}
 				pico_script::run("_draw", true);
 
 				int buffer_w;
