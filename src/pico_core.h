@@ -19,6 +19,8 @@ namespace pico_api {
 	uint32_t peek4(uint16_t a);
 	void poke(uint16_t a, uint8_t v);
 	void poke4(uint16_t a, uint32_t v);
+	void memory_set(uint16_t a, uint8_t val, uint16_t len);
+	void memory_cpy(uint16_t dest_a, uint16_t src_a, uint16_t len);
 
 	uint32_t dget(uint16_t a);
 	void dset(uint16_t a, uint32_t v);

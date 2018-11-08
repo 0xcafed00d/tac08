@@ -607,9 +607,9 @@ static int impl_fillp(lua_State* ls) {
 
 static int impl_time(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	float t = TIME_GetTime_ms();
-	t = t / 1000.0f;
-	lua_pushnumber(ls, t);
+	uint64_t t = TIME_GetTime_ms();
+	t = (t << 16) / 1000;
+	lua_pushnumber(ls, z8::fix32::frombits(t));
 	return 1;
 }
 
@@ -689,6 +689,24 @@ static int impl_sfx(lua_State* ls) {
 	return 0;
 }
 
+static int impl_memcpy(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto src_a = lua_tonumber(ls, 1);
+	auto dest_a = lua_tonumber(ls, 2);
+	auto len = lua_tonumber(ls, 3);
+	pico_api::memory_cpy(src_a, dest_a, len);
+	return 0;
+}
+
+static int impl_memset(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto a = lua_tonumber(ls, 1);
+	auto val = lua_tonumber(ls, 2);
+	auto len = lua_tonumber(ls, 3);
+	pico_api::memory_set(a, val, len);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -731,6 +749,8 @@ static void register_cfuncs() {
 	register_cfunc("stat", impl_stat);
 	register_cfunc("music", impl_music);
 	register_cfunc("sfx", impl_sfx);
+	register_cfunc("memcpy", impl_memcpy);
+	register_cfunc("memset", impl_memset);
 }
 
 namespace pico_script {

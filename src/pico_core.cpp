@@ -573,6 +573,26 @@ namespace pico_api {
 		poke(a + 3, v >> 24);
 	}
 
+	void memory_set(uint16_t a, uint8_t val, uint16_t len) {
+		for (uint32_t i = 0; i < len; i++) {
+			ram.poke(a + i, val);
+		}
+	}
+
+	void memory_cpy(uint16_t dest_a, uint16_t src_a, uint16_t len) {
+		if (uint32_t(dest_a) - uint32_t(src_a) >= len) {
+			for (uint32_t i = 0; i < len; i++) {
+				ram.poke(dest_a + i, ram.peek(src_a + i));
+			}
+		} else {
+			src_a += len;
+			dest_a += len;
+			for (uint32_t i = len - 1; i >= 0; i++) {
+				ram.poke(dest_a - i, ram.peek(src_a - i));
+			}
+		}
+	}
+
 	uint32_t dget(uint16_t a) {
 		return peek4(pico_ram::MEM_CART_DATA_ADDR + ((a * 4) & 0xff));
 	}

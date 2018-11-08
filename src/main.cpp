@@ -30,6 +30,9 @@ int safe_main(int argc, char** argv) {
 	uint32_t gameFrameCount = 0;
 	uint32_t frameTimer = TIME_GetTime_ms();
 
+	uint64_t updateTime = 0;
+	uint64_t drawTime = 0;
+
 	while (true) {
 		SDL_Event e;
 		if (SDL_PollEvent(&e)) {
@@ -50,12 +53,17 @@ int safe_main(int argc, char** argv) {
 					init = true;
 				}
 
+				uint64_t updateTimeStart = TIME_GetProfileTime();
 				if (!pico_script::run("_update", true)) {
 					if (pico_script::run("_update60", true)) {
 						target_ticks = 1;
 					}
 				}
+				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
+
+				uint64_t drawTimeStart = TIME_GetProfileTime();
 				pico_script::run("_draw", true);
+				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
 
 				int buffer_w;
 				int buffer_h;
@@ -69,10 +77,17 @@ int safe_main(int argc, char** argv) {
 			GFX_Flip();
 
 			if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
-				std::cout << gameFrameCount << " " << systemFrameCount << std::endl;
+				updateTime /= systemFrameCount;
+				drawTime /= systemFrameCount;
+
+				std::cout << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
+				          << " update: " << updateTime / 1000.0f
+				          << "ms  draw: " << drawTime / 1000.0f << "ms" << std::endl;
 
 				gameFrameCount = 0;
 				systemFrameCount = 0;
+				updateTime = 0;
+				drawTime = 0;
 				frameTimer = TIME_GetTime_ms();
 			}
 		}

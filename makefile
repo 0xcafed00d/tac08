@@ -7,7 +7,8 @@ LUA_LIB =  -Lsrc/z8lua -llua
 SDL_INCLUDE = -I/usr/local/include
 UTF8_UTIL_BASE = src/utf8-util/utf8-util
 
-CXXFLAGS = -O3 -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
+# CXXFLAGS = -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
+CXXFLAGS = -O3 -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
 LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
 EXE = thing
 
