@@ -683,6 +683,13 @@ namespace pico_api {
 		pico_private::pset(x, y);
 	}
 
+	colour_t pget(int x, int y) {
+		pico_private::apply_camera(x, y);
+		x &= 0x7f;
+		y &= 0x7f;
+		return backbuffer[y * buffer_size_x + x];
+	}
+
 	void rect(int x0, int y0, int x1, int y1) {
 		rect(x0, y0, x1, y1, currentGraphicsState->fg);
 	}

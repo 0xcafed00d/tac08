@@ -121,7 +121,7 @@ static std::string firmware = R"(
 	end
 )";
 
-static void dump_func(lua_State* ls, const char* funcname) {
+void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << funcname + 5 << "(";
 	int params = lua_gettop(ls);
 	for (int n = 1; n <= params; n++) {
@@ -472,9 +472,11 @@ static int impl_cursor(lua_State* ls) {
 
 static int impl_pget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
-	lua_pushnumber(ls, 0);
-	// TODO: implement
+	auto x = lua_tonumber(ls, 1);
+	auto y = lua_tonumber(ls, 2);
+
+	pico_api::colour_t p = pico_api::pget(x, y);
+	lua_pushnumber(ls, p);
 	return 1;
 }
 

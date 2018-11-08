@@ -46,6 +46,7 @@ namespace pico_api {
 
 	void pset(int x, int y);
 	void pset(int x, int y, colour_t colour);
+	colour_t pget(int x, int y);
 
 	void rect(int x0, int y0, int x1, int y1);
 	void rect(int x0, int y0, int x1, int y1, colour_t c);
