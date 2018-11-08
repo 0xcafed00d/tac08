@@ -2,6 +2,7 @@
 #include "pico_memory.h"
 
 #include <assert.h>
+#include <algorithm>
 #include <iostream>
 
 static pico_api::colour_t backbuffer_store[128 * 256];
@@ -486,6 +487,23 @@ namespace pico_control {
 		return backbuffer;
 	}
 
+	void copy_cartdata_to_ram(const std::string& data) {
+		uint16_t addr = pico_ram::MEM_CART_DATA_ADDR;
+
+		std::string buf;
+
+		for (size_t n = 0; n < data.length(); n++) {
+			if (data[n] > ' ') {
+				buf += data[n];
+				if (buf.length() == 8) {
+					pico_api::poke4(addr, strtol(buf.c_str(), nullptr, 16));
+					addr += 4;
+					buf.clear();
+				}
+			}
+		}
+	}
+
 	void copy_data_to_ram(uint16_t addr, const std::string& data, bool gfx = true) {
 		for (size_t n = 0; n < data.length(); n++) {
 			char buf[3] = {0};
@@ -546,7 +564,7 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
-		std::cout << std::hex << "peek (" << a << ") -> " << (int)ram.peek(a) << std::endl;
+		// std::cout << std::hex << "peek (" << a << ") -> " << (int)ram.peek(a) << std::endl;
 		return ram.peek(a);
 	}
 
@@ -559,7 +577,7 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
-		std::cout << std::hex << "poke (" << a << ", " << (int)v << ")" << std::endl;
+		// std::cout << std::hex << "poke (" << a << ", " << (int)v << ")" << std::endl;
 
 		if (a >= 0x5f00 && a <= 0x5f0f) {
 			pal(a - 0x5f00, v);
@@ -598,8 +616,8 @@ namespace pico_api {
 
 	void cartdata(std::string name) {
 		std::string data = FILE_LoadGameState(name + ".p8d.txt");
-		std::cout << "[" << data << "]" << std::endl;
-		pico_control::copy_data_to_ram(pico_ram::MEM_CART_DATA_ADDR, data, false);
+		// std::cout << "[" << data << "]" << std::endl;
+		pico_control::copy_cartdata_to_ram(data);
 	}
 
 	uint32_t dget(uint16_t a) {
