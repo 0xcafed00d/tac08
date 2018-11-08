@@ -546,6 +546,7 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
+		std::cout << std::hex << "peek (" << a << ") -> " << (int)ram.peek(a) << std::endl;
 		return ram.peek(a);
 	}
 
@@ -558,6 +559,8 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
+		std::cout << std::hex << "poke (" << a << ", " << (int)v << ")" << std::endl;
+
 		if (a >= 0x5f00 && a <= 0x5f0f) {
 			pal(a - 0x5f00, v);
 			palt(a - 0x5f00, (v & 0x80) != 0);
@@ -591,6 +594,12 @@ namespace pico_api {
 				ram.poke(dest_a - i, ram.peek(src_a - i));
 			}
 		}
+	}
+
+	void cartdata(std::string name) {
+		std::string data = FILE_LoadGameState(name + ".p8d.txt");
+		std::cout << "[" << data << "]" << std::endl;
+		pico_control::copy_data_to_ram(pico_ram::MEM_CART_DATA_ADDR, data, false);
 	}
 
 	uint32_t dget(uint16_t a) {

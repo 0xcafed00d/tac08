@@ -1,4 +1,5 @@
 #include "hal_core.h"
+#include <SDL2/SDL_rwops.h>
 #include <iostream>
 #include <string>
 
@@ -188,4 +189,35 @@ MouseState INP_GetMouseState() {
 	ms.wheel = mouseWheel;
 	mouseWheel = 0;
 	return ms;
+}
+
+std::string FILE_LoadGameState(std::string name) {
+	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
+	name = std::string(path) + name;
+	SDL_free((void*)path);
+	std::string data;
+
+	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "r");
+	if (file) {
+		size_t sz = SDL_RWsize(file);
+		if (sz) {
+			data.resize(sz, ' ');
+			SDL_RWread(file, &data[0], sz, 1);
+		}
+		SDL_RWclose(file);
+	}
+
+	return data;
+}
+
+void FILE_SaveGameState(std::string name, std::string data) {
+	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
+	name = std::string(path) + name;
+	SDL_free((void*)path);
+
+	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "w");
+	if (file) {
+		SDL_RWwrite(file, data.c_str(), data.length(), 1);
+	}
+	SDL_RWclose(file);
 }

@@ -21,6 +21,9 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h);
 
 void GFX_Flip();
 
+std::string FILE_LoadGameState(std::string name);
+void FILE_SaveGameState(std::string name, std::string data);
+
 void INP_ProcessInputEvents(const SDL_Event& ev);
 uint8_t INP_GetInputState();
 

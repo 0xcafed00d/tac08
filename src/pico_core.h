@@ -24,6 +24,7 @@ namespace pico_api {
 
 	uint32_t dget(uint16_t a);
 	void dset(uint16_t a, uint32_t v);
+	void cartdata(std::string name);
 
 	void color(uint8_t c);
 

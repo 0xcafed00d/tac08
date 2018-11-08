@@ -132,7 +132,7 @@ void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-//#define API_TRACE
+#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
@@ -165,7 +165,9 @@ static void register_cfunc(const char* name, lua_CFunction cf) {
 static int impl_cartdata(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto s = luaL_checkstring(ls, 1);
-	// TODO: implement
+	if (s) {
+		pico_api::cartdata(s);
+	}
 	return 0;
 }
 
