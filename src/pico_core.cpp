@@ -62,6 +62,7 @@ struct InputState {
 
 static InputState inputState[4];
 static MouseState mouseState;
+static std::string cartDataName;
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
@@ -458,35 +459,6 @@ namespace pico_private {
 		y = y - currentGraphicsState->camera_y;
 	}
 
-}  // namespace pico_private
-
-namespace pico_control {
-	void init(int x, int y) {
-		buffer_size_x = x;
-		buffer_size_y = y;
-
-		pico_private::restore_palette();
-		pico_private::restore_transparency();
-
-		ram.addMemoryArea(&mem_gfx);
-		ram.addMemoryArea(&mem_gfx2_map2);
-		ram.addMemoryArea(&mem_map);
-		ram.addMemoryArea(&mem_flags);
-		ram.addMemoryArea(&mem_screen);
-		ram.addMemoryArea(&mem_font);
-		ram.addMemoryArea(&mem_cart_data);
-		ram.addMemoryArea(&mem_scratch_data);
-
-		pico_private::init_guards();
-	}
-
-	pico_api::colour_t* get_buffer(int& width, int& height) {
-		width = buffer_size_x;
-		height = buffer_size_y;
-		pico_private::check_guards();
-		return backbuffer;
-	}
-
 	void copy_cartdata_to_ram(const std::string& data) {
 		uint16_t addr = pico_ram::MEM_CART_DATA_ADDR;
 
@@ -502,6 +474,27 @@ namespace pico_control {
 				}
 			}
 		}
+		mem_cart_data.clearDirty();
+	}
+
+	std::string get_cartdata_as_str() {
+		uint16_t addr = pico_ram::MEM_CART_DATA_ADDR;
+		uint16_t len = pico_ram::MEM_CART_DATA_SIZE;
+
+		std::string result;
+		char buffer[16];
+		int pos = 0;
+		for (size_t n = addr; n < (addr + len); n += 4) {
+			sprintf(buffer, "%08x", peek4(n));
+			result += buffer;
+			pos++;
+			if (pos == 8) {
+				result += '\n';
+				pos = 0;
+			}
+		}
+
+		return result;
 	}
 
 	void copy_data_to_ram(uint16_t addr, const std::string& data, bool gfx = true) {
@@ -521,17 +514,59 @@ namespace pico_control {
 		}
 	}
 
+}  // namespace pico_private
+
+namespace pico_control {
+	void init(int x, int y) {
+		buffer_size_x = x;
+		buffer_size_y = y;
+
+		cartDataName = "";
+		pico_private::restore_palette();
+		pico_private::restore_transparency();
+
+		ram.addMemoryArea(&mem_gfx);
+		ram.addMemoryArea(&mem_gfx2_map2);
+		ram.addMemoryArea(&mem_map);
+		ram.addMemoryArea(&mem_flags);
+		ram.addMemoryArea(&mem_screen);
+		ram.addMemoryArea(&mem_font);
+		ram.addMemoryArea(&mem_cart_data);
+		ram.addMemoryArea(&mem_scratch_data);
+
+		pico_private::init_guards();
+	}
+
+	void frame_start() {
+	}
+
+	void frame_end() {
+		if (mem_cart_data.isDirty()) {
+			if (!cartDataName.empty()) {
+				FILE_SaveGameState(cartDataName, pico_private::get_cartdata_as_str());
+			}
+			mem_cart_data.clearDirty();
+		}
+	}
+
+	pico_api::colour_t* get_buffer(int& width, int& height) {
+		width = buffer_size_x;
+		height = buffer_size_y;
+		pico_private::check_guards();
+		return backbuffer;
+	}
+
 	void set_sprite_data(std::string data, std::string flags) {
-		copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data);
-		copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
+		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data);
+		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
 	}
 
 	void set_font_data(std::string data) {
-		copy_data_to_ram(0x8000, data);
+		pico_private::copy_data_to_ram(0x8000, data);
 	}
 
 	void set_map_data(std::string data) {
-		copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
+		pico_private::copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
 		// ram.dump(0x0000, 0x4000);
 	}
 
@@ -615,9 +650,10 @@ namespace pico_api {
 	}
 
 	void cartdata(std::string name) {
-		std::string data = FILE_LoadGameState(name + ".p8d.txt");
+		cartDataName = name + ".p8d.txt";
+		std::string data = FILE_LoadGameState(cartDataName);
 		// std::cout << "[" << data << "]" << std::endl;
-		pico_control::copy_cartdata_to_ram(data);
+		pico_private::copy_cartdata_to_ram(data);
 	}
 
 	uint32_t dget(uint16_t a) {

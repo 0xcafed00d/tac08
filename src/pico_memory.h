@@ -79,6 +79,10 @@ namespace pico_ram {
 		void clearDirty() {
 			m_isDirty = false;
 		}
+
+		bool isDirty() {
+			return m_isDirty;
+		}
 	};
 
 	struct All0MemoryArea : public MemoryArea {

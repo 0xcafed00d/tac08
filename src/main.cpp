@@ -45,6 +45,8 @@ int safe_main(int argc, char** argv) {
 			using namespace pico_api;
 
 			if ((TIME_GetTime_ms() - ticks) > target_ticks) {
+				pico_control::frame_start();
+
 				pico_control::set_input_state(INP_GetInputState());
 				pico_control::set_mouse_state(INP_GetMouseState());
 
@@ -72,6 +74,7 @@ int safe_main(int argc, char** argv) {
 
 				ticks = SDL_GetTicks();
 				gameFrameCount++;
+				pico_control::frame_end();
 			}
 			systemFrameCount++;
 			GFX_Flip();
