@@ -32,6 +32,7 @@ int safe_main(int argc, char** argv) {
 
 	uint64_t updateTime = 0;
 	uint64_t drawTime = 0;
+	uint64_t copyBBTime = 0;
 
 	while (true) {
 		SDL_Event e;
@@ -70,7 +71,9 @@ int safe_main(int argc, char** argv) {
 				int buffer_w;
 				int buffer_h;
 				pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
+				uint64_t copyBBStart = TIME_GetProfileTime();
 				GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
+				copyBBTime += TIME_GetElapsedProfileTime_us(copyBBStart);
 
 				ticks = SDL_GetTicks();
 				gameFrameCount++;
@@ -82,15 +85,18 @@ int safe_main(int argc, char** argv) {
 			if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
 				updateTime /= systemFrameCount;
 				drawTime /= systemFrameCount;
+				copyBBTime /= systemFrameCount;
 
 				std::cout << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
 				          << " update: " << updateTime / 1000.0f
-				          << "ms  draw: " << drawTime / 1000.0f << "ms" << std::endl;
+				          << "ms  draw: " << drawTime / 1000.0f << "ms"
+				          << " bb copy: " << copyBBTime << "us" << std::endl;
 
 				gameFrameCount = 0;
 				systemFrameCount = 0;
 				updateTime = 0;
 				drawTime = 0;
+				copyBBTime = 0;
 				frameTimer = TIME_GetTime_ms();
 			}
 		}
