@@ -20,7 +20,7 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_Init Error: ");
 	}
 
-	sdlWin = SDL_CreateWindow("thing!", 100, 100, x, y, SDL_WINDOW_SHOWN);
+	sdlWin = SDL_CreateWindow("tac08", 100, 100, x, y, SDL_WINDOW_SHOWN);
 	if (sdlWin == nullptr) {
 		throw_error("SDL_CreateWindow Error: ");
 	}
