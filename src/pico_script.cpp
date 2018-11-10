@@ -132,7 +132,7 @@ void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-//#define API_TRACE
+#define API_TRACE
 
 #ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
@@ -369,7 +369,7 @@ static int impl_spr(lua_State* ls) {
 	auto x = lua_tonumber(ls, 2);
 	auto y = lua_tonumber(ls, 3);
 
-	if (lua_gettop(ls) == 3) {
+	if (lua_gettop(ls) <= 3) {
 		pico_api::spr(n, x, y);
 		return 0;
 	}
@@ -377,7 +377,7 @@ static int impl_spr(lua_State* ls) {
 	auto w = lua_tonumber(ls, 4);
 	auto h = lua_tonumber(ls, 5);
 
-	if (lua_gettop(ls) == 5) {
+	if (lua_gettop(ls) <= 5) {
 		pico_api::spr(n, x, y, w, h);
 		return 0;
 	}
