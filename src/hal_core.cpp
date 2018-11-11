@@ -1,4 +1,5 @@
 #include "hal_core.h"
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_rwops.h>
 #include <iostream>
 #include <string>
@@ -151,6 +152,18 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		set_state_bit(joyState, 5, ev.jbutton.button == 0, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);
 	}
+}
+
+bool EVT_ProcessEvents() {
+	SDL_Event e;
+	while (SDL_PollEvent(&e)) {
+		if (e.type == SDL_QUIT) {
+			return false;
+		} else {
+			INP_ProcessInputEvents(e);
+		}
+	}
+	return true;
 }
 
 uint8_t INP_GetInputState() {

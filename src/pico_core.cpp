@@ -2,6 +2,7 @@
 #include "pico_memory.h"
 
 #include <assert.h>
+#include <string.h>
 #include <algorithm>
 #include <iostream>
 

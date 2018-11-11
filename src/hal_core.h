@@ -1,7 +1,6 @@
 #ifndef GFX_CORE_H
 #define GFX_CORE_H
 
-#include <SDL2/SDL.h>
 #include <stdint.h>
 #include <stdexcept>
 
@@ -24,7 +23,7 @@ void GFX_Flip();
 std::string FILE_LoadGameState(std::string name);
 void FILE_SaveGameState(std::string name, std::string data);
 
-void INP_ProcessInputEvents(const SDL_Event& ev);
+bool EVT_ProcessEvents();
 uint8_t INP_GetInputState();
 
 uint32_t TIME_GetTime_ms();

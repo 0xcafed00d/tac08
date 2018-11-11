@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include <SDL2/SDL.h>
-
 #include "hal_core.h"
 #include "pico_cart.h"
 #include "pico_core.h"
@@ -34,73 +32,65 @@ int safe_main(int argc, char** argv) {
 	uint64_t drawTime = 0;
 	uint64_t copyBBTime = 0;
 
-	while (true) {
-		SDL_Event e;
-		if (SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) {
-				break;
-			} else {
-				INP_ProcessInputEvents(e);
+	while (EVT_ProcessEvents()) {
+		using namespace pico_api;
+
+		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
+			pico_control::frame_start();
+
+			pico_control::set_input_state(INP_GetInputState());
+			pico_control::set_mouse_state(INP_GetMouseState());
+
+			if (!init) {
+				pico_script::run("_init", true);
+				init = true;
 			}
-		} else {
-			using namespace pico_api;
 
-			if ((TIME_GetTime_ms() - ticks) > target_ticks) {
-				pico_control::frame_start();
-
-				pico_control::set_input_state(INP_GetInputState());
-				pico_control::set_mouse_state(INP_GetMouseState());
-
-				if (!init) {
-					pico_script::run("_init", true);
-					init = true;
+			uint64_t updateTimeStart = TIME_GetProfileTime();
+			if (!pico_script::run("_update", true)) {
+				if (pico_script::run("_update60", true)) {
+					target_ticks = 1;
 				}
-
-				uint64_t updateTimeStart = TIME_GetProfileTime();
-				if (!pico_script::run("_update", true)) {
-					if (pico_script::run("_update60", true)) {
-						target_ticks = 1;
-					}
-				}
-				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
-
-				uint64_t drawTimeStart = TIME_GetProfileTime();
-				pico_script::run("_draw", true);
-				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
-
-				int buffer_w;
-				int buffer_h;
-				pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
-				uint64_t copyBBStart = TIME_GetProfileTime();
-				GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
-				copyBBTime += TIME_GetElapsedProfileTime_us(copyBBStart);
-
-				ticks = SDL_GetTicks();
-				gameFrameCount++;
-				pico_control::frame_end();
 			}
-			systemFrameCount++;
-			GFX_Flip();
+			updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
-			if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
-				updateTime /= systemFrameCount;
-				drawTime /= systemFrameCount;
-				copyBBTime /= systemFrameCount;
+			uint64_t drawTimeStart = TIME_GetProfileTime();
+			pico_script::run("_draw", true);
+			drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
 
-				std::cout << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
-				          << " update: " << updateTime / 1000.0f
-				          << "ms  draw: " << drawTime / 1000.0f << "ms"
-				          << " bb copy: " << copyBBTime << "us" << std::endl;
+			int buffer_w;
+			int buffer_h;
+			pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
+			uint64_t copyBBStart = TIME_GetProfileTime();
+			GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
+			copyBBTime += TIME_GetElapsedProfileTime_us(copyBBStart);
 
-				gameFrameCount = 0;
-				systemFrameCount = 0;
-				updateTime = 0;
-				drawTime = 0;
-				copyBBTime = 0;
-				frameTimer = TIME_GetTime_ms();
-			}
+			ticks = TIME_GetTime_ms();
+			gameFrameCount++;
+			pico_control::frame_end();
+		}
+		systemFrameCount++;
+		GFX_Flip();
+
+		if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
+			updateTime /= systemFrameCount;
+			drawTime /= systemFrameCount;
+			copyBBTime /= systemFrameCount;
+
+			std::cout << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
+			          << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime / 1000.0f
+			          << "ms"
+			          << " bb copy: " << copyBBTime << "us" << std::endl;
+
+			gameFrameCount = 0;
+			systemFrameCount = 0;
+			updateTime = 0;
+			drawTime = 0;
+			copyBBTime = 0;
+			frameTimer = TIME_GetTime_ms();
 		}
 	}
+
 	GFX_End();
 	return 0;
 }
