@@ -121,7 +121,11 @@ static std::string firmware = R"(
 	end
 )";
 
-void dump_func(lua_State* ls, const char* funcname) {
+//#define API_TRACE
+
+#ifdef API_TRACE
+
+static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << funcname + 5 << "(";
 	int params = lua_gettop(ls);
 	for (int n = 1; n <= params; n++) {
@@ -132,9 +136,6 @@ void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-#define API_TRACE
-
-#ifdef API_TRACE
 #define DEBUG_DUMP_FUNCTION         \
 	pico_control::test_integrity(); \
 	dump_func(ls, __FUNCTION__);
@@ -152,6 +153,9 @@ static void init_scripting() {
 
 	std::string fw = pico_cart::convert_emojis(firmware);
 
+	lua_newtable(lstate);
+	lua_setglobal(lstate, "__tac08__");
+
 	throw_error(luaL_loadbuffer(lstate, fw.c_str(), fw.size(), "firmware"));
 	throw_error(lua_pcall(lstate, 0, 0, 0));
 }
@@ -159,6 +163,13 @@ static void init_scripting() {
 static void register_cfunc(const char* name, lua_CFunction cf) {
 	lua_pushcfunction(lstate, cf);
 	lua_setglobal(lstate, name);
+}
+
+static void register_ext_cfunc(const char* name, lua_CFunction cf) {
+	lua_getglobal(lstate, "__tac08__");
+	lua_pushcfunction(lstate, cf);
+	lua_setfield(lstate, -2, name);
+	lua_pop(lstate, 1);
 }
 
 // ------------------------------------------------------------------
@@ -711,6 +722,16 @@ static int impl_memset(lua_State* ls) {
 	return 0;
 }
 
+static int implx_writeclipboard(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	return 0;
+}
+
+static int implx_readclipboard(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -755,6 +776,8 @@ static void register_cfuncs() {
 	register_cfunc("sfx", impl_sfx);
 	register_cfunc("memcpy", impl_memcpy);
 	register_cfunc("memset", impl_memset);
+	register_ext_cfunc("write_clipboard", implx_writeclipboard);
+	register_ext_cfunc("read_clipboard", implx_readclipboard);
 }
 
 namespace pico_script {
