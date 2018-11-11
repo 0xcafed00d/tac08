@@ -732,6 +732,16 @@ static int implx_readclipboard(lua_State* ls) {
 	return 0;
 }
 
+static int implx_readstr(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	return 0;
+}
+
+static int implx_writestr(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -776,8 +786,10 @@ static void register_cfuncs() {
 	register_cfunc("sfx", impl_sfx);
 	register_cfunc("memcpy", impl_memcpy);
 	register_cfunc("memset", impl_memset);
-	register_ext_cfunc("write_clipboard", implx_writeclipboard);
-	register_ext_cfunc("read_clipboard", implx_readclipboard);
+	register_ext_cfunc("wrclip", implx_writeclipboard);
+	register_ext_cfunc("rdclip", implx_readclipboard);
+	register_ext_cfunc("wrstr", implx_writestr);
+	register_ext_cfunc("rdstr", implx_readstr);
 }
 
 namespace pico_script {
