@@ -226,7 +226,7 @@ std::string FILE_LoadGameState(std::string name) {
 	return data;
 }
 
-void FILE_SaveGameState(std::string name, std::string data) {
+void FILE_SaveGameState(std::string name, const std::string& data) {
 	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
 	name = std::string(path) + name;
 	SDL_free((void*)path);

@@ -21,9 +21,9 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h);
 void GFX_Flip();
 
 std::string FILE_LoadGameState(std::string name);
-void FILE_SaveGameState(std::string name, std::string data);
+void FILE_SaveGameState(std::string name, const std::string& data);
 std::string FILE_ReadClip();
-void FILE_WriteClip(std::string data);
+void FILE_WriteClip(const std::string& data);
 
 bool EVT_ProcessEvents();
 uint8_t INP_GetInputState();
