@@ -1043,10 +1043,11 @@ namespace pico_api {
 
 namespace pico_apix {
 	void wrclip(const std::string& s) {
+		FILE_WriteClip(s);
 	}
 
 	std::string rdclip() {
-		return "";
+		return FILE_ReadClip();
 	}
 
 	void wrstr(const std::string& name, const std::string& s) {
