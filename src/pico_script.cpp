@@ -722,23 +722,40 @@ static int impl_memset(lua_State* ls) {
 	return 0;
 }
 
-static int implx_writeclipboard(lua_State* ls) {
+static int implx_wrclip(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
+	auto s = luaL_checkstring(ls, 1);
+	if (s) {
+		pico_apix::wrclip(s);
+	}
 	return 0;
 }
 
-static int implx_readclipboard(lua_State* ls) {
+static int implx_rdclip(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	return 0;
+	auto s = pico_apix::rdclip();
+	lua_pushstring(ls, s.c_str());
+	return 1;
 }
 
-static int implx_readstr(lua_State* ls) {
+static int implx_rdstr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	return 0;
+	auto name = luaL_checkstring(ls, 1);
+	std::string res;
+	if (name) {
+		res = pico_apix::rdstr(name);
+	}
+	lua_pushstring(ls, res.c_str());
+	return 1;
 }
 
-static int implx_writestr(lua_State* ls) {
+static int implx_wrstr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
+	auto name = luaL_checkstring(ls, 1);
+	auto s = luaL_checkstring(ls, 2);
+	if (name && s) {
+		pico_apix::wrstr(name, s);
+	}
 	return 0;
 }
 
@@ -786,10 +803,10 @@ static void register_cfuncs() {
 	register_cfunc("sfx", impl_sfx);
 	register_cfunc("memcpy", impl_memcpy);
 	register_cfunc("memset", impl_memset);
-	register_ext_cfunc("wrclip", implx_writeclipboard);
-	register_ext_cfunc("rdclip", implx_readclipboard);
-	register_ext_cfunc("wrstr", implx_writestr);
-	register_ext_cfunc("rdstr", implx_readstr);
+	register_ext_cfunc("wrclip", implx_wrclip);
+	register_ext_cfunc("rdclip", implx_rdclip);
+	register_ext_cfunc("wrstr", implx_wrstr);
+	register_ext_cfunc("rdstr", implx_rdstr);
 }
 
 namespace pico_script {

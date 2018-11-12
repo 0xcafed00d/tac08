@@ -93,6 +93,15 @@ namespace pico_api {
 
 }  // namespace pico_api
 
+// extended api
+namespace pico_apix {
+	void wrclip(const std::string& s);
+	std::string rdclip();
+
+	void wrstr(const std::string& name, const std::string& s);
+	std::string rdstr(const std::string& name);
+}  // namespace pico_apix
+
 namespace pico_control {
 	void init(int x, int y);
 	void frame_start();

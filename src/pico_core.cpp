@@ -544,7 +544,7 @@ namespace pico_control {
 	void frame_end() {
 		if (mem_cart_data.isDirty()) {
 			if (!cartDataName.empty()) {
-				FILE_SaveGameState(cartDataName, pico_private::get_cartdata_as_str());
+				FILE_SaveGameState(cartDataName + ".p8d.txt", pico_private::get_cartdata_as_str());
 			}
 			mem_cart_data.clearDirty();
 		}
@@ -651,8 +651,8 @@ namespace pico_api {
 	}
 
 	void cartdata(std::string name) {
-		cartDataName = name + ".p8d.txt";
-		std::string data = FILE_LoadGameState(cartDataName);
+		cartDataName = name;
+		std::string data = FILE_LoadGameState(cartDataName + ".p8d.txt");
 		// std::cout << "[" << data << "]" << std::endl;
 		pico_private::copy_cartdata_to_ram(data);
 	}
@@ -1040,3 +1040,21 @@ namespace pico_api {
 	}
 
 }  // namespace pico_api
+
+namespace pico_apix {
+	void wrclip(const std::string& s) {
+	}
+
+	std::string rdclip() {
+		return "";
+	}
+
+	void wrstr(const std::string& name, const std::string& s) {
+		FILE_SaveGameState(cartDataName + "_" + name, s);
+	}
+
+	std::string rdstr(const std::string& name) {
+		return FILE_LoadGameState(cartDataName + "_" + name);
+	}
+
+}  // namespace pico_apix

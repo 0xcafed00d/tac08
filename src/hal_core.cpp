@@ -1,5 +1,6 @@
 #include "hal_core.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
 #include <iostream>
 #include <string>
@@ -235,4 +236,20 @@ void FILE_SaveGameState(std::string name, std::string data) {
 		SDL_RWwrite(file, data.c_str(), data.length(), 1);
 	}
 	SDL_RWclose(file);
+}
+
+std::string FILE_ReadClip() {
+	std::string res;
+	if (SDL_HasClipboardText()) {
+		auto t = SDL_GetClipboardText();
+		if (t) {
+			res = t;
+			SDL_free(t);
+		}
+	}
+	return res;
+}
+
+void FILE_WriteClip(const std::string& data) {
+	SDL_SetClipboardText(data.c_str());
 }

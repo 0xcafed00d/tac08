@@ -22,6 +22,8 @@ void GFX_Flip();
 
 std::string FILE_LoadGameState(std::string name);
 void FILE_SaveGameState(std::string name, std::string data);
+std::string FILE_ReadClip();
+void FILE_WriteClip(std::string data);
 
 bool EVT_ProcessEvents();
 uint8_t INP_GetInputState();
