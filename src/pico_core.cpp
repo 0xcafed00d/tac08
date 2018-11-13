@@ -82,6 +82,7 @@ struct GraphicsState {
 };
 
 static GraphicsState graphicsState;
+static GraphicsState menuGraphicsState;
 static GraphicsState* currentGraphicsState = &graphicsState;
 
 struct SpriteSheet {
