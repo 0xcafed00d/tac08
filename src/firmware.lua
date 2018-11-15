@@ -88,12 +88,22 @@ __tac08__.menu = {
 				{nil, nil}, 
 				{"reset", nil}},
 	current = 0,
+	bg = 0,
+	t1 = 7,
+	t2 = 6,
 
 	resetmenu = function(m)
 		for i = 1, 5 do
 			m:menuitem(i, nil, nil)
 			m.current = 0
 		end
+		m.color(0, 7, 6)
+	end,
+
+	color = function(m, bg, t1, t2)
+		m.bg = bg
+		m.t1 = t1
+		m.t2 = t2
 	end,
 
 	menuitem = function(m, idx, label, func)
@@ -140,17 +150,17 @@ __tac08__.menu = {
 
 		local x, y = 64 - w / 2, 64 - h / 2
 
-		rectfill(x, y, x+w, y+h, 0)
-		rect(x+1, y+1, x+w-1, y+h-1, 7)
+		rectfill(x, y, x+w, y+h, m.bg)
+		rect(x+1, y+1, x+w-1, y+h-1, m.t1)
 		y += 8
 
 		for i = 1, #m.items do
 			if m.items[i][1] ~= nil then
 				if i == m.current+1 then
-					print (">", x+6, y, 7)
-					print (m.items[i][1], x+12, y, 7)
+					print (">", x+6, y, m.t1)
+					print (m.items[i][1], x+12, y, m.t1)
 				else
-					print (m.items[i][1], x+10, y, 6)
+					print (m.items[i][1], x+10, y, m.t2)
 				end
 				y += 8
 			end
