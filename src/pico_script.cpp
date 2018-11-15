@@ -9,6 +9,7 @@
 #include "z8lua/lua.h"
 #include "z8lua/lualib.h"
 
+#include <assert.h>
 #include <iostream>
 
 #include "firmware.lua"
@@ -54,9 +55,6 @@ static void init_scripting() {
 	luaL_openlibs(lstate);
 
 	std::string fw = pico_cart::convert_emojis(firmware);
-
-	lua_newtable(lstate);
-	lua_setglobal(lstate, "__tac08__");
 
 	throw_error(luaL_loadbuffer(lstate, fw.c_str(), fw.size(), "firmware"));
 	throw_error(lua_pcall(lstate, 0, 0, 0));
@@ -734,6 +732,18 @@ namespace pico_script {
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 		return true;
+	}
+
+	// returns true when menu finished
+	bool do_menu() {
+		lua_getglobal(lstate, "__tac08__");
+		lua_getfield(lstate, -1, "do_menu");
+		lua_remove(lstate, -2);
+		throw_error(lua_pcall(lstate, 0, 1, 0));
+		bool res = lua_toboolean(lstate, -1);
+		lua_pop(lstate, 1);
+
+		return res;
 	}
 
 }  // namespace pico_script

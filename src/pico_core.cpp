@@ -64,6 +64,7 @@ struct InputState {
 static InputState inputState[4];
 static MouseState mouseState;
 static std::string cartDataName;
+static bool pauseMenuRequested = false;
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
@@ -549,6 +550,8 @@ namespace pico_control {
 			}
 			mem_cart_data.clearDirty();
 		}
+		if (pauseMenuRequested)
+			begin_pause_menu();
 	}
 
 	pico_api::colour_t* get_buffer(int& width, int& height) {
@@ -574,6 +577,11 @@ namespace pico_control {
 
 	void set_input_state(int state, int player) {
 		inputState[player].set(state);
+		if (player == 0) {
+			if (inputState[0].justPressed(6) && !is_pause_menu()) {
+				pauseMenuRequested = true;
+			}
+		}
 	}
 
 	void set_mouse_state(const MouseState& ms) {
@@ -583,6 +591,20 @@ namespace pico_control {
 	void test_integrity() {
 		pico_private::check_guards();
 	}
+
+	void begin_pause_menu() {
+		currentGraphicsState = &menuGraphicsState;
+		pauseMenuRequested = false;
+	}
+
+	bool is_pause_menu() {
+		return currentGraphicsState == &menuGraphicsState;
+	}
+
+	void end_pause_menu() {
+		currentGraphicsState = &graphicsState;
+	}
+
 }  // namespace pico_control
 
 namespace pico_api {

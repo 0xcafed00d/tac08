@@ -39,7 +39,7 @@ bin/pico_memory.o: src/pico_memory.cpp src/pico_memory.h
 bin/pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h
+bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h src/firmware.lua
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp

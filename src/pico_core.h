@@ -114,6 +114,9 @@ namespace pico_control {
 	void set_mouse_state(const MouseState& ms);
 	void copy_shared_data();
 	void test_integrity();
+	void begin_pause_menu();
+	bool is_pause_menu();
+	void end_pause_menu();
 
 }  // namespace pico_control
 

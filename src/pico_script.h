@@ -14,6 +14,7 @@ namespace pico_script {
 	void load(std::string script);
 	void reset();
 	bool run(std::string function, bool optional);
+	bool do_menu();
 
 }  // namespace pico_script
 

@@ -46,17 +46,23 @@ int safe_main(int argc, char** argv) {
 				init = true;
 			}
 
-			uint64_t updateTimeStart = TIME_GetProfileTime();
-			if (!pico_script::run("_update", true)) {
-				if (pico_script::run("_update60", true)) {
-					target_ticks = 1;
+			if (pico_control::is_pause_menu()) {
+				if (pico_script::do_menu()) {
+					pico_control::end_pause_menu();
 				}
-			}
-			updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
+			} else {
+				uint64_t updateTimeStart = TIME_GetProfileTime();
+				if (!pico_script::run("_update", true)) {
+					if (pico_script::run("_update60", true)) {
+						target_ticks = 1;
+					}
+				}
+				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
-			uint64_t drawTimeStart = TIME_GetProfileTime();
-			pico_script::run("_draw", true);
-			drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
+				uint64_t drawTimeStart = TIME_GetProfileTime();
+				pico_script::run("_draw", true);
+				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
+			}
 
 			int buffer_w;
 			int buffer_h;
