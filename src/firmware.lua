@@ -124,12 +124,12 @@ __tac08__.menu = {
 				m.current = (m.current+1) % #m.items 
 			until m.items[m.current+1][1]~=nil
 		end
-		if btnp(4) or btnp(5) then
+		if btnp(4) or btnp(5) or btnp(6) then
 			local f = m.items[m.current+1][2]
 			if (f) f()
 			return true; 
 		end 
-		if btnp(6) then
+		if btnp(7) then
 			return true; 
 		end
 		return false; 

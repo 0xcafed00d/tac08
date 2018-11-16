@@ -138,6 +138,8 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		set_state_bit(keyState, 4, ev.key.keysym.sym == SDLK_z, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 5, ev.key.keysym.sym == SDLK_x, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 6, ev.key.keysym.sym == SDLK_p, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 6, ev.key.keysym.sym == SDLK_RETURN, ev.type == SDL_KEYDOWN);
+		set_state_bit(keyState, 7, ev.key.keysym.sym == SDLK_ESCAPE, ev.type == SDL_KEYDOWN);
 	} else if (ev.type == SDL_MOUSEWHEEL) {
 		mouseWheel += ev.wheel.y;
 	} else if (ev.type == SDL_JOYAXISMOTION) {
