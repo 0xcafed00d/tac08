@@ -2,7 +2,8 @@ CXX = g++
 # Update these paths to match your installation
 # You may also need to update the linker option rpath, which sets where to look for
 # the SDL2 libraries at runtime to match your install
-SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
+SDL_LIB = -L/home/lmw/src/SDL2-2.0.9/build/.libs -lSDL2 -Wl,-rpath=/home/lmw/src/SDL2-2.0.9/build/.libs
+#SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
 LUA_LIB =  -Lsrc/z8lua -llua 
 SDL_INCLUDE = -I/usr/local/include
 UTF8_UTIL_BASE = src/utf8-util/utf8-util
