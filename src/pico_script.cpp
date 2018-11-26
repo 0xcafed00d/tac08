@@ -1,5 +1,6 @@
 #include "pico_script.h"
 
+#include "hal_audio.h"
 #include "hal_core.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
@@ -659,6 +660,56 @@ static int implx_wrstr(lua_State* ls) {
 	return 0;
 }
 
+static int impx_wavload(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto name = luaL_checkstring(ls, 1);
+	try {
+		int id = AUDIO_LoadWav(name);
+		lua_pushnumber(ls, id);
+		return 1;
+	} catch (audio_exception& e) {
+		// TODO: log error
+	}
+	return 0;
+}
+
+static int impx_wavplay(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto id = luaL_checknumber(ls, 1);
+	auto chan = luaL_checknumber(ls, 2);
+	if (lua_gettop(ls) == 3) {
+		bool loop = lua_toboolean(ls, 3);
+		AUDIO_Play(id, chan, loop);
+		return 0;
+	}
+	auto loop_start = luaL_checknumber(ls, 3);
+	auto loop_end = luaL_checknumber(ls, 4);
+	AUDIO_Play(id, chan, loop_start, loop_end);
+	return 0;
+}
+
+static int impx_wavstop(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto chan = luaL_checknumber(ls, 1);
+	AUDIO_Stop(chan);
+	return 0;
+}
+
+static int impx_wavstoploop(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto chan = luaL_checknumber(ls, 1);
+	AUDIO_StopLoop(chan);
+	return 0;
+}
+
+static int impx_wavplaying(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto chan = luaL_checknumber(ls, 1);
+	bool b = AUDIO_isPlaying(chan);
+	lua_pushboolean(ls, b);
+	return 1;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -707,6 +758,11 @@ static void register_cfuncs() {
 	register_ext_cfunc("rdclip", implx_rdclip);
 	register_ext_cfunc("wrstr", implx_wrstr);
 	register_ext_cfunc("rdstr", implx_rdstr);
+	register_ext_cfunc("wavload", impx_wavload);
+	register_ext_cfunc("wavplay", impx_wavplay);
+	register_ext_cfunc("wavstop", impx_wavstop);
+	register_ext_cfunc("wavstoploop", impx_wavstoploop);
+	register_ext_cfunc("wavplaying", impx_wavplaying);
 }
 
 namespace pico_script {
