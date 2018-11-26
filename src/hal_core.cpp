@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include "config.h"
+
 static SDL_Window* sdlWin = nullptr;
 static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
