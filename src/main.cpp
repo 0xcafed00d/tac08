@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "config.h"
 #include "hal_core.h"
 #include "pico_cart.h"
 #include "pico_core.h"
@@ -7,9 +8,9 @@
 #include "pico_script.h"
 
 int safe_main(int argc, char** argv) {
-	GFX_Init(512, 512);
-	GFX_CreateBackBuffer(128, 128);
-	pico_control::init(128, 128);
+	GFX_Init(config::SCREEN_WIDTH * 2, config::SCREEN_HEIGHT * 2);
+	GFX_CreateBackBuffer(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
+	pico_control::init(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_data::load_font_data();
 
 	if (argc > 1) {

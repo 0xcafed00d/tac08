@@ -1,20 +1,25 @@
 
 #include "pico_core.h"
-#include "config.h"
 #include "pico_memory.h"
 
 #include <assert.h>
 #include <string.h>
 #include <algorithm>
 #include <iostream>
-
+/*
 static pico_api::colour_t backbuffer_store[128 * 256];
 static pico_api::colour_t* backbuffer = &backbuffer_store[128 * 64];
 static pico_api::colour_t* backbuffer_guard1 = &backbuffer_store[0];
 static pico_api::colour_t* backbuffer_guard2 = &backbuffer_store[128 * 192];
+*/
 
-static int buffer_size_x = 128;
-static int buffer_size_y = 128;
+static pico_api::colour_t* backbuffer_store = nullptr;
+static pico_api::colour_t* backbuffer = nullptr;
+static pico_api::colour_t* backbuffer_guard1 = nullptr;
+static pico_api::colour_t* backbuffer_guard2 = nullptr;
+
+static int buffer_size_x = 0;
+static int buffer_size_y = 0;
 
 struct InputState {
 	uint8_t old = 0;
@@ -143,14 +148,14 @@ namespace pico_private {
 	using namespace pico_api;
 
 	void init_guards() {
-		for (size_t i = 0; i < 128 * 64; i++) {
+		for (int i = 0; i < buffer_size_x * buffer_size_y / 2; i++) {
 			backbuffer_guard1[i] = i;
 			backbuffer_guard2[i] = i;
 		}
 	}
 
 	void check_guards() {
-		for (size_t i = 0; i < 128 * 64; i++) {
+		for (int i = 0; i < buffer_size_x * buffer_size_y / 2; i++) {
 			assert(backbuffer_guard1[i] == (i & 0xff));
 			assert(backbuffer_guard2[i] == (i & 0xff));
 		}
@@ -526,6 +531,11 @@ namespace pico_control {
 		buffer_size_x = x;
 		buffer_size_y = y;
 
+		backbuffer_store = new uint8_t[x * y * 2];
+		backbuffer = backbuffer_store + x * y / 2;
+		backbuffer_guard1 = backbuffer_store;
+		backbuffer_guard2 = backbuffer_store + x * y / 2 * 3;
+
 		cartDataName = "";
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
@@ -540,6 +550,7 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_scratch_data);
 
 		pico_private::init_guards();
+		pico_api::clip();
 	}
 
 	void frame_start() {
