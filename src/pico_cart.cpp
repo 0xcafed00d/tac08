@@ -3,6 +3,7 @@
 #include <map>
 #include <set>
 
+#include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
 #include "pico_script.h"
@@ -66,6 +67,8 @@ namespace pico_cart {
 
 		pico_control::set_sprite_data(sect["__gfx__"], sect["__gff__"]);
 		pico_control::set_map_data(sect["__map__"]);
+		pico_control::set_music_from_cart(sect["__music__"]);
+		pico_control::set_sfx_from_cart(sect["__sfx__"]);
 		pico_script::load(convert_emojis(sect["__lua__"]));
 	}
 

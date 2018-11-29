@@ -15,4 +15,9 @@ namespace pico_api {
 
 }  // namespace pico_api
 
+namespace pico_control {
+	void set_music_from_cart(std::string& data);
+	void set_sfx_from_cart(std::string& data);
+}  // namespace pico_control
+
 #endif /* PICO_AUDIO_H */

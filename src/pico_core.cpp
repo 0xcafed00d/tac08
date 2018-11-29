@@ -6,12 +6,6 @@
 #include <string.h>
 #include <algorithm>
 #include <iostream>
-/*
-static pico_api::colour_t backbuffer_store[128 * 256];
-static pico_api::colour_t* backbuffer = &backbuffer_store[128 * 64];
-static pico_api::colour_t* backbuffer_guard1 = &backbuffer_store[0];
-static pico_api::colour_t* backbuffer_guard2 = &backbuffer_store[128 * 192];
-*/
 
 static pico_api::colour_t* backbuffer_store = nullptr;
 static pico_api::colour_t* backbuffer = nullptr;
@@ -108,6 +102,8 @@ struct MapSheet {
 
 static uint8_t cart_data[pico_ram::MEM_CART_DATA_SIZE] = {0};
 static uint8_t scratch_data[pico_ram::MEM_SCRATCH_SIZE] = {0};
+static uint8_t music_data[pico_ram::MEM_MUSIC_SIZE] = {0};
+static uint8_t sfx_data[pico_ram::MEM_SFX_SIZE] = {0};
 
 static MapSheet mapSheet;
 static MapSheet* currentMapData = &mapSheet;
@@ -143,6 +139,14 @@ static pico_ram::LinearMemoryAreaDF mem_cart_data(cart_data,
 static pico_ram::LinearMemoryArea mem_scratch_data(scratch_data,
                                                    pico_ram::MEM_SCRATCH_ADDR,
                                                    pico_ram::MEM_SCRATCH_SIZE);
+
+static pico_ram::LinearMemoryArea mem_music_data(music_data,
+                                                 pico_ram::MEM_MUSIC_ADDR,
+                                                 pico_ram::MEM_MUSIC_SIZE);
+
+static pico_ram::LinearMemoryArea mem_sfx_data(sfx_data,
+                                               pico_ram::MEM_SFX_ADDR,
+                                               pico_ram::MEM_SFX_SIZE);
 
 namespace pico_private {
 	using namespace pico_api;
@@ -548,6 +552,8 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_font);
 		ram.addMemoryArea(&mem_cart_data);
 		ram.addMemoryArea(&mem_scratch_data);
+		ram.addMemoryArea(&mem_music_data);
+		ram.addMemoryArea(&mem_sfx_data);
 
 		pico_private::init_guards();
 		pico_api::clip();
@@ -616,6 +622,13 @@ namespace pico_control {
 
 	void end_pause_menu() {
 		currentGraphicsState = &graphicsState;
+	}
+
+	uint8_t* get_music_data() {
+		return music_data;
+	}
+	uint8_t* get_sfx_data() {
+		return sfx_data;
 	}
 
 }  // namespace pico_control

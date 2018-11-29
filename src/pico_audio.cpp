@@ -1,4 +1,7 @@
 #include "pico_audio.h"
+#include "hal_audio.h"
+
+#include <sstream>
 
 namespace pico_api {
 
@@ -19,3 +22,22 @@ namespace pico_api {
 	}
 
 }  // namespace pico_api
+
+namespace pico_control {
+	void set_music_from_cart(std::string& data) {
+		std::istringstream str(data);
+		std::string line;
+		while (std::getline(str, line)) {
+			puts(line.c_str());
+		}
+	}
+
+	void set_sfx_from_cart(std::string& data) {
+		std::istringstream str(data);
+		std::string line;
+		while (std::getline(str, line)) {
+			puts(line.c_str());
+		}
+	}
+
+}  // namespace pico_control

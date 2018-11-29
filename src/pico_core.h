@@ -117,6 +117,8 @@ namespace pico_control {
 	void begin_pause_menu();
 	bool is_pause_menu();
 	void end_pause_menu();
+	uint8_t* get_music_data();
+	uint8_t* get_sfx_data();
 
 }  // namespace pico_control
 

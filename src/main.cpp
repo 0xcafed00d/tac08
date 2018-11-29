@@ -8,7 +8,7 @@
 #include "pico_script.h"
 
 int safe_main(int argc, char** argv) {
-	GFX_Init(config::SCREEN_WIDTH * 2, config::SCREEN_HEIGHT * 2);
+	GFX_Init(config::SCREEN_WIDTH * 4, config::SCREEN_HEIGHT * 4);
 	GFX_CreateBackBuffer(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_control::init(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_data::load_font_data();
