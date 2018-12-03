@@ -1,4 +1,5 @@
 #include "hal_audio.h"
+#include "config.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
@@ -9,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-static const int NUM_CHANNELS = 4;
+static const int NUM_CHANNELS = config::AUDIO_CHANNELS;
 
 struct Wav {
 	SDL_AudioSpec spec;
@@ -79,10 +80,10 @@ void AUDIO_Init() {
 
 	SDL_AudioSpec spec, gotspec;
 	SDL_zero(spec);
-	spec.freq = 22050;
+	spec.freq = config::AUDIO_FREQ;
 	spec.format = AUDIO_S16LSB;
 	spec.channels = 1;
-	spec.samples = 2048;
+	spec.samples = config::AUDIO_BUFFER_SIZE;
 	spec.callback = callback;
 	audioDevice = SDL_OpenAudioDevice(nullptr, 0, &spec, &gotspec, 0);
 	if (audioDevice == 0) {
