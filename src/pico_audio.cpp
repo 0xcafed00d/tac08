@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace pico_private {
-
+#pragma pack(1)
 	struct Note {
 		union {
 			uint8_t b1;
@@ -33,6 +33,8 @@ namespace pico_private {
 		uint8_t loopstart;
 		uint8_t loopend;
 	};
+
+#pragma pack()
 }  // namespace pico_private
 
 namespace pico_control {
@@ -65,30 +67,36 @@ namespace pico_control {
 		std::istringstream str(data);
 		std::string line;
 		pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
+		int linenum = 0;
 		while (std::getline(str, line)) {
+			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
+
 			int o[5] = {0};
-			sscanf(line.c_str(), "%02x%02x%02x%02x", o, o + 1, o + 2, o + 3);
-			sfx_ptr->mode = o[0];
-			sfx_ptr->speed = o[1];
-			sfx_ptr->loopstart = o[2];
-			sfx_ptr->loopend = o[3];
+			if (sscanf(line.c_str(), "%02x%02x%02x%02x", o, o + 1, o + 2, o + 3) == 4) {
+				sfx_ptr->mode = o[0];
+				sfx_ptr->speed = o[1];
+				sfx_ptr->loopstart = o[2];
+				sfx_ptr->loopend = o[3];
 
-			int offset = 8;
-			for (int n = 0; n < 32; n++) {
-				sscanf(line.c_str() + offset, "%01x%01x%01x%01x%01x", o, o + 1, o + 2, o + 3,
-				       o + 4);
+				int offset = 8;
+				for (int n = 0; n < 32; n++) {
+					if (sscanf(line.c_str() + offset, "%01x%01x%01x%01x%01x", o, o + 1, o + 2,
+					           o + 3, o + 4) == 5) {
+						sfx_ptr->notes[n].pitch = (o[0] << 4) | o[1];
+						sfx_ptr->notes[n].volume = o[3];
+						sfx_ptr->notes[n].effect = o[4];
 
-				sfx_ptr->notes[n].pitch = (o[0] << 4) | o[1];
-				sfx_ptr->notes[n].volume = o[3];
-				sfx_ptr->notes[n].effect = o[4];
+						sfx_ptr->notes[n].w1 = o[2];
+						sfx_ptr->notes[n].w2 = o[2] >> 1;
+						sfx_ptr->notes[n].w3 = o[2] >> 2;
+						sfx_ptr->notes[n].c = o[2] >> 3;
 
-				sfx_ptr->notes[n].w1 = o[2];
-				sfx_ptr->notes[n].w2 = o[2] >> 1;
-				sfx_ptr->notes[n].w3 = o[2] >> 2;
-				sfx_ptr->notes[n].c = o[2] >> 3;
-
-				offset += 5;
+						offset += 5;
+					}
+				}
 			}
+			sfx_ptr++;
+			linenum++;
 		}
 	}
 

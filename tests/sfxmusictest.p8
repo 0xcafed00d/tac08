@@ -6,8 +6,8 @@ function _init()
 	cls()
 	printh("Music:")
 	dump_ram(0x3100, 256)
-	--printh("SFX:")
-	--dump_ram(0x3200, 0x1100)
+	printh("SFX:")
+	dump_ram(0x3200, 0x1100)
 end
 
 function _update()
