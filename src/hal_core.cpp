@@ -24,7 +24,7 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_Init Error: ");
 	}
 
-	sdlWin = SDL_CreateWindow("tac08", 100, 100, x, y, SDL_WINDOW_SHOWN);
+	sdlWin = SDL_CreateWindow("tac08", 100, 100, x, y, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (sdlWin == nullptr) {
 		throw_error("SDL_CreateWindow Error: ");
 	}
@@ -112,8 +112,23 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 }
 
 void GFX_Flip() {
-	// SDL_RenderClear(sdlRen);
-	SDL_RenderCopy(sdlRen, sdlTex, NULL, NULL);
+	SDL_RenderClear(sdlRen);
+	int winx, winy;
+	SDL_GetWindowSize(sdlWin, &winx, &winy);
+
+	SDL_Rect r = {0, 0, winx, winy};
+	double xscale = (double)winx / (double)config::SCREEN_WIDTH;
+	double yscale = (double)winy / (double)config::SCREEN_HEIGHT;
+
+	if (xscale * config::SCREEN_HEIGHT > winy) {
+		r.w = yscale * config::SCREEN_WIDTH;
+		r.x = winx / 2 - r.w / 2;
+	} else {
+		r.h = xscale * config::SCREEN_HEIGHT;
+		r.y = winy / 2 - r.h / 2;
+	}
+
+	SDL_RenderCopy(sdlRen, sdlTex, NULL, &r);
 	SDL_RenderPresent(sdlRen);
 }
 
