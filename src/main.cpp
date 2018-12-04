@@ -83,12 +83,14 @@ int safe_main(int argc, char** argv) {
 			updateTime /= systemFrameCount;
 			drawTime /= systemFrameCount;
 			copyBBTime /= systemFrameCount;
-
-			std::cout << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
-			          << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime / 1000.0f
-			          << "ms"
-			          << " bb copy: " << copyBBTime << "us" << std::endl;
-
+			/*
+			            std::cout << "game FPS: " << gameFrameCount << " sys FPS: " <<
+			   systemFrameCount
+			                      << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime
+			   / 1000.0f
+			                      << "ms"
+			                      << " bb copy: " << copyBBTime << "us" << std::endl;
+			*/
 			gameFrameCount = 0;
 			systemFrameCount = 0;
 			updateTime = 0;

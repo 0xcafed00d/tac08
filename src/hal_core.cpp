@@ -111,10 +111,9 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	SDL_UnlockTexture(sdlTex);
 }
 
-void GFX_Flip() {
-	SDL_RenderClear(sdlRen);
+static SDL_Rect getDisplayArea(SDL_Window* win) {
 	int winx, winy;
-	SDL_GetWindowSize(sdlWin, &winx, &winy);
+	SDL_GetWindowSize(win, &winx, &winy);
 
 	SDL_Rect r = {0, 0, winx, winy};
 	double xscale = (double)winx / (double)config::SCREEN_WIDTH;
@@ -127,7 +126,12 @@ void GFX_Flip() {
 		r.h = xscale * config::SCREEN_HEIGHT;
 		r.y = winy / 2 - r.h / 2;
 	}
+	return r;
+}
 
+void GFX_Flip() {
+	SDL_RenderClear(sdlRen);
+	SDL_Rect r = getDisplayArea(sdlWin);
 	SDL_RenderCopy(sdlRen, sdlTex, NULL, &r);
 	SDL_RenderPresent(sdlRen);
 }
@@ -212,9 +216,19 @@ uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start) {
 	return ((now - start) * 1000) / SDL_GetPerformanceFrequency();
 }
 
+static bool scaleMouse(int& x, int& y) {
+	SDL_Point p = {x, y};
+	SDL_Rect r = getDisplayArea(sdlWin);
+
+	return true;
+}
+
 MouseState INP_GetMouseState() {
 	MouseState ms;
+
 	int b = SDL_GetMouseState(&ms.x, &ms.y);
+	bool visible = scaleMouse(ms.x, ms.y);
+
 	ms.buttons = (b & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
 	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 2 : 0;
 	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_MIDDLE)) ? 4 : 0;
