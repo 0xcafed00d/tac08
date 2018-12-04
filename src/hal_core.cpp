@@ -111,7 +111,7 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	SDL_UnlockTexture(sdlTex);
 }
 
-static SDL_Rect getDisplayArea(SDL_Window* win) {
+static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	int winx, winy;
 	SDL_GetWindowSize(win, &winx, &winy);
 
@@ -122,9 +122,13 @@ static SDL_Rect getDisplayArea(SDL_Window* win) {
 	if (xscale * config::SCREEN_HEIGHT > winy) {
 		r.w = yscale * config::SCREEN_WIDTH;
 		r.x = winx / 2 - r.w / 2;
+		if (scale)
+			*scale = yscale;
 	} else {
 		r.h = xscale * config::SCREEN_HEIGHT;
 		r.y = winy / 2 - r.h / 2;
+		if (scale)
+			*scale = xscale;
 	}
 	return r;
 }
@@ -216,25 +220,25 @@ uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start) {
 	return ((now - start) * 1000) / SDL_GetPerformanceFrequency();
 }
 
-static bool scaleMouse(int& x, int& y) {
-	SDL_Point p = {x, y};
-	SDL_Rect r = getDisplayArea(sdlWin);
-
-	return true;
+static void scaleMouse(int& x, int& y) {
+	double scale;
+	SDL_Rect r = getDisplayArea(sdlWin, &scale);
+	x -= r.x;
+	y -= r.y;
+	x = x / scale;
+	y = y / scale;
 }
 
 MouseState INP_GetMouseState() {
 	MouseState ms;
 
 	int b = SDL_GetMouseState(&ms.x, &ms.y);
-	bool visible = scaleMouse(ms.x, ms.y);
+	scaleMouse(ms.x, ms.y);
 
 	ms.buttons = (b & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
 	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 2 : 0;
 	ms.buttons |= (b & SDL_BUTTON(SDL_BUTTON_MIDDLE)) ? 4 : 0;
 
-	ms.x /= 4;  // TODO: scale based on window size
-	ms.y /= 4;
 	ms.wheel = mouseWheel;
 	mouseWheel = 0;
 	return ms;
