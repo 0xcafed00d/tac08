@@ -15,6 +15,7 @@ int safe_main(int argc, char** argv) {
 
 	if (argc > 1) {
 		pico_cart::load(argv[1]);
+		pico_cart::extractCart(pico_cart::getCart());
 	} else {
 		std::cerr << "no cart specified" << std::endl;
 		return 1;

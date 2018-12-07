@@ -660,17 +660,17 @@ static int implx_wrstr(lua_State* ls) {
 	return 0;
 }
 
+// returns nil if sound could not be loaded.
 static int impx_wavload(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto name = luaL_checkstring(ls, 1);
 	try {
 		int id = AUDIO_LoadWav(name);
 		lua_pushnumber(ls, id);
-		return 1;
 	} catch (audio_exception& e) {
-		// TODO: log error
+		lua_pushnil(ls);
 	}
-	return 0;
+	return 1;
 }
 
 static int impx_wavplay(lua_State* ls) {

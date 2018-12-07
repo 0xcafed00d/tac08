@@ -1,3 +1,4 @@
+#include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -9,6 +10,8 @@
 #include "pico_script.h"
 
 #include "utf8-util.h"
+
+namespace fs = std::experimental::filesystem;
 
 std::map<char32_t, uint8_t> emoji = {
     {0x2588, 0x80}, {0x2592, 0x81}, {0x1f431, 0x82}, {0x2b07, 0x83}, {0x2591, 0x84},
@@ -39,6 +42,14 @@ namespace pico_cart {
 		}
 	}
 
+	std::string getCartName() {
+		return "";
+	}
+
+	std::string getCartPath() {
+		return "";
+	}
+
 	std::string convert_emojis(std::string& lua) {
 		std::string res;
 		for (char32_t codepoint : utf8::CodepointIterator(lua)) {
@@ -54,17 +65,27 @@ namespace pico_cart {
 		return res;
 	}
 
+	static sections cart;
+
+	sections& getCart() {
+		return cart;
+	}
+
 	void load(std::string filename) {
 		std::ifstream s(filename.c_str());
 		if (!s) {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
 
-		sections sect;
-		sect["filename"] = filename;
+		fs::path path(filename);
+		cart["filename"] = filename;
+		cart["base_path"] = path.remove_filename();
+		cart["cart_name"] = path.filename().replace_extension("");
 
-		do_load(s, sect);
+		do_load(s, cart);
+	}
 
+	void extractCart(sections& sect) {
 		pico_control::set_sprite_data(sect["__gfx__"], sect["__gff__"]);
 		pico_control::set_map_data(sect["__map__"]);
 		pico_control::set_music_from_cart(sect["__music__"]);

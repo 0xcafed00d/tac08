@@ -1,0 +1,9 @@
+for a=0x3200,0x42ff,68 do
+	poke(a+66,0)
+	poke(a+67,0)
+end
+cstore(0x3100,0x3100,0x1200,"audio.p8")
+
+for a=0x3200,0x42ff,68 do poke(a+66,0) poke(a+67,0) end cstore(0x3100,0x3100,0x1200,"audio.p8")
+
+export "audio%d.wav"
