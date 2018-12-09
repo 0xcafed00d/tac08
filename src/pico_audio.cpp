@@ -148,7 +148,7 @@ namespace pico_api {
 				} else {
 					int speed = sfx_ptr->speed;
 					int lstart = speed * sfx_ptr->loopstart;
-					int lend = speed * sfx_ptr->loopend;  // TODO: correct speed calc
+					int lend = speed * (sfx_ptr->loopend + 1) - 1;
 					AUDIO_Play(wavid, channel, lstart, lend);
 				}
 			}
