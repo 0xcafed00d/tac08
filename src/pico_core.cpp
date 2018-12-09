@@ -1,5 +1,6 @@
 
 #include "pico_core.h"
+#include "pico_cart.h"
 #include "pico_memory.h"
 
 #include <assert.h>
@@ -1082,6 +1083,12 @@ namespace pico_api {
 			case 36:
 				ival = mouseState.wheel;
 				return 2;
+			case 400:
+				sval = pico_cart::getCart()["base_path"];
+				return 1;
+			case 401:
+				sval = pico_cart::getCart()["cart_name"];
+				return 1;
 		}
 
 		ival = 0;

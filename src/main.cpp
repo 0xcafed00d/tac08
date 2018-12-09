@@ -1,7 +1,9 @@
 #include <iostream>
 
 #include "config.h"
+#include "hal_audio.h"
 #include "hal_core.h"
+#include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
 #include "pico_data.h"
@@ -9,6 +11,7 @@
 
 int safe_main(int argc, char** argv) {
 	GFX_Init(config::SCREEN_WIDTH * 4, config::SCREEN_HEIGHT * 4);
+	AUDIO_Init();
 	GFX_CreateBackBuffer(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_control::init(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_data::load_font_data();
@@ -75,6 +78,7 @@ int safe_main(int argc, char** argv) {
 
 			ticks = TIME_GetTime_ms();
 			gameFrameCount++;
+			pico_control::sound_tick();
 			pico_control::frame_end();
 		}
 		systemFrameCount++;

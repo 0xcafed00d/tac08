@@ -1,7 +1,9 @@
 #include "pico_audio.h"
 #include "hal_audio.h"
+#include "pico_cart.h"
 #include "pico_core.h"
 
+#include <map>
 #include <sstream>
 
 namespace pico_private {
@@ -35,6 +37,28 @@ namespace pico_private {
 	};
 
 #pragma pack()
+
+	std::map<int, int> sfx_map;
+
+	void load_wavs() {
+		for (int n = 0; n < 64; n++) {
+			std::string name = pico_cart::getCart()["base_path"] +
+			                   pico_cart::getCart()["cart_name"] + std::to_string(n) + ".wav";
+			try {
+				sfx_map[n] = AUDIO_LoadWav(name.c_str());
+			} catch (audio_exception& e) {
+			}
+		}
+	}
+
+	int get_wavid(int sfx_id) {
+		auto i = sfx_map.find(sfx_id);
+		if (i != sfx_map.end()) {
+			return i->second;
+		}
+		return -1;
+	}
+
 }  // namespace pico_private
 
 namespace pico_control {
@@ -100,12 +124,25 @@ namespace pico_control {
 		}
 	}
 
+	void sound_tick() {
+		if (pico_private::sfx_map.empty()) {
+			pico_private::load_wavs();
+		}
+	}
+
 }  // namespace pico_control
+
 namespace pico_api {
 
 	void sfx(int n) {
 	}
 	void sfx(int n, int channel) {
+		if (n >= 0 && n <= 63) {
+			int wavid = pico_private::get_wavid(n);
+			if (wavid >= 0) {
+				AUDIO_Play(wavid, channel, false);
+			}
+		}
 	}
 	void sfx(int n, int channel, int offset) {
 	}
