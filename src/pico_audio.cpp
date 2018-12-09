@@ -140,8 +140,24 @@ namespace pico_api {
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
 			if (wavid >= 0) {
-				AUDIO_Play(wavid, channel, false);
+				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
+				sfx_ptr += wavid;
+
+				if (sfx_ptr->loopstart == 0 && sfx_ptr->loopend == 0) {
+					AUDIO_Play(wavid, channel, false);
+				} else {
+					int speed = sfx_ptr->speed;
+					int lstart = speed * sfx_ptr->loopstart;
+					int lend = speed * sfx_ptr->loopend;  // TODO: correct speed calc
+					AUDIO_Play(wavid, channel, lstart, lend);
+				}
 			}
+		}
+		if (n == -1) {
+			AUDIO_Stop(channel);
+		}
+		if (n == -2) {
+			AUDIO_StopLoop(channel);
 		}
 	}
 	void sfx(int n, int channel, int offset) {

@@ -25,7 +25,7 @@ static void throw_error(int err) {
 	}
 }
 
-#define API_TRACE
+//#define API_TRACE
 
 #ifdef API_TRACE
 
