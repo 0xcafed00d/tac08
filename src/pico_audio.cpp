@@ -41,12 +41,15 @@ namespace pico_private {
 	std::map<int, int> sfx_map;
 
 	void load_wavs() {
+		sfx_map[-1] = -1;
 		for (int n = 0; n < 64; n++) {
 			std::string name = pico_cart::getCart()["base_path"] +
 			                   pico_cart::getCart()["cart_name"] + std::to_string(n) + ".wav";
 			try {
-				sfx_map[n] = AUDIO_LoadWav(name.c_str());
+				int id = AUDIO_LoadWav(name.c_str());
+				sfx_map[n] = id;
 			} catch (audio_exception& e) {
+				// printf("failed to load wav: %s\n", e.what());
 			}
 		}
 	}
@@ -139,6 +142,8 @@ namespace pico_api {
 	void sfx(int n, int channel) {
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
+			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
+			printf(">>>> %d -> %d <<<< \n", n, wavid);
 			if (wavid >= 0) {
 				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
 				sfx_ptr += wavid;
