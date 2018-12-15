@@ -244,12 +244,8 @@ MouseState INP_GetMouseState() {
 	return ms;
 }
 
-std::string FILE_LoadGameState(std::string name) {
-	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
-	name = std::string(path) + name;
-	SDL_free((void*)path);
+std::string FILE_LoadFile(std::string name) {
 	std::string data;
-
 	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "r");
 	if (file) {
 		size_t sz = SDL_RWsize(file);
@@ -261,6 +257,14 @@ std::string FILE_LoadGameState(std::string name) {
 	}
 
 	return data;
+}
+
+std::string FILE_LoadGameState(std::string name) {
+	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
+	name = std::string(path) + name;
+	SDL_free((void*)path);
+
+	return FILE_LoadFile(name);
 }
 
 void FILE_SaveGameState(std::string name, const std::string& data) {

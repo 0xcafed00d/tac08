@@ -143,7 +143,7 @@ namespace pico_api {
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
 			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
-			printf(">>>> %d -> %d <<<< \n", n, wavid);
+			// printf(">>>> %d -> %d <<<< \n", n, wavid);
 			if (wavid >= 0) {
 				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
 				sfx_ptr += wavid;

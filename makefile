@@ -50,7 +50,8 @@ bin/utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
-	rm bin/*.o && rm $(EXE)
+	rm bin/*.o || true 
+	rm $(EXE) || true
 	
 run: all
 	./$(EXE) ../pico-8/gridbug/gridbug.p8 

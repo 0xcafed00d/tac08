@@ -1,9 +1,10 @@
 #include <experimental/filesystem>
 #include <fstream>
-#include <iostream>
 #include <map>
 #include <set>
+#include <sstream>
 
+#include "hal_core.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
@@ -35,7 +36,6 @@ namespace pico_cart {
 
 			if (valid_sections.find(line) != valid_sections.end()) {
 				cur_sect = line;
-				std::cout << line << std::endl;
 			} else {
 				sect[cur_sect] += line + "\n";
 			}
@@ -72,8 +72,8 @@ namespace pico_cart {
 	}
 
 	void load(std::string filename) {
-		std::ifstream s(filename.c_str());
-		if (!s) {
+		std::string data = FILE_LoadFile(filename);
+		if (data.size() == 0) {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
 
@@ -82,6 +82,7 @@ namespace pico_cart {
 		cart["base_path"] = path.remove_filename();
 		cart["cart_name"] = path.filename().replace_extension("");
 
+		std::istringstream s(data);
 		do_load(s, cart);
 	}
 
