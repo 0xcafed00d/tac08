@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include <iostream>
 
 #include "config.h"
@@ -16,12 +17,17 @@ int safe_main(int argc, char** argv) {
 	pico_control::init(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
 	pico_data::load_font_data();
 
-	if (argc > 1) {
-		pico_cart::load(argv[1]);
+	if (argc == 1) {
+		pico_cart::load("cart.p8");
 		pico_cart::extractCart(pico_cart::getCart());
 	} else {
-		std::cerr << "no cart specified" << std::endl;
-		return 1;
+		if (argc > 1) {
+			pico_cart::load(argv[1]);
+			pico_cart::extractCart(pico_cart::getCart());
+		} else {
+			std::cerr << "no cart specified" << std::endl;
+			return 1;
+		}
 	}
 
 	bool init = false;

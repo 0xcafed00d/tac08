@@ -1,4 +1,4 @@
-#include <experimental/filesystem>
+//#include <experimental/filesystem>
 #include <fstream>
 #include <map>
 #include <set>
@@ -12,7 +12,7 @@
 
 #include "utf8-util.h"
 
-namespace fs = std::experimental::filesystem;
+// namespace fs = std::experimental::filesystem;
 
 std::map<char32_t, uint8_t> emoji = {
     {0x2588, 0x80}, {0x2592, 0x81}, {0x1f431, 0x82}, {0x2b07, 0x83}, {0x2591, 0x84},
@@ -77,10 +77,12 @@ namespace pico_cart {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
 
-		fs::path path(filename);
-		cart["filename"] = filename;
-		cart["base_path"] = path.remove_filename();
-		cart["cart_name"] = path.filename().replace_extension("");
+		/*
+		        fs::path path(filename);
+		        cart["filename"] = filename;
+		        cart["base_path"] = path.remove_filename();
+		        cart["cart_name"] = path.filename().replace_extension("");
+		*/
 
 		std::istringstream s(data);
 		do_load(s, cart);
