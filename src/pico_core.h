@@ -100,6 +100,11 @@ namespace pico_apix {
 
 	void wrstr(const std::string& name, const std::string& s);
 	std::string rdstr(const std::string& name);
+
+	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
+	void resetpal();
+	void resetpal(uint8_t i);
+
 }  // namespace pico_apix
 
 namespace pico_control {

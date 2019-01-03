@@ -661,7 +661,7 @@ static int implx_wrstr(lua_State* ls) {
 }
 
 // returns nil if sound could not be loaded.
-static int impx_wavload(lua_State* ls) {
+static int implx_wavload(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto name = luaL_checkstring(ls, 1);
 	try {
@@ -673,7 +673,7 @@ static int impx_wavload(lua_State* ls) {
 	return 1;
 }
 
-static int impx_wavplay(lua_State* ls) {
+static int implx_wavplay(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto id = luaL_checknumber(ls, 1);
 	auto chan = luaL_checknumber(ls, 2);
@@ -688,26 +688,48 @@ static int impx_wavplay(lua_State* ls) {
 	return 0;
 }
 
-static int impx_wavstop(lua_State* ls) {
+static int implx_wavstop(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto chan = luaL_checknumber(ls, 1);
 	AUDIO_Stop(chan);
 	return 0;
 }
 
-static int impx_wavstoploop(lua_State* ls) {
+static int implx_wavstoploop(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto chan = luaL_checknumber(ls, 1);
 	AUDIO_StopLoop(chan);
 	return 0;
 }
 
-static int impx_wavplaying(lua_State* ls) {
+static int implx_wavplaying(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto chan = luaL_checknumber(ls, 1);
 	bool b = AUDIO_isPlaying(chan);
 	lua_pushboolean(ls, b);
 	return 1;
+}
+
+static int implx_setpal(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto i = luaL_checknumber(ls, 1);
+	auto r = luaL_checknumber(ls, 2);
+	auto g = luaL_checknumber(ls, 3);
+	auto b = luaL_checknumber(ls, 4);
+	pico_apix::setpal(i, r, g, b);
+	return 0;
+}
+
+static int implx_resetpal(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	if (lua_gettop(ls) == 1) {
+		auto i = luaL_checknumber(ls, 1);
+		pico_apix::resetpal(i);
+	} else {
+		pico_apix::resetpal();
+	}
+
+	return 0;
 }
 
 // ------------------------------------------------------------------
@@ -758,11 +780,13 @@ static void register_cfuncs() {
 	register_ext_cfunc("rdclip", implx_rdclip);
 	register_ext_cfunc("wrstr", implx_wrstr);
 	register_ext_cfunc("rdstr", implx_rdstr);
-	register_ext_cfunc("wavload", impx_wavload);
-	register_ext_cfunc("wavplay", impx_wavplay);
-	register_ext_cfunc("wavstop", impx_wavstop);
-	register_ext_cfunc("wavstoploop", impx_wavstoploop);
-	register_ext_cfunc("wavplaying", impx_wavplaying);
+	register_ext_cfunc("wavload", implx_wavload);
+	register_ext_cfunc("wavplay", implx_wavplay);
+	register_ext_cfunc("wavstop", implx_wavstop);
+	register_ext_cfunc("wavstoploop", implx_wavstoploop);
+	register_ext_cfunc("wavplaying", implx_wavplaying);
+	register_ext_cfunc("setpal", implx_setpal);
+	register_ext_cfunc("resetpal", implx_resetpal);
 }
 
 namespace pico_script {

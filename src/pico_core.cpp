@@ -1114,4 +1114,13 @@ namespace pico_apix {
 		return FILE_LoadGameState(cartDataName + "_" + name);
 	}
 
+	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
+	}
+
+	void resetpal() {
+	}
+
+	void resetpal(uint8_t i) {
+	}
+
 }  // namespace pico_apix
