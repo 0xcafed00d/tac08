@@ -15,6 +15,8 @@ void GFX_End();
 
 void GFX_CreateBackBuffer(int x, int y);
 void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h);
+void GFX_CreateBackBuffer(int x, int y);
+void GFX_SetBackBufferSize(int x, int y);
 
 void GFX_Flip();
 

@@ -100,6 +100,11 @@ void GFX_CreateBackBuffer(int x, int y) {
 	GFX_RestorePalette();
 }
 
+void GFX_SetBackBufferSize(int x, int y) {
+	screenWidth = x;
+	screenHeight = y;
+}
+
 void GFX_RestorePalette() {
 	palette = original_palette;
 }
