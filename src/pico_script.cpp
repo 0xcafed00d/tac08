@@ -732,6 +732,14 @@ static int implx_resetpal(lua_State* ls) {
 	return 0;
 }
 
+static int implx_screen(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto w = luaL_checknumber(ls, 1);
+	auto h = luaL_checknumber(ls, 2);
+	pico_apix::screen(w, h);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -787,6 +795,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("wavplaying", implx_wavplaying);
 	register_ext_cfunc("setpal", implx_setpal);
 	register_ext_cfunc("resetpal", implx_resetpal);
+	register_ext_cfunc("screen", implx_screen);
 }
 
 namespace pico_script {

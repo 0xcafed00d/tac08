@@ -1,5 +1,6 @@
 
 #include "pico_core.h"
+#include "config.h"
 #include "pico_cart.h"
 #include "pico_memory.h"
 
@@ -12,6 +13,8 @@ static pico_api::colour_t* backbuffer_store = nullptr;
 static pico_api::colour_t* backbuffer = nullptr;
 static pico_api::colour_t* backbuffer_guard1 = nullptr;
 static pico_api::colour_t* backbuffer_guard2 = nullptr;
+
+static const int guard_size = 256 * 16;
 
 static int buffer_size_x = 0;
 static int buffer_size_y = 0;
@@ -153,14 +156,14 @@ namespace pico_private {
 	using namespace pico_api;
 
 	void init_guards() {
-		for (int i = 0; i < buffer_size_x * buffer_size_y / 2; i++) {
+		for (int i = 0; i < guard_size; i++) {
 			backbuffer_guard1[i] = i;
 			backbuffer_guard2[i] = i;
 		}
 	}
 
 	void check_guards() {
-		for (int i = 0; i < buffer_size_x * buffer_size_y / 2; i++) {
+		for (int i = 0; i < guard_size; i++) {
 			assert(backbuffer_guard1[i] == (i & 0xff));
 			assert(backbuffer_guard2[i] == (i & 0xff));
 		}
@@ -532,14 +535,27 @@ namespace pico_private {
 }  // namespace pico_private
 
 namespace pico_control {
-	void init(int x, int y) {
+
+	void init_backbuffer_mem(int x, int y) {
+		x = pico_private::limit(x, config::MIN_SCREEN_WIDTH, config::MAX_SCREEN_WIDTH);
+		y = pico_private::limit(y, config::MIN_SCREEN_HEIGHT, config::MAX_SCREEN_HEIGHT);
+
 		buffer_size_x = x;
 		buffer_size_y = y;
 
-		backbuffer_store = new uint8_t[x * y * 2];
-		backbuffer = backbuffer_store + x * y / 2;
+		backbuffer = backbuffer_store + guard_size;
 		backbuffer_guard1 = backbuffer_store;
-		backbuffer_guard2 = backbuffer_store + x * y / 2 * 3;
+		backbuffer_guard2 = backbuffer + x * y;
+
+		pico_private::init_guards();
+		pico_api::clip();
+	}
+
+	void init(int x, int y) {
+		backbuffer_store =
+		    new uint8_t[config::MAX_SCREEN_WIDTH * config::MAX_SCREEN_HEIGHT + guard_size * 2];
+		init_backbuffer_mem(x, y);
+		mem_screen.setData(backbuffer);
 
 		cartDataName = "";
 		pico_private::restore_palette();
@@ -555,9 +571,6 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_scratch_data);
 		ram.addMemoryArea(&mem_music_data);
 		ram.addMemoryArea(&mem_sfx_data);
-
-		pico_private::init_guards();
-		pico_api::clip();
 	}
 
 	void frame_start() {
@@ -1124,6 +1137,10 @@ namespace pico_apix {
 
 	void resetpal(uint8_t i) {
 		GFX_RestorePaletteIndex(i);
+	}
+
+	void screen(uint8_t w, uint8_t h) {
+		pico_control::init_backbuffer_mem(w, h);
 	}
 
 }  // namespace pico_apix

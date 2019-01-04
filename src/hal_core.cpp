@@ -15,6 +15,8 @@ static SDL_PixelFormat* sdlPixFmt = nullptr;
 static SDL_Joystick* joystick = nullptr;
 static std::array<pixel_t, 256> original_palette;
 static std::array<pixel_t, 256> palette;
+static int screenWidth = config::INIT_SCREEN_WIDTH;
+static int screenHeight = config::INIT_SCREEN_HEIGHT;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -68,7 +70,11 @@ pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void GFX_CreateBackBuffer(int x, int y) {
-	sdlTex = SDL_CreateTexture(sdlRen, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, x, y);
+	screenWidth = x;
+	screenHeight = y;
+
+	sdlTex = SDL_CreateTexture(sdlRen, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING,
+	                           config::MAX_SCREEN_WIDTH, config::MAX_SCREEN_HEIGHT);
 	if (sdlTex == nullptr) {
 		throw_error("SDL_CreateTexture Error: ");
 	}
@@ -132,16 +138,16 @@ static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	SDL_GetWindowSize(win, &winx, &winy);
 
 	SDL_Rect r = {0, 0, winx, winy};
-	double xscale = (double)winx / (double)config::SCREEN_WIDTH;
-	double yscale = (double)winy / (double)config::SCREEN_HEIGHT;
+	double xscale = (double)winx / (double)screenWidth;
+	double yscale = (double)winy / (double)screenHeight;
 
-	if (xscale * config::SCREEN_HEIGHT > winy) {
-		r.w = yscale * config::SCREEN_WIDTH;
+	if (xscale * screenHeight > winy) {
+		r.w = yscale * screenWidth;
 		r.x = winx / 2 - r.w / 2;
 		if (scale)
 			*scale = yscale;
 	} else {
-		r.h = xscale * config::SCREEN_HEIGHT;
+		r.h = xscale * screenHeight;
 		r.y = winy / 2 - r.h / 2;
 		if (scale)
 			*scale = xscale;
@@ -151,8 +157,9 @@ static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 
 void GFX_Flip() {
 	SDL_RenderClear(sdlRen);
-	SDL_Rect r = getDisplayArea(sdlWin);
-	SDL_RenderCopy(sdlRen, sdlTex, NULL, &r);
+	SDL_Rect dr = getDisplayArea(sdlWin);
+	SDL_Rect sr = {0, 0, screenWidth, screenHeight};
+	SDL_RenderCopy(sdlRen, sdlTex, &sr, &dr);
 	SDL_RenderPresent(sdlRen);
 }
 

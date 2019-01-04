@@ -104,6 +104,7 @@ namespace pico_apix {
 	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
 	void resetpal();
 	void resetpal(uint8_t i);
+	void screen(uint8_t w, uint8_t h);
 
 }  // namespace pico_apix
 

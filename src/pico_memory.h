@@ -44,6 +44,11 @@ namespace pico_ram {
 		MemoryArea(uint8_t* data, uint16_t address, uint16_t size)
 		    : m_data(data), m_address(address), m_size(size) {
 		}
+
+		void setData(uint8_t* data) {
+			m_data = data;
+		}
+
 		virtual uint16_t address() const {
 			return m_address;
 		}

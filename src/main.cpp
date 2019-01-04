@@ -11,10 +11,10 @@
 #include "pico_script.h"
 
 int safe_main(int argc, char** argv) {
-	GFX_Init(config::SCREEN_WIDTH * 4, config::SCREEN_HEIGHT * 4);
+	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
 	AUDIO_Init();
-	GFX_CreateBackBuffer(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
-	pico_control::init(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
+	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
+	pico_control::init(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 	pico_data::load_font_data();
 
 	if (argc == 1) {
