@@ -13,12 +13,14 @@ typedef uint16_t pixel_t;
 void GFX_Init(int x, int y);
 void GFX_End();
 
-pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b);
-
 void GFX_CreateBackBuffer(int x, int y);
 void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h);
 
 void GFX_Flip();
+
+void GFX_RestorePalette();
+void GFX_RestorePaletteIndex(uint8_t i);
+void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
 
 std::string FILE_LoadFile(std::string name);
 std::string FILE_LoadGameState(std::string name);

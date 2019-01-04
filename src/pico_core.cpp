@@ -1115,12 +1115,15 @@ namespace pico_apix {
 	}
 
 	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
+		GFX_SetPaletteIndex(i, r, g, b);
 	}
 
 	void resetpal() {
+		GFX_RestorePalette();
 	}
 
 	void resetpal(uint8_t i) {
+		GFX_RestorePaletteIndex(i);
 	}
 
 }  // namespace pico_apix

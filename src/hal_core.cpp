@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
+#include <array>
 #include <iostream>
 #include <string>
 
@@ -12,7 +13,8 @@ static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
 static SDL_PixelFormat* sdlPixFmt = nullptr;
 static SDL_Joystick* joystick = nullptr;
-static pixel_t palette[256] = {0};
+static std::array<pixel_t, 256> original_palette;
+static std::array<pixel_t, 256> palette;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -61,6 +63,10 @@ void GFX_End() {
 	SDL_Quit();
 }
 
+pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
+	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
+}
+
 void GFX_CreateBackBuffer(int x, int y) {
 	sdlTex = SDL_CreateTexture(sdlRen, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, x, y);
 	if (sdlTex == nullptr) {
@@ -68,26 +74,36 @@ void GFX_CreateBackBuffer(int x, int y) {
 	}
 
 	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
-	palette[0] = GFX_GetPixel(0, 0, 0);
-	palette[1] = GFX_GetPixel(29, 43, 83);
-	palette[2] = GFX_GetPixel(126, 37, 83);
-	palette[3] = GFX_GetPixel(0, 135, 81);
-	palette[4] = GFX_GetPixel(171, 82, 54);
-	palette[5] = GFX_GetPixel(95, 87, 79);
-	palette[6] = GFX_GetPixel(194, 195, 199);
-	palette[7] = GFX_GetPixel(255, 241, 232);
-	palette[8] = GFX_GetPixel(255, 0, 77);
-	palette[9] = GFX_GetPixel(255, 163, 0);
-	palette[10] = GFX_GetPixel(255, 240, 36);
-	palette[11] = GFX_GetPixel(0, 231, 86);
-	palette[12] = GFX_GetPixel(41, 173, 255);
-	palette[13] = GFX_GetPixel(131, 118, 156);
-	palette[14] = GFX_GetPixel(255, 119, 168);
-	palette[15] = GFX_GetPixel(255, 204, 170);
+	original_palette[0] = GFX_GetPixel(0, 0, 0);
+	original_palette[1] = GFX_GetPixel(29, 43, 83);
+	original_palette[2] = GFX_GetPixel(126, 37, 83);
+	original_palette[3] = GFX_GetPixel(0, 135, 81);
+	original_palette[4] = GFX_GetPixel(171, 82, 54);
+	original_palette[5] = GFX_GetPixel(95, 87, 79);
+	original_palette[6] = GFX_GetPixel(194, 195, 199);
+	original_palette[7] = GFX_GetPixel(255, 241, 232);
+	original_palette[8] = GFX_GetPixel(255, 0, 77);
+	original_palette[9] = GFX_GetPixel(255, 163, 0);
+	original_palette[10] = GFX_GetPixel(255, 240, 36);
+	original_palette[11] = GFX_GetPixel(0, 231, 86);
+	original_palette[12] = GFX_GetPixel(41, 173, 255);
+	original_palette[13] = GFX_GetPixel(131, 118, 156);
+	original_palette[14] = GFX_GetPixel(255, 119, 168);
+	original_palette[15] = GFX_GetPixel(255, 204, 170);
+
+	GFX_RestorePalette();
 }
 
-pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
-	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
+void GFX_RestorePalette() {
+	palette = original_palette;
+}
+
+void GFX_RestorePaletteIndex(uint8_t i) {
+	palette[i] = original_palette[i];
+}
+
+void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
+	palette[i] = GFX_GetPixel(r, g, b);
 }
 
 void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {

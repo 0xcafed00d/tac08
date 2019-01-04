@@ -54,5 +54,5 @@ clean:
 	rm $(EXE) || true
 	
 run: all
-	./$(EXE) ../pico-8/gridbug/gridbug.p8 
+	./$(EXE) ../../pico-8/gridbug/gridbug.p8 
 
