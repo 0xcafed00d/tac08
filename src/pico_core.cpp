@@ -1139,7 +1139,7 @@ namespace pico_apix {
 		GFX_RestorePaletteIndex(i);
 	}
 
-	void screen(uint8_t w, uint8_t h) {
+	void screen(uint16_t w, uint16_t h) {
 		pico_control::init_backbuffer_mem(w, h);
 	}
 
