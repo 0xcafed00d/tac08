@@ -1162,4 +1162,8 @@ namespace pico_apix {
 		pico_control::init_backbuffer_mem(w, h);
 	}
 
+	void xpal(bool enable) {
+		currentGraphicsState->extendedPalette = enable;
+	}
+
 }  // namespace pico_apix

@@ -10,7 +10,7 @@ UTF8_UTIL_BASE = src/utf8-util/utf8-util
 
 CXXFLAGS = -DDEBUG -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
 # CXXFLAGS = -O3 -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
-LDFLAGS = $(SDL_LIB) $(LUA_LIB) -lstdc++fs 
+LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
 EXE = tac08
 
 all: $(EXE)
