@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <string.h>
 #include <algorithm>
+#include <array>
 #include <iostream>
 
 static pico_api::colour_t* backbuffer_store = nullptr;
@@ -83,8 +84,9 @@ struct GraphicsState {
 	int clip_y2 = 128;
 	int camera_x = 0;
 	int camera_y = 0;
-	pico_api::colour_t palette_map[16];
-	bool transparent[16];
+	std::array<pico_api::colour_t, 256> palette_map;
+	std::array<bool, 256> transparent;
+	bool extendedPalette = false;
 };
 
 static GraphicsState graphicsState;
@@ -170,13 +172,13 @@ namespace pico_private {
 	}
 
 	static void restore_palette() {
-		for (colour_t n = 0; n < 16; n++) {
+		for (size_t n = 0; n < currentGraphicsState->palette_map.size(); n++) {
 			currentGraphicsState->palette_map[n] = n;
 		}
 	}
 
 	static void restore_transparency() {
-		for (size_t n = 0; n < 16; n++) {
+		for (size_t n = 0; n < currentGraphicsState->palette_map.size(); n++) {
 			currentGraphicsState->transparent[n] = false;
 		}
 		currentGraphicsState->transparent[0] = true;
@@ -532,6 +534,21 @@ namespace pico_private {
 		}
 	}
 
+	inline colour_t fgcolor(uint16_t c) {
+		if (currentGraphicsState->extendedPalette) {
+			return c & 0xff;
+		} else {
+			return c & 0xf;
+		}
+	}
+
+	inline colour_t bgcolor(uint16_t c) {
+		if (currentGraphicsState->extendedPalette) {
+			return c >> 8;
+		} else {
+			return (c >> 4) & 0xf;
+		}
+	}
 }  // namespace pico_private
 
 namespace pico_control {
@@ -649,9 +666,9 @@ namespace pico_control {
 
 namespace pico_api {
 
-	void color(uint8_t c) {
-		currentGraphicsState->fg = c & 0xf;
-		currentGraphicsState->bg = c >> 4;
+	void color(uint16_t c) {
+		currentGraphicsState->fg = pico_private::fgcolor(c);
+		currentGraphicsState->bg = pico_private::bgcolor(c >> 8);
 	}
 
 	void cls(colour_t c) {
@@ -804,7 +821,7 @@ namespace pico_api {
 		pset(x, y, currentGraphicsState->fg);
 	}
 
-	void pset(int x, int y, colour_t c) {
+	void pset(int x, int y, uint16_t c) {
 		color(c);
 		pico_private::apply_camera(x, y);
 		pico_private::pset(x, y);
@@ -821,7 +838,7 @@ namespace pico_api {
 		rect(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void rect(int x0, int y0, int x1, int y1, colour_t c) {
+	void rect(int x0, int y0, int x1, int y1, uint16_t c) {
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
 		color(c);
@@ -837,7 +854,9 @@ namespace pico_api {
 		rectfill(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void rectfill(int x0, int y0, int x1, int y1, colour_t c) {
+	void rectfill(int x0, int y0, int x1, int y1, uint16_t c) {
+		using namespace pico_private;
+
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
 		color(c);
@@ -846,8 +865,8 @@ namespace pico_api {
 
 		pico_private::clip_rect(x0, y0, x1, y1);
 		colour_t* pix = backbuffer + y0 * buffer_size_x;
-		colour_t p1 = currentGraphicsState->palette_map[c & 0x0f];
-		colour_t p2 = currentGraphicsState->palette_map[(c >> 4) & 0x0f];
+		colour_t p1 = currentGraphicsState->palette_map[fgcolor(c)];
+		colour_t p2 = currentGraphicsState->palette_map[bgcolor(c)];
 
 		uint16_t pat = currentGraphicsState->pattern;
 
@@ -863,7 +882,7 @@ namespace pico_api {
 		circ(x, y, r, currentGraphicsState->fg);
 	}
 
-	void circ(int xm, int ym, int r, colour_t c) {
+	void circ(int xm, int ym, int r, uint16_t c) {
 		pico_private::apply_camera(xm, ym);
 		color(c);
 		if (r >= 0) {
@@ -886,7 +905,7 @@ namespace pico_api {
 		circfill(x, y, r, currentGraphicsState->fg);
 	}
 
-	void circfill(int xm, int ym, int r, colour_t c) {
+	void circfill(int xm, int ym, int r, uint16_t c) {
 		pico_private::apply_camera(xm, ym);
 		color(c);
 		if (r == 0) {
@@ -913,7 +932,7 @@ namespace pico_api {
 		line(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void line(int x0, int y0, int x1, int y1, colour_t c) {
+	void line(int x0, int y0, int x1, int y1, uint16_t c) {
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
 		color(c);
@@ -998,14 +1017,14 @@ namespace pico_api {
 		print(str, x, y, currentGraphicsState->fg);
 	}
 
-	void print(std::string str, int x, int y, colour_t c) {
+	void print(std::string str, int x, int y, uint16_t c) {
 		pico_private::apply_camera(x, y);
 		color(c);
 
 		colour_t old = currentGraphicsState->palette_map[7];
 		bool oldt = currentGraphicsState->transparent[0];
 
-		currentGraphicsState->palette_map[7] = c & 0xf;
+		currentGraphicsState->palette_map[7] = currentGraphicsState->fg;
 		currentGraphicsState->transparent[0] = true;
 
 		currentGraphicsState->text_x = x;

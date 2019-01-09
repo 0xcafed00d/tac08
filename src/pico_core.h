@@ -26,7 +26,7 @@ namespace pico_api {
 	void dset(uint16_t a, uint32_t v);
 	void cartdata(std::string name);
 
-	void color(uint8_t c);
+	void color(uint16_t c);
 
 	uint8_t fget(int n);
 	bool fget(int n, int bit);
@@ -46,21 +46,21 @@ namespace pico_api {
 	void sset(int x, int y, colour_t c);
 
 	void pset(int x, int y);
-	void pset(int x, int y, colour_t colour);
+	void pset(int x, int y, uint16_t colour);
 	colour_t pget(int x, int y);
 
 	void rect(int x0, int y0, int x1, int y1);
-	void rect(int x0, int y0, int x1, int y1, colour_t c);
+	void rect(int x0, int y0, int x1, int y1, uint16_t c);
 	void rectfill(int x0, int y0, int x1, int y1);
-	void rectfill(int x0, int y0, int x1, int y1, colour_t c);
+	void rectfill(int x0, int y0, int x1, int y1, uint16_t c);
 
 	void circ(int x, int y, int r);
-	void circ(int x, int y, int r, colour_t c);
+	void circ(int x, int y, int r, uint16_t c);
 	void circfill(int x, int y, int r);
-	void circfill(int x, int y, int r, colour_t c);
+	void circfill(int x, int y, int r, uint16_t c);
 
 	void line(int x0, int y0, int x1, int y1);
-	void line(int x0, int y0, int x1, int y1, colour_t c);
+	void line(int x0, int y0, int x1, int y1, uint16_t c);
 
 	void map(int cell_x, int cell_y);
 	void map(int cell_x, int cell_y, int scr_x, int scr_y);
@@ -72,7 +72,7 @@ namespace pico_api {
 	void cursor(int x, int y);
 	void print(std::string str);
 	void print(std::string str, int x, int y);
-	void print(std::string str, int x, int y, colour_t c);
+	void print(std::string str, int x, int y, uint16_t c);
 
 	int btn();
 	int btn(int n, int player = 0);
