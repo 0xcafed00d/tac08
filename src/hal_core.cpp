@@ -13,10 +13,16 @@ static SDL_Renderer* sdlRen = nullptr;
 static SDL_Texture* sdlTex = nullptr;
 static SDL_PixelFormat* sdlPixFmt = nullptr;
 static SDL_Joystick* joystick = nullptr;
-static std::array<pixel_t, 256> original_palette;
-static std::array<pixel_t, 256> palette;
 static int screenWidth = config::INIT_SCREEN_WIDTH;
 static int screenHeight = config::INIT_SCREEN_HEIGHT;
+
+static std::array<pixel_t, 256> original_palette;
+static std::array<pixel_t, 256> palette;
+
+const size_t palette_sz = 16;
+uint32_t palette_rgb[palette_sz] = {0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f,
+                                    0xc2c3c7, 0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436,
+                                    0x29adff, 0x83769c, 0xff77a8, 0xffccaa};
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -80,22 +86,10 @@ void GFX_CreateBackBuffer(int x, int y) {
 	}
 
 	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
-	original_palette[0] = GFX_GetPixel(0, 0, 0);
-	original_palette[1] = GFX_GetPixel(29, 43, 83);
-	original_palette[2] = GFX_GetPixel(126, 37, 83);
-	original_palette[3] = GFX_GetPixel(0, 135, 81);
-	original_palette[4] = GFX_GetPixel(171, 82, 54);
-	original_palette[5] = GFX_GetPixel(95, 87, 79);
-	original_palette[6] = GFX_GetPixel(194, 195, 199);
-	original_palette[7] = GFX_GetPixel(255, 241, 232);
-	original_palette[8] = GFX_GetPixel(255, 0, 77);
-	original_palette[9] = GFX_GetPixel(255, 163, 0);
-	original_palette[10] = GFX_GetPixel(255, 240, 36);
-	original_palette[11] = GFX_GetPixel(0, 231, 86);
-	original_palette[12] = GFX_GetPixel(41, 173, 255);
-	original_palette[13] = GFX_GetPixel(131, 118, 156);
-	original_palette[14] = GFX_GetPixel(255, 119, 168);
-	original_palette[15] = GFX_GetPixel(255, 204, 170);
+	for (size_t i = 0; i < palette_sz; i++) {
+		auto pal = palette_rgb[i];
+		original_palette[i] = GFX_GetPixel((pal >> 16) & 0xff, (pal >> 8) & 0xff, pal & 0xff);
+	}
 
 	GFX_RestorePalette();
 }
