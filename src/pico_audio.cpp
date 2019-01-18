@@ -138,13 +138,13 @@ namespace pico_control {
 namespace pico_api {
 
 	void sfx(int n) {
-		int chan = AUDIO_AvailableChan(true);
-		if (chan >= 0) {
-			sfx(n, chan);
-		}
+		sfx(n, -1);
 	}
 
 	void sfx(int n, int channel) {
+		if (channel == -1) {
+			channel = AUDIO_AvailableChan(true);
+		}
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
 			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
@@ -171,6 +171,10 @@ namespace pico_api {
 		}
 	}
 	void sfx(int n, int channel, int offset) {
+		if (offset == 0) {
+			sfx(n, channel);
+		} else {
+		}
 	}
 	void sfx(int n, int channel, int offset, int length) {
 	}

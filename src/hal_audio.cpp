@@ -159,6 +159,23 @@ static uint32_t pos2sample(int pos, int frequency) {
 	return (uint32_t)(pos * ((double)frequency / 128.0));
 }
 
+void AUDIO_Play(int id, int chan, int start, int end, bool loop) {
+	Channel ci;
+	ci.wav = &loadedWavs[id];
+	ci.loop = loop;
+	ci.playing = true;
+
+	ci.start = std::min(pos2sample(start, ci.wav->spec.freq), ci.wav->numSamples);
+	ci.end = std::min(pos2sample(end, ci.wav->spec.freq), ci.wav->numSamples);
+	ci.loop_start = ci.start;
+	ci.loop_end = ci.end;
+	ci.current = ci.start;
+
+	SDL_LockAudioDevice(audioDevice);
+	channels[chan] = ci;
+	SDL_UnlockAudioDevice(audioDevice);
+}
+
 void AUDIO_Play(int id, int chan, int loop_start, int loop_end) {
 	Channel ci;
 	ci.wav = &loadedWavs[id];
