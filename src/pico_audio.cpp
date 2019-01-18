@@ -147,8 +147,6 @@ namespace pico_api {
 		}
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
-			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
-			// printf(">>>> %d -> %d <<<< \n", n, wavid);
 			if (wavid >= 0) {
 				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
 				sfx_ptr += wavid;
@@ -170,13 +168,30 @@ namespace pico_api {
 			AUDIO_StopLoop(channel);
 		}
 	}
+
 	void sfx(int n, int channel, int offset) {
+		sfx(n, channel, offset, 32);
+	}
+
+	void sfx(int n, int channel, int offset, int length) {
 		if (offset == 0) {
 			sfx(n, channel);
 		} else {
+			if (channel == -1) {
+				channel = AUDIO_AvailableChan(true);
+			}
+
+			int wavid = pico_private::get_wavid(n);
+			if (wavid >= 0) {
+				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
+				sfx_ptr += wavid;
+
+				int speed = sfx_ptr->speed;
+				int start = speed * offset;
+				int end = speed * (offset + length);
+				AUDIO_Play(wavid, channel, start, end, false);
+			}
 		}
-	}
-	void sfx(int n, int channel, int offset, int length) {
 	}
 
 	void music(int n) {
