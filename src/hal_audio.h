@@ -17,5 +17,6 @@ void AUDIO_Play(int id, int chan, int loop_start, int loop_end);
 void AUDIO_Stop(int chan);
 void AUDIO_StopLoop(int chan);
 bool AUDIO_isPlaying(int chan);
+int AUDIO_AvailableChan(bool force = false);
 
 #endif /* SDL_AUDIO_H */

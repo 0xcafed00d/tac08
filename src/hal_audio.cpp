@@ -194,3 +194,17 @@ bool AUDIO_isPlaying(int chan) {
 	SDL_UnlockAudioDevice(audioDevice);
 	return playing;
 }
+
+int AUDIO_AvailableChan(bool force) {
+	for (int c = 0; c < (int)channels.size(); c++) {
+		if (!AUDIO_isPlaying(c)) {
+			return c;
+		}
+	}
+	// no free channels - use the oldest playing
+	if (force) {
+		return 0;  // TODO: look for oldest playing chan
+	} else {
+		return -1;
+	}
+}

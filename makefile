@@ -17,8 +17,8 @@ all: $(EXE)
 
 $(EXE): bin/main.o bin/hal_core.o bin/hal_audio.o bin/pico_core.o bin/pico_audio.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o
 	$(CXX) $^ $(LDFLAGS) -o $@
-	@cowsay "Built All The Things!!!"
-
+	@cowsay "Built All The Things!!!" || true
+	
 bin/main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/pico_data.h src/pico_script.h src/pico_cart.h src/config.h 
 	$(CXX) $(CXXFLAGS) $< -o $@
 

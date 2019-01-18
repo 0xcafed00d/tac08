@@ -138,7 +138,12 @@ namespace pico_control {
 namespace pico_api {
 
 	void sfx(int n) {
+		int chan = AUDIO_AvailableChan(true);
+		if (chan >= 0) {
+			sfx(n, chan);
+		}
 	}
+
 	void sfx(int n, int channel) {
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
