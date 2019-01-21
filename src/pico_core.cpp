@@ -3,6 +3,7 @@
 #include "config.h"
 #include "pico_cart.h"
 #include "pico_memory.h"
+#include "utils.h"
 
 #include <assert.h>
 #include <string.h>
@@ -394,15 +395,6 @@ namespace pico_private {
 		return 0;
 	}
 
-	template <typename T>
-	T limit(T n, T min, T max) {
-		if (n < min)
-			return min;
-		if (n > max)
-			return max;
-		return n;
-	}
-
 	inline void normalise_coords(int& c0, int& c1) {
 		if (c0 > c1)
 			std::swap(c0, c1);
@@ -414,8 +406,8 @@ namespace pico_private {
 		if (y < currentGraphicsState->clip_y1 || y >= currentGraphicsState->clip_y2) {
 			return;
 		}
-		x0 = limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
-		x1 = limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
+		x0 = utils::limit(x0, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
+		x1 = utils::limit(x1, currentGraphicsState->clip_x1, currentGraphicsState->clip_x2);
 
 		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
 		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
@@ -439,8 +431,8 @@ namespace pico_private {
 			return;
 		}
 
-		y0 = limit(y0, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
-		y1 = limit(y1, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+		y0 = utils::limit(y0, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
+		y1 = utils::limit(y1, currentGraphicsState->clip_y1, currentGraphicsState->clip_y2);
 
 		colour_t* pix = backbuffer + y0 * buffer_size_x;
 
@@ -554,8 +546,8 @@ namespace pico_private {
 namespace pico_control {
 
 	void init_backbuffer_mem(int x, int y) {
-		x = pico_private::limit(x, config::MIN_SCREEN_WIDTH, config::MAX_SCREEN_WIDTH);
-		y = pico_private::limit(y, config::MIN_SCREEN_HEIGHT, config::MAX_SCREEN_HEIGHT);
+		x = utils::limit(x, config::MIN_SCREEN_WIDTH, config::MAX_SCREEN_WIDTH);
+		y = utils::limit(y, config::MIN_SCREEN_HEIGHT, config::MAX_SCREEN_HEIGHT);
 
 		buffer_size_x = x;
 		buffer_size_y = y;
@@ -1074,10 +1066,10 @@ namespace pico_api {
 	void clip(int x, int y, int w, int h) {
 		using namespace pico_private;
 
-		currentGraphicsState->clip_x1 = limit(x, 0, buffer_size_x);
-		currentGraphicsState->clip_y1 = limit(y, 0, buffer_size_y);
-		currentGraphicsState->clip_x2 = limit(x + w, 0, buffer_size_x);
-		currentGraphicsState->clip_y2 = limit(y + h, 0, buffer_size_y);
+		currentGraphicsState->clip_x1 = utils::limit(x, 0, buffer_size_x);
+		currentGraphicsState->clip_y1 = utils::limit(y, 0, buffer_size_y);
+		currentGraphicsState->clip_x2 = utils::limit(x + w, 0, buffer_size_x);
+		currentGraphicsState->clip_y2 = utils::limit(y + h, 0, buffer_size_y);
 	}
 
 	void clip() {

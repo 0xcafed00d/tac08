@@ -4,6 +4,7 @@
 #include "config.h"
 #include "hal_audio.h"
 #include "hal_core.h"
+#include "log.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
@@ -95,14 +96,12 @@ int safe_main(int argc, char** argv) {
 			updateTime /= systemFrameCount;
 			drawTime /= systemFrameCount;
 			copyBBTime /= systemFrameCount;
-			/*
-			            std::cout << "game FPS: " << gameFrameCount << " sys FPS: " <<
-			   systemFrameCount
-			                      << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime
-			   / 1000.0f
-			                      << "ms"
-			                      << " bb copy: " << copyBBTime << "us" << std::endl;
-			*/
+
+			logr << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
+			     << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime / 1000.0f
+			     << "ms"
+			     << " bb copy: " << copyBBTime << "us";
+
 			gameFrameCount = 0;
 			systemFrameCount = 0;
 			updateTime = 0;
