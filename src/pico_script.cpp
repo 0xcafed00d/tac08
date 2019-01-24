@@ -11,11 +11,16 @@
 #include "z8lua/lualib.h"
 
 #include <assert.h>
+#include <deque>
+#include <functional>
 #include <iostream>
 
 #include "firmware.lua"
 
 static lua_State* lstate = nullptr;
+
+typedef std::function<void()> deferredAPICall_t;
+static std::deque<deferredAPICall_t> deferredAPICalls;
 
 static void throw_error(int err) {
 	if (err) {
@@ -52,6 +57,8 @@ static void init_scripting() {
 		lua_close(lstate);
 	}
 
+	deferredAPICalls.clear();
+
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
 
@@ -74,6 +81,25 @@ static void register_ext_cfunc(const char* name, lua_CFunction cf) {
 }
 
 // ------------------------------------------------------------------
+// Lua accesable API
+// ------------------------------------------------------------------
+
+static int impl_load(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto s = luaL_checkstring(ls, 1);
+	if (s) {
+		deferredAPICalls.push_back([=]() { pico_api::load(s); });
+	}
+	return 0;
+}
+
+static int impl_run(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	std::cout << "impl_run" << std::endl;
+	deferredAPICalls.push_back([]() { pico_api::run(); });
+	return 0;
+}
+
 static int impl_cartdata(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto s = luaL_checkstring(ls, 1);
@@ -750,6 +776,8 @@ static int implx_xpal(lua_State* ls) {
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
+	register_cfunc("load", impl_load);
+	register_cfunc("run", impl_run);
 	register_cfunc("cartdata", impl_cartdata);
 	register_cfunc("cls", impl_cls);
 	register_cfunc("poke", impl_poke);
@@ -816,10 +844,8 @@ namespace pico_script {
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}
 
-	void reset() {
-	}
-
-	bool run(std::string function, bool optional) {
+	bool run(std::string function, bool optional, bool& restarted) {
+		restarted = false;
 		lua_getglobal(lstate, function.c_str());
 		if (!lua_isfunction(lstate, -1)) {
 			if (optional)
@@ -828,6 +854,13 @@ namespace pico_script {
 				throw pico_script::error(function + " not found");
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
+
+		while (!deferredAPICalls.empty()) {
+			deferredAPICall_t apicall = deferredAPICalls.front();
+			deferredAPICalls.pop_front();
+			apicall();
+			restarted = true;
+		}
 		return true;
 	}
 

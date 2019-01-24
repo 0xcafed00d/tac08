@@ -3,6 +3,7 @@
 #include "config.h"
 #include "pico_cart.h"
 #include "pico_memory.h"
+#include "pico_script.h"
 #include "utils.h"
 
 #include <assert.h>
@@ -560,10 +561,13 @@ namespace pico_control {
 		pico_api::clip();
 	}
 
-	void init(int x, int y) {
-		backbuffer_store =
-		    new uint8_t[config::MAX_SCREEN_WIDTH * config::MAX_SCREEN_HEIGHT + guard_size * 2];
-		init_backbuffer_mem(x, y);
+	void init() {
+		if (!backbuffer_store) {
+			backbuffer_store =
+			    new uint8_t[config::MAX_SCREEN_WIDTH * config::MAX_SCREEN_HEIGHT + guard_size * 2];
+		}
+
+		init_backbuffer_mem(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 		mem_screen.setData(backbuffer);
 
 		cartDataName = "";
@@ -654,9 +658,23 @@ namespace pico_control {
 		return sfx_data;
 	}
 
+	void restartCart() {
+		init_backbuffer_mem(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
+		pico_private::restore_palette();
+		pico_private::restore_transparency();
+		pico_cart::extractCart(pico_cart::getCart());
+	}
+
 }  // namespace pico_control
 
 namespace pico_api {
+
+	void load(std::string cartname) {
+	}
+
+	void run() {
+		pico_control::restartCart();
+	}
 
 	void color(uint16_t c) {
 		currentGraphicsState->fg = pico_private::fgcolor(c);

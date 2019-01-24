@@ -6,6 +6,9 @@
 namespace pico_api {
 	typedef uint8_t colour_t;
 
+	void load(std::string cartname);
+	void run();
+
 	void cls(colour_t c);
 	void cls();
 
@@ -109,7 +112,7 @@ namespace pico_apix {
 }  // namespace pico_apix
 
 namespace pico_control {
-	void init(int x, int y);
+	void init();
 	void frame_start();
 	void frame_end();
 	pico_api::colour_t* get_buffer(int& width, int& height);
@@ -125,6 +128,7 @@ namespace pico_control {
 	void end_pause_menu();
 	uint8_t* get_music_data();
 	uint8_t* get_sfx_data();
+	void restartCart();
 
 }  // namespace pico_control
 

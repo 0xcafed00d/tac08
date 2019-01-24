@@ -78,15 +78,22 @@ end
 function flip() 
 end
 
+__tac08__.resetgame = function ()
+	run()
+end
+
+
 -- pause menu 
 __tac08__.menu = {
-	items = {{"continue", nil}, 
+	items = {
+				{"continue", nil}, 
 				{nil, nil}, 
 				{nil, nil}, 
 				{nil, nil}, 
 				{nil, nil}, 
 				{nil, nil}, 
-				{"reset", nil}},
+				{"reset", __tac08__.resetgame}
+			},
 	current = 0,
 	bg = 0,
 	t1 = 7,
@@ -126,6 +133,7 @@ __tac08__.menu = {
 		end
 		if btnp(4) or btnp(5) or btnp(6) then
 			local f = m.items[m.current+1][2]
+			printh(m.items[m.current+1][1])
 			if (f) f()
 			return true; 
 		end 

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-enum class log {
+enum class level {
 	perf = 1,
 	trace = 2,
 	info = 4,

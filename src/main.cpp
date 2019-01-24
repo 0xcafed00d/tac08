@@ -15,7 +15,7 @@ int safe_main(int argc, char** argv) {
 	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
 	AUDIO_Init();
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
-	pico_control::init(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
+	pico_control::init();
 	pico_data::load_font_data();
 
 	if (argc == 1) {
@@ -31,8 +31,6 @@ int safe_main(int argc, char** argv) {
 		}
 	}
 
-	bool init = false;
-
 	uint32_t target_ticks = 20;
 	uint32_t ticks = 0;
 
@@ -44,8 +42,11 @@ int safe_main(int argc, char** argv) {
 	uint64_t drawTime = 0;
 	uint64_t copyBBTime = 0;
 
+restart_game_loop:
+	bool init = false;
 	while (EVT_ProcessEvents()) {
 		using namespace pico_api;
+		bool restarted = false;
 
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 			pico_control::frame_start();
@@ -54,7 +55,9 @@ int safe_main(int argc, char** argv) {
 			pico_control::set_mouse_state(INP_GetMouseState());
 
 			if (!init) {
-				pico_script::run("_init", true);
+				pico_script::run("_init", true, restarted);
+				if (restarted)
+					goto restart_game_loop;
 				init = true;
 			}
 
@@ -64,15 +67,19 @@ int safe_main(int argc, char** argv) {
 				}
 			} else {
 				uint64_t updateTimeStart = TIME_GetProfileTime();
-				if (!pico_script::run("_update", true)) {
-					if (pico_script::run("_update60", true)) {
+				if (!pico_script::run("_update", true, restarted)) {
+					if (pico_script::run("_update60", true, restarted)) {
 						target_ticks = 1;
 					}
 				}
+				if (restarted)
+					goto restart_game_loop;
 				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
 				uint64_t drawTimeStart = TIME_GetProfileTime();
-				pico_script::run("_draw", true);
+				pico_script::run("_draw", true, restarted);
+				if (restarted)
+					goto restart_game_loop;
 				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
 			}
 
