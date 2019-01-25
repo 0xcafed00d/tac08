@@ -131,4 +131,5 @@ int main(int argc, char** argv) {
 	} catch (pico_cart::error& err) {
 		std::cerr << err.what() << std::endl;
 	}
+	return 0;
 }
