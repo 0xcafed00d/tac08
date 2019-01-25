@@ -42,11 +42,16 @@ int safe_main(int argc, char** argv) {
 	uint64_t drawTime = 0;
 	uint64_t copyBBTime = 0;
 
-restart_game_loop:
 	bool init = false;
+	bool restarted = true;
+
 	while (EVT_ProcessEvents()) {
 		using namespace pico_api;
-		bool restarted = false;
+
+		if (restarted == true) {
+			restarted = false;
+			init = false;
+		}
 
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 			pico_control::frame_start();
@@ -56,8 +61,6 @@ restart_game_loop:
 
 			if (!init) {
 				pico_script::run("_init", true, restarted);
-				if (restarted)
-					goto restart_game_loop;
 				init = true;
 			}
 
@@ -72,14 +75,10 @@ restart_game_loop:
 						target_ticks = 1;
 					}
 				}
-				if (restarted)
-					goto restart_game_loop;
 				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
 				uint64_t drawTimeStart = TIME_GetProfileTime();
 				pico_script::run("_draw", true, restarted);
-				if (restarted)
-					goto restart_game_loop;
 				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
 			}
 

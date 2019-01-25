@@ -845,7 +845,9 @@ namespace pico_script {
 	}
 
 	bool run(std::string function, bool optional, bool& restarted) {
-		restarted = false;
+		if (restarted) {
+			return true;
+		}
 		lua_getglobal(lstate, function.c_str());
 		if (!lua_isfunction(lstate, -1)) {
 			if (optional)
