@@ -1,16 +1,17 @@
-
-#include "pico_core.h"
-#include "config.h"
-#include "pico_cart.h"
-#include "pico_memory.h"
-#include "pico_script.h"
-#include "utils.h"
-
 #include <assert.h>
 #include <string.h>
 #include <algorithm>
 #include <array>
 #include <iostream>
+
+#include "pico_core.h"
+
+#include "config.h"
+#include "pico_audio.h"
+#include "pico_cart.h"
+#include "pico_memory.h"
+#include "pico_script.h"
+#include "utils.h"
 
 static pico_api::colour_t* backbuffer_store = nullptr;
 static pico_api::colour_t* backbuffer = nullptr;
@@ -660,6 +661,8 @@ namespace pico_control {
 
 	void restartCart() {
 		init_backbuffer_mem(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
+		graphicsState = GraphicsState{};
+		stop_all_audio();
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
 		pico_cart::extractCart(pico_cart::getCart());
@@ -670,6 +673,8 @@ namespace pico_control {
 namespace pico_api {
 
 	void load(std::string cartname) {
+		pico_cart::load(cartname);
+		pico_control::restartCart();
 	}
 
 	void run() {

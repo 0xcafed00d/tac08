@@ -15,6 +15,7 @@ int AUDIO_LoadWav(const char* name, bool trim = true);
 void AUDIO_Play(int id, int chan, bool loop);
 void AUDIO_Play(int id, int chan, int start, int end, bool loop);
 void AUDIO_Play(int id, int chan, int loop_start, int loop_end);
+void AUDIO_StopAll();
 void AUDIO_Stop(int chan);
 void AUDIO_StopLoop(int chan);
 bool AUDIO_isPlaying(int chan);

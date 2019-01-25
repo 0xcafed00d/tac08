@@ -1,10 +1,11 @@
-#include "hal_core.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
 #include <array>
 #include <iostream>
 #include <string>
+
+#include "hal_core.h"
 
 #include "config.h"
 

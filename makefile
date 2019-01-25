@@ -19,31 +19,31 @@ $(EXE): bin/main.o bin/hal_core.o bin/hal_audio.o bin/pico_core.o bin/pico_audio
 	$(CXX) $^ $(LDFLAGS) -o $@
 	@cowsay "Built All The Things!!!" || true
 	
-bin/main.o: src/main.cpp src/hal_core.h src/pico_core.h src/pico_data.h src/pico_data.h src/pico_script.h src/pico_cart.h src/config.h src/log.h 
+bin/main.o: src/main.cpp src/hal_core.h src/hal_audio.h src/pico_core.h src/pico_audio.h src/pico_data.h src/pico_data.h src/pico_script.h src/pico_cart.h src/config.h src/log.h 
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/hal_core.o: src/hal_core.cpp src/hal_core.h src/hal_audio.h src/config.h src/log.h
+bin/hal_core.o: src/hal_core.cpp src/hal_core.h src/config.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/hal_audio.o: src/hal_audio.cpp src/hal_audio.h src/config.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_core.o: src/pico_core.cpp src/pico_core.h src/hal_core.h src/pico_memory.h src/pico_cart.h src/config.h src/utils.h src/log.h
+bin/pico_core.o: src/pico_core.cpp src/pico_core.h src/pico_audio.h src/pico_memory.h src/pico_script.h src/pico_cart.h src/config.h src/utils.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_audio.o: src/pico_audio.cpp src/pico_core.h src/pico_audio.h src/hal_core.h src/pico_memory.h src/hal_audio.h src/log.h
+bin/pico_audio.o: src/pico_audio.cpp src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_core.h src/hal_audio.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h src/pico_script.h src/log.h
+bin/pico_data.o: src/pico_data.cpp src/pico_data.h src/pico_core.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/pico_memory.o: src/pico_memory.cpp src/pico_memory.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_core.h src/utils.h src/log.h
+bin/pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_audio.h src/pico_core.h src/pico_script.h src/utils.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_audio.h src/log.h src/firmware.lua
+bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_audio.h src/hal_core.h src/log.h src/firmware.lua
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/utils.o: src/utils.cpp src/utils.h

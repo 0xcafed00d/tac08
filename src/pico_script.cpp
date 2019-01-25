@@ -1,3 +1,8 @@
+#include <assert.h>
+#include <deque>
+#include <functional>
+#include <iostream>
+
 #include "pico_script.h"
 
 #include "hal_audio.h"
@@ -9,11 +14,6 @@
 #include "z8lua/lauxlib.h"
 #include "z8lua/lua.h"
 #include "z8lua/lualib.h"
-
-#include <assert.h>
-#include <deque>
-#include <functional>
-#include <iostream>
 
 #include "firmware.lua"
 

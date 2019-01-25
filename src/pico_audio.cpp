@@ -1,10 +1,11 @@
+#include <map>
+#include <sstream>
+
 #include "pico_audio.h"
+
 #include "hal_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
-
-#include <map>
-#include <sstream>
 
 namespace pico_private {
 #pragma pack(1)
@@ -131,6 +132,10 @@ namespace pico_control {
 		if (pico_private::sfx_map.empty()) {
 			pico_private::load_wavs();
 		}
+	}
+
+	void stop_all_audio() {
+		AUDIO_StopAll();
 	}
 
 }  // namespace pico_control

@@ -1,6 +1,3 @@
-#include "hal_audio.h"
-#include "config.h"
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
 
@@ -9,6 +6,10 @@
 #include <array>
 #include <iostream>
 #include <vector>
+
+#include "hal_audio.h"
+
+#include "config.h"
 
 static const int NUM_CHANNELS = config::AUDIO_CHANNELS;
 
@@ -191,6 +192,12 @@ void AUDIO_Play(int id, int chan, int loop_start, int loop_end) {
 	SDL_LockAudioDevice(audioDevice);
 	channels[chan] = ci;
 	SDL_UnlockAudioDevice(audioDevice);
+}
+
+void AUDIO_StopAll() {
+	for (size_t c = 0; c < channels.size(); c++) {
+		AUDIO_Stop(c);
+	}
 }
 
 void AUDIO_Stop(int chan) {
