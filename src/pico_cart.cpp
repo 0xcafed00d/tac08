@@ -6,6 +6,7 @@
 #include "pico_cart.h"
 
 #include "hal_core.h"
+#include "log.h"
 #include "pico_audio.h"
 #include "pico_core.h"
 #include "pico_script.h"
@@ -71,13 +72,23 @@ namespace pico_cart {
 		return cart;
 	}
 
+	// if the filename begins with a $ then the path of the new cart of relative to the one callng
+	// load
 	void load(std::string filename) {
+		logr << "Request cart load: " << filename;
+
 		filename = path::normalisePath(filename);
+
+		if (cart.find("base_path") != cart.end() && filename.length() && filename[0] == '$') {
+			filename = cart["base_path"] + filename.substr(1);
+		}
 
 		std::string data = FILE_LoadFile(filename);
 		if (data.size() == 0) {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
+
+		logr << "Loading cart: " << filename;
 
 		cart["filename"] = filename;
 		cart["base_path"] = path::getPath(filename);

@@ -3,7 +3,7 @@ version 16
 __lua__
 
 function _init()
-	to_load = "../../pico-8/jetdude/jetdude.p8"
+	to_load = "../../pico-8/gridbug/gridbug.p8"
 	time = 30
 end
 
@@ -11,7 +11,7 @@ end
 function _update()
 	time = time - 1
 	if time == 0 then
-		load("../../pico-8/jetdude/jetdude.p8")
+		load(to_load)
 	end
 end
 

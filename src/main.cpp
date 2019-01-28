@@ -117,13 +117,14 @@ int safe_main(int argc, char** argv) {
 		}
 	}
 
-	GFX_End();
 	return 0;
 }
 
 int main(int argc, char** argv) {
 	try {
-		return safe_main(argc, argv);
+		safe_main(argc, argv);
+		GFX_End();
+		return 0;
 	} catch (gfx_exception& err) {
 		std::cerr << err.what() << std::endl;
 	} catch (pico_script::error& err) {

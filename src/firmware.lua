@@ -1,6 +1,6 @@
 static std::string firmware = R"(--"
 
--- namespace for extension & and intername api
+-- namespace for extension & and internal api
 __tac08__ = {}
 
 printh = print
