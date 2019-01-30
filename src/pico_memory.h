@@ -120,13 +120,10 @@ namespace pico_ram {
 		using MemoryArea::MemoryArea;
 
 		virtual uint8_t peek(uint16_t addr) {
-			//			return (m_data[addr * 2 + 1] & 0xf) | ((m_data[addr * 2] & 0xf) << 4);
 			return (m_data[addr * 2] & 0xf) | ((m_data[addr * 2 + 1] & 0xf) << 4);
 		}
 
 		virtual void poke(uint16_t addr, uint8_t val) {
-			//			m_data[addr * 2] = val >> 4;
-			//			m_data[addr * 2 + 1] = val & 0xf;
 			m_data[addr * 2 + 1] = val >> 4;
 			m_data[addr * 2] = val & 0xf;
 		}

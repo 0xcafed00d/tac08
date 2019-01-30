@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include <algorithm>
 #include <array>
-#include <iostream>
 #include <vector>
 
 #include "hal_audio.h"
 
 #include "config.h"
+#include "log.h"
 
 static const int NUM_CHANNELS = config::AUDIO_CHANNELS;
 
@@ -131,9 +131,8 @@ int AUDIO_LoadWav(const char* name, bool trim) {
 	loadedWavs.push_back(wav);
 	SDL_UnlockAudioDevice(audioDevice);
 
-	std::cout << "loaded wav: " << name << " freq: " << wav.spec.freq
-	          << " samples: " << wav.numSamples
-	          << " duration: " << (double)wav.numSamples / (double)wav.spec.freq << std::endl;
+	logr << "loaded wav: " << name << " freq: " << wav.spec.freq << " samples: " << wav.numSamples
+	     << " duration: " << (double)wav.numSamples / (double)wav.spec.freq;
 
 	return loadedWavs.size() - 1;
 }

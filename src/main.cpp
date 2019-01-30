@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <iostream>
 
 #include "config.h"
 #include "hal_audio.h"
@@ -12,6 +11,8 @@
 #include "pico_script.h"
 
 int safe_main(int argc, char** argv) {
+	logr.enable(false);
+
 	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
 	AUDIO_Init();
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
@@ -26,7 +27,7 @@ int safe_main(int argc, char** argv) {
 			pico_cart::load(argv[1]);
 			pico_cart::extractCart(pico_cart::getCart());
 		} else {
-			std::cerr << "no cart specified" << std::endl;
+			logr << "no cart specified";
 			return 1;
 		}
 	}
@@ -123,14 +124,13 @@ int safe_main(int argc, char** argv) {
 int main(int argc, char** argv) {
 	try {
 		safe_main(argc, argv);
-		GFX_End();
-		return 0;
 	} catch (gfx_exception& err) {
-		std::cerr << err.what() << std::endl;
+		logr << err.what();
 	} catch (pico_script::error& err) {
-		std::cerr << err.what() << std::endl;
+		logr << err.what();
 	} catch (pico_cart::error& err) {
-		std::cerr << err.what() << std::endl;
+		logr << err.what();
 	}
+	GFX_End();
 	return 0;
 }

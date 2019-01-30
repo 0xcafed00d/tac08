@@ -2,12 +2,12 @@
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
 #include <array>
-#include <iostream>
 #include <string>
 
 #include "hal_core.h"
 
 #include "config.h"
+#include "log.h"
 
 static SDL_Window* sdlWin = nullptr;
 static SDL_Renderer* sdlRen = nullptr;
@@ -49,9 +49,9 @@ void GFX_Init(int x, int y) {
 	if (SDL_NumJoysticks() > 0) {
 		joystick = SDL_JoystickOpen(0);
 		if (joystick) {
-			std::cout << "name: " << SDL_JoystickName(joystick) << std::endl;
-			std::cout << "buttons: " << SDL_JoystickNumButtons(joystick) << std::endl;
-			std::cout << "axis: " << SDL_JoystickNumAxes(joystick) << std::endl;
+			logr << "name: " << SDL_JoystickName(joystick);
+			logr << "buttons: " << SDL_JoystickNumButtons(joystick);
+			logr << "axis: " << SDL_JoystickNumAxes(joystick);
 		}
 	}
 }
@@ -191,14 +191,13 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 	} else if (ev.type == SDL_MOUSEWHEEL) {
 		mouseWheel += ev.wheel.y;
 	} else if (ev.type == SDL_JOYAXISMOTION) {
-		// std::cout << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value << std::endl;
+		// logr << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value;
 		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -500);
 		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 500);
 		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -500);
 		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 500);
 	} else if (ev.type == SDL_JOYBUTTONDOWN || ev.type == SDL_JOYBUTTONUP) {
-		// std::cout << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state <<
-		// std::endl;
+		// logr << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state
 		set_state_bit(joyState, 4, ev.jbutton.button == 1, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 5, ev.jbutton.button == 0, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);

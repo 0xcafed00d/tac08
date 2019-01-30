@@ -95,7 +95,6 @@ static int impl_load(lua_State* ls) {
 
 static int impl_run(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	std::cout << "impl_run" << std::endl;
 	deferredAPICalls.push_back([]() { pico_api::run(); });
 	return 0;
 }

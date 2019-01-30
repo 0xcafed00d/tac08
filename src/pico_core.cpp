@@ -2,7 +2,6 @@
 #include <string.h>
 #include <algorithm>
 #include <array>
-#include <iostream>
 
 #include "pico_core.h"
 
@@ -695,7 +694,6 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
-		// std::cout << std::hex << "peek (" << a << ") -> " << (int)ram.peek(a) << std::endl;
 		return ram.peek(a);
 	}
 
@@ -708,8 +706,6 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
-		// std::cout << std::hex << "poke (" << a << ", " << (int)v << ")" << std::endl;
-
 		if (a >= 0x5f00 && a <= 0x5f0f) {
 			pal(a - 0x5f00, v);
 			palt(a - 0x5f00, (v & 0x80) != 0);
@@ -748,7 +744,6 @@ namespace pico_api {
 	void cartdata(std::string name) {
 		cartDataName = name;
 		std::string data = FILE_LoadGameState(cartDataName + ".p8d.txt");
-		// std::cout << "[" << data << "]" << std::endl;
 		pico_private::copy_cartdata_to_ram(data);
 	}
 

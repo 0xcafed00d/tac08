@@ -4,6 +4,7 @@
 #include "pico_audio.h"
 
 #include "hal_audio.h"
+#include "log.h"
 #include "pico_cart.h"
 #include "pico_core.h"
 
@@ -50,7 +51,7 @@ namespace pico_private {
 				int id = AUDIO_LoadWav(name.c_str());
 				sfx_map[n] = id;
 			} catch (audio_exception& e) {
-				// printf("failed to load wav: %s\n", e.what());
+				logr << "failed to load wav: ", e.what();
 			}
 		}
 	}
@@ -97,8 +98,6 @@ namespace pico_control {
 		pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
 		int linenum = 0;
 		while (std::getline(str, line)) {
-			// printf(">>>> %d %s <<<< \n", linenum, line.c_str());
-
 			int o[5] = {0};
 			if (sscanf(line.c_str(), "%02x%02x%02x%02x", o, o + 1, o + 2, o + 3) == 4) {
 				sfx_ptr->mode = o[0];

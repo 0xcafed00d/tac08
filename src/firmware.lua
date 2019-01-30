@@ -133,7 +133,6 @@ __tac08__.menu = {
 		end
 		if btnp(4) or btnp(5) or btnp(6) then
 			local f = m.items[m.current+1][2]
-			printh(m.items[m.current+1][1])
 			if (f) f()
 			return true; 
 		end 
