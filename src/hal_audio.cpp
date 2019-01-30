@@ -75,6 +75,7 @@ static void callback(void* userdata, uint8_t* stream, int len) {
 }
 
 void AUDIO_Init() {
+	TraceFunction();
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
 		throw_error("SDL_Init Error: ");
 	}
@@ -94,13 +95,14 @@ void AUDIO_Init() {
 }
 
 void AUDIO_Shutdown() {
+	TraceFunction();
 	SDL_PauseAudioDevice(audioDevice, 1);
 	SDL_CloseAudioDevice(audioDevice);
 
 	for (auto& wav : loadedWavs) {
 		SDL_FreeWAV((uint8_t*)(wav.sampleData));
 	}
-
+	loadedWavs.clear();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 

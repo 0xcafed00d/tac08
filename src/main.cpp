@@ -11,11 +11,11 @@
 #include "pico_script.h"
 
 int safe_main(int argc, char** argv) {
-	logr.enable(false);
+	TraceFunction();
 
 	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
-	AUDIO_Init();
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
+	AUDIO_Init();
 	pico_control::init();
 	pico_data::load_font_data();
 
@@ -122,6 +122,10 @@ int safe_main(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+	logr.enable(true);
+	logr.setOutputFunction(SYSLOG_LogMessage);
+
+	TraceFunction();
 	try {
 		safe_main(argc, argv);
 	} catch (gfx_exception& err) {
@@ -131,6 +135,8 @@ int main(int argc, char** argv) {
 	} catch (pico_cart::error& err) {
 		logr << err.what();
 	}
+	AUDIO_Shutdown();
 	GFX_End();
+
 	return 0;
 }

@@ -84,6 +84,18 @@ class Logger {
 
 extern Logger logr;
 
-#define TraceFunction() logr << "TRACEFUNC: " << __PRETTY_FUNCTION__
+class logr_trace_func__ {
+	const char* fname;
+
+   public:
+	logr_trace_func__(const char* fname) : fname(fname) {
+		logr << "Trace enter >>: " << fname;
+	}
+	~logr_trace_func__() {
+		logr << "Trace leave <<: " << fname;
+	}
+};
+
+#define TraceFunction() logr_trace_func__ trace_func_log__(__PRETTY_FUNCTION__)
 
 #endif /* LOG_H */

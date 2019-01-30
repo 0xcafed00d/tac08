@@ -40,6 +40,8 @@ uint64_t TIME_GetProfileTime();
 uint64_t TIME_GetElapsedProfileTime_us(uint64_t start);
 uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start);
 
+void SYSLOG_LogMessage(const char* msg);
+
 struct MouseState {
 	int x;
 	int y;
