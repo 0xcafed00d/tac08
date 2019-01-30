@@ -3,7 +3,7 @@ version 16
 __lua__
 
 function _init()
-	to_load = "../../pico-8/gridbug/gridbug.p8"
+	to_load = "../../pico-8/flower/flower.p8"
 	time = 30
 end
 

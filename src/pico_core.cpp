@@ -6,6 +6,7 @@
 #include "pico_core.h"
 
 #include "config.h"
+#include "log.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_memory.h"
@@ -547,6 +548,7 @@ namespace pico_private {
 namespace pico_control {
 
 	void init_backbuffer_mem(int x, int y) {
+		TraceFunction();
 		x = utils::limit(x, config::MIN_SCREEN_WIDTH, config::MAX_SCREEN_WIDTH);
 		y = utils::limit(y, config::MIN_SCREEN_HEIGHT, config::MAX_SCREEN_HEIGHT);
 
@@ -562,6 +564,7 @@ namespace pico_control {
 	}
 
 	void init() {
+		TraceFunction();
 		if (!backbuffer_store) {
 			backbuffer_store =
 			    new uint8_t[config::MAX_SCREEN_WIDTH * config::MAX_SCREEN_HEIGHT + guard_size * 2];
@@ -584,6 +587,8 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_scratch_data);
 		ram.addMemoryArea(&mem_music_data);
 		ram.addMemoryArea(&mem_sfx_data);
+
+		audio_init();
 	}
 
 	void frame_start() {
@@ -608,15 +613,18 @@ namespace pico_control {
 	}
 
 	void set_sprite_data(std::string data, std::string flags) {
+		TraceFunction();
 		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data);
 		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
 	}
 
 	void set_font_data(std::string data) {
+		TraceFunction();
 		pico_private::copy_data_to_ram(0x8000, data);
 	}
 
 	void set_map_data(std::string data) {
+		TraceFunction();
 		pico_private::copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
 		// ram.dump(0x0000, 0x4000);
 	}
@@ -659,9 +667,11 @@ namespace pico_control {
 	}
 
 	void restartCart() {
+		TraceFunction();
 		init_backbuffer_mem(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 		graphicsState = GraphicsState{};
 		stop_all_audio();
+		audio_init();
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
 		pico_cart::extractCart(pico_cart::getCart());
@@ -672,11 +682,13 @@ namespace pico_control {
 namespace pico_api {
 
 	void load(std::string cartname) {
+		TraceFunction();
 		pico_cart::load(cartname);
 		pico_control::restartCart();
 	}
 
 	void run() {
+		TraceFunction();
 		pico_control::restartCart();
 	}
 

@@ -16,6 +16,7 @@ namespace pico_api {
 }  // namespace pico_api
 
 namespace pico_control {
+	void audio_init();
 	void set_music_from_cart(std::string& data);
 	void set_sfx_from_cart(std::string& data);
 	void sound_tick();

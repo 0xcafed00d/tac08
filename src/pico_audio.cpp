@@ -51,7 +51,7 @@ namespace pico_private {
 				int id = AUDIO_LoadWav(name.c_str());
 				sfx_map[n] = id;
 			} catch (audio_exception& e) {
-				logr << "failed to load wav: ", e.what();
+				logr << "failed to load wav: " << e.what();
 			}
 		}
 	}
@@ -67,7 +67,14 @@ namespace pico_private {
 }  // namespace pico_private
 
 namespace pico_control {
+	void audio_init() {
+		TraceFunction();
+		AUDIO_StopAll();
+		pico_private::sfx_map.clear();
+	}
+
 	void set_music_from_cart(std::string& data) {
+		TraceFunction();
 		std::istringstream str(data);
 		std::string line;
 		uint8_t* ptr = pico_control::get_music_data();
@@ -93,6 +100,7 @@ namespace pico_control {
 	}
 
 	void set_sfx_from_cart(std::string& data) {
+		TraceFunction();
 		std::istringstream str(data);
 		std::string line;
 		pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();
@@ -134,6 +142,7 @@ namespace pico_control {
 	}
 
 	void stop_all_audio() {
+		TraceFunction();
 		AUDIO_StopAll();
 	}
 
