@@ -17,7 +17,7 @@ There are several
 1. Not all peek and poke addresses are implemented, notably the current draw state values
 2. Only one joystick is currently supported and it cannot be configured.
 3. Saving screen shots and recording gif videos are not implemented.  
-4. The flip() api function is not implemented. So no tweet carts and such will work. Only games that use _init, _update, _draw will work correctly.
+4. The flip() api function is not implemented. So no tweet carts and such will work. Only games that use _init, _update or _update60, _draw will work correctly.
 5. Pico-8's sound synthesizer is not implemented, however you can still play sound effects (see below)
 6. The music() api function is not currently implemented (but I plan to implement it). 
 7. There are probably more things i can add to this list and will update as needed. 
