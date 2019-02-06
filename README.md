@@ -8,7 +8,7 @@ tac08 is not a replacement for Pico-8, it provides none of the content creation 
 
 ## why was tac08 written? 
 1. To enable Pico-8 games to be run on platforms that Pico-8 itself does not run on.
-2. To embed pico-8 games within other game engines. 
+2. To embed Pico-8 games within other game engines. 
 3. To make it possible to extend the Pico-8 api and allow games to use features not currently supported by Pico-8
 
 ## is it a 100% emulation?
@@ -24,11 +24,11 @@ This is a list of the most significant compatibility issues:
 7. There are probably more things i can add to this list and will update as needed. 
 
 ## how do I get sound working then?
-The way sound is implemented in tac08 is not ideal, but given current my current work loads and complexity of the pico-8 sound system I feel it is a reasonable compromise.
-In order to have tac08 play sound you need to export your sound effects from pico-8 as wav files. I have found then sound effects do no export completely if they have loops within them. 
+The way sound is implemented in tac08 is not ideal, but given current my current work loads and complexity of the Pico-8 sound system I feel it is a reasonable compromise.
+In order to have tac08 play sound you need to export your sound effects from Pico-8 as wav files. I have found then sound effects do no export completely if they have loops within them. 
 Exporting the sound effects is a two stage process. 
 
-First paste the following code into the pico-8 command prompt: 
+First paste the following code into the Pico-8 command prompt: 
 ```
 for a=0x3200,0x42ff,68 do poke(a+66,0) poke(a+67,0) end cstore(0x3100,0x3100,0x1200,"audio.p8")
 ```
