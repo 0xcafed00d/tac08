@@ -135,6 +135,8 @@ int main(int argc, char** argv) {
 	} catch (pico_cart::error& err) {
 		logr << err.what();
 	}
+
+	pico_script::unload_scripting();
 	AUDIO_Shutdown();
 	GFX_End();
 

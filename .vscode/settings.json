@@ -34,7 +34,8 @@
 		"type_traits": "cpp",
 		"tuple": "cpp",
 		"typeinfo": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"memory": "cpp"
 	},
 	"spellright.language": [],
 	"spellright.documentTypes": [

@@ -53,12 +53,6 @@ static void dump_func(lua_State* ls, const char* funcname) {
 #endif
 
 static void init_scripting() {
-	if (lstate) {
-		lua_close(lstate);
-	}
-
-	deferredAPICalls.clear();
-
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
 
@@ -836,11 +830,20 @@ static void register_cfuncs() {
 namespace pico_script {
 
 	void load(std::string script) {
+		unload_scripting();
 		init_scripting();
 		register_cfuncs();
 
 		throw_error(luaL_loadbuffer(lstate, script.c_str(), script.size(), "main"));
 		throw_error(lua_pcall(lstate, 0, 0, 0));
+	}
+
+	void unload_scripting() {
+		if (lstate) {
+			lua_close(lstate);
+			lstate = nullptr;
+		}
+		deferredAPICalls.clear();
 	}
 
 	bool run(std::string function, bool optional, bool& restarted) {
