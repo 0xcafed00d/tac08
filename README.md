@@ -8,12 +8,13 @@ tac08 is not a replacement for Pico-8, it provides none of the content creation 
 
 ## why was tac08 written? 
 1. To enable Pico-8 games to be run on platforms that Pico-8 itself does not run on.
-2. To make it possible to extend the Pico-8 api and allow games to use features not currently supported by Pico-8
+2. To embed pico-8 games within other game engines. 
+3. To make it possible to extend the Pico-8 api and allow games to use features not currently supported by Pico-8
 
 ## is it a 100% emulation?
 No. tac08 is still in development, however in my testing, I have found that a large number of the most popular games work correctly. 
 
-There are several 
+This is a list of the most significant compatibility issues:
 1. Not all peek and poke addresses are implemented, notably the current draw state values
 2. Only one joystick is currently supported and it cannot be configured.
 3. Saving screen shots and recording gif videos are not implemented.  
@@ -40,13 +41,13 @@ export "cart%d.wav"
 
 where "cart" is the name of your original cartridge file. You need to have these wav files in the same folder as you cart. You can delete any wav files that your cart does not need. 
 
-*** not that if the game creates sound at runtime then it is not currently possible to play these ***
+** not that if the game creates sound at runtime then it is not currently possible to play these **
 
 
 ## how do I build tac08
 A makefile is supplied that will build tac08 for linux systems. It has been tested on Ubuntu 16.04 & 18.04, Rasbian on a Raspberry Pi 3, and a Crostini hosted debian install on a chromebook. It will probably work with little modification on a Apple Mac too, but I am not able to test that.
 
-Build scripts for other environments are not currently provided. tac08 is written in standard c++11. The lua interpreter is a version of lua 5.2 modified to support the syntax changes Pico-8 requires, while the lua interpreter is written in C, the modifications require it to be compiled as C++. This modification was performed by Sam Hocevar https://github.com/samhocevar/z8lua
+Build scripts for other environments are not currently provided (because I have not written them yet :-). tac08 is written in standard c++11. The lua interpreter is a version of lua 5.2 modified to support the syntax changes Pico-8 requires, while the lua interpreter is written in C, the modifications require it to be compiled as C++. This modification was performed by Sam Hocevar https://github.com/samhocevar/z8lua
 
 The only external dependency tac08 is the core SDL2.0 library, so it should be possible to build tac08 from the provided code for any platform that has SDL2.0 ported to it. 
 
