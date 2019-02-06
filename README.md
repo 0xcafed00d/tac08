@@ -28,17 +28,17 @@ This is a list of the most significant compatibility issues:
 
 ## how do I get sound working then?
 The way sound is implemented in tac08 is not ideal, but given current my current work loads and complexity of the Pico-8 sound system I feel it is a reasonable compromise.
-In order to have tac08 play sound you need to export your sound effects from Pico-8 as wav files. I have found then sound effects do no export completely if they have loops within them. 
-Exporting the sound effects is a two stage process. 
+In order to have tac08 play sound you need to export your sound effects from Pico-8 as wav files. I have found that sound effects do not export completely if they have loops within them. 
 
-First paste the following code into the Pico-8 command prompt: 
+Exporting the sound effects is a two stage process. First paste the following code into the Pico-8 command prompt: 
 ```
 for a=0x3200,0x42ff,68 do poke(a+66,0) poke(a+67,0) end cstore(0x3100,0x3100,0x1200,"audio.p8")
 ```
 This will save out a cart called "audio.p8" containing only the unlooped sfx data. 
 
-Next export the actual sfx as wav files:
+Next load the audio.p8 cart and export the actual sfx as wav files:
 ```
+load "audio.p8"
 export "cart%d.wav"
 ```
 
