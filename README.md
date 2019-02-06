@@ -13,7 +13,7 @@ tac08 is not a replacement for Pico-8, it provides none of the content creation 
 ## is it a 100% emulation?
 No. tac08 is still in development, however in my testing, I have found that a large number of the most popular games work correctly. 
 
-There are several  
+There are several 
 1. Not all peek and poke addresses are implemented, notably the current draw state values
 2. Only one joystick is currently supported and it cannot be configured.
 3. Saving screen shots and recording gif videos are not implemented.  
@@ -23,6 +23,25 @@ There are several
 7. There are probably more things i can add to this list and will update as needed. 
 
 ## how do I get sound working then?
+The way sound is implemented in tac08 is not ideal, but given current my current work loads and complexity of the pico-8 sound system I feel it is a reasonable compromise.
+In order to have tac08 play sound you need to export your sound effects from pico-8 as wav files. I have found then sound effects do no export completely if they have loops within them. 
+Exporting the sound effects is a two stage process. 
+
+First paste the following code into the pico-8 command prompt: 
+```
+for a=0x3200,0x42ff,68 do poke(a+66,0) poke(a+67,0) end cstore(0x3100,0x3100,0x1200,"audio.p8")
+```
+This will save out a cart called "audio.p8" containing only the unlooped sfx data. 
+
+Next export the actual sfx as wav files:
+```
+export "cart%d.wav"
+```
+
+where "cart" is the name of your original cartridge file. You need to have these wav files in the same folder as you cart. You can delete any wav files that your cart does not need. 
+
+*** not that if the game creates sound at runtime then it is not currently possible to play these ***
+
 
 ## how do I build tac08
 A makefile is supplied that will build tac08 for linux systems. It has been tested on Ubuntu 16.04 & 18.04, Rasbian on a Raspberry Pi 3, and a Crostini hosted debian install on a chromebook. It will probably work with little modification on a Apple Mac too, but I am not able to test that.
