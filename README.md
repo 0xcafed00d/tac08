@@ -1,12 +1,12 @@
 # tac08
 
-## what is tac08?
+## What is tac08?
 tac08 is an emulation of the runtime part of the Pico-8 fantasy console. It takes a .p8 (text format) Pico-8 cart file and runs it closely as possible to the real Pico-8 software.
 
-## what isn't tac08?
+## What isn't tac08?
 tac08 is not a replacement for Pico-8, it provides none of the content creation components of Pico-8, such as code editing, sprite and map creation and music tools. You will still require a copy of Pico-8 to make games. Also if you just want to run Pico-8 games you will have a much better experience with Pico-8 than tac08
 
-## why was tac08 written? 
+## Why was tac08 written? 
 tac08's target audience are developers that want to do one or more of the following: 
 1. To enable Pico-8 games to be run on platforms that Pico-8 itself does not run on.
 2. To embed Pico-8 games within other game engines. 
@@ -14,7 +14,7 @@ tac08's target audience are developers that want to do one or more of the follow
 
 tac08 was written for my own personal use (specifically for items 1 & 3 above) but I have decided to open source it as others may find it useful. 
 
-## is it a 100% emulation?
+## Is it a 100% emulation?
 No. tac08 is still in development, however in my testing, I have found that a large number of the most popular games work correctly. 
 
 This is a list of the most significant compatibility issues:
@@ -26,7 +26,7 @@ This is a list of the most significant compatibility issues:
 6. The music() api function is not currently implemented (but I plan to implement it). 
 7. There are probably more things i can add to this list and will update as needed. 
 
-## how do I get sound working then?
+## How do I get sound working then?
 The way sound is implemented in tac08 is not ideal, but given current my current work loads and complexity of the Pico-8 sound system I feel it is a reasonable compromise.
 In order to have tac08 play sound you need to export your sound effects from Pico-8 as wav files. I have found that sound effects do not export completely if they have loops within them. 
 
@@ -47,7 +47,7 @@ where "cart" is the name of your original cartridge file. You need to have these
 **note that if the game creates sound at runtime then it is not currently possible to play these**
 
 
-## how do I build tac08
+## How do I build tac08
 A makefile is supplied that will build tac08 for linux systems. It has been tested on Ubuntu 16.04 & 18.04, Rasbian on a Raspberry Pi 3, and a Crostini hosted debian install on a chromebook. It will probably work with little modification on a Apple Mac too, but I am not able to test that.
 
 Build scripts for other environments are not currently provided (because I have not written them yet :-). tac08 is written in standard c++11. The lua interpreter is a version of lua 5.2 modified to support the syntax changes Pico-8 requires, while the lua interpreter is written in C, the modifications require it to be compiled as C++. This modification was performed by Sam Hocevar https://github.com/samhocevar/z8lua

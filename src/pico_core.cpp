@@ -747,7 +747,7 @@ namespace pico_api {
 		} else {
 			src_a += len;
 			dest_a += len;
-			for (uint32_t i = len - 1; i >= 0; i++) {
+			for (int32_t i = len - 1; i >= 0; i++) {
 				ram.poke(dest_a - i, ram.peek(src_a - i));
 			}
 		}

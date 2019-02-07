@@ -60,7 +60,6 @@ void GFX_Init(int x, int y) {
 		logr << "  buttons: " << SDL_JoystickNumButtons(js);
 		logr << "  axis: " << SDL_JoystickNumAxes(js);
 		logr << "  hats: " << SDL_JoystickNumHats(js);
-		logr << "  type: " << SDL_JoystickGetType(js);
 		SDL_JoystickClose(js);
 	}
 

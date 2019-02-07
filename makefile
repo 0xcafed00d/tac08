@@ -1,15 +1,20 @@
 CXX = g++
-# Update these paths to match your installation
-# You may also need to update the linker option rpath, which sets where to look for
-# the SDL2 libraries at runtime to match your install
-SDL_LIB = -L/home/lmw/src/SDL2-2.0.9/build/.libs -lSDL2 -Wl,-rpath=/home/lmw/src/SDL2-2.0.9/build/.libs
-#SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
+
+# modify these paths to point to your local sdl install. 
+SDL_PATH_LIB = /usr/local/lib
+SDL_PATH_INC = /usr/local/include
+
+SDL_LIB = -L$(SDL_PATH_LIB) -lSDL2 -Wl,-rpath=$(SDL_PATH_LIB)
+SDL_INCLUDE = -I$(SDL_PATH_LIB)
+
 LUA_LIB =  -Lsrc/z8lua -llua 
-SDL_INCLUDE = -I/usr/local/include
 UTF8_UTIL_BASE = src/utf8-util/utf8-util
 
-CXXFLAGS = -DDEBUG -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
-# CXXFLAGS = -O3 -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
+CXXFLAGS_DEBUG = -DDEBUG -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
+CXXFLAGS_RELEASE = -O3 -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE)
+
+CXXFLAGS = $(CXXFLAGS_DEBUG)
+
 LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
 EXE = tac08
 
