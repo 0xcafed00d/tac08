@@ -1,6 +1,6 @@
 [submodule "src/z8lua"]
 	path = src/z8lua
-	url = https://github.com/simulatedsimian/z8lua.git
+	url = https://github.com/0xcafed00d/z8lua.git
 [submodule "src/utf8-util"]
 	path = src/utf8-util
-	url = https://github.com/simulatedsimian/utf8-util.git
+	url = https://github.com/0xcafed00d/utf8-util.git
