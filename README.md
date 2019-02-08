@@ -56,7 +56,7 @@ The only external dependency tac08 is the core SDL2.0 library, so it should be p
 
 1. first clone tac08 from github: 
 ```
-git clone --recurse-submodules https://github.com/simulatedsimian/tac08.git
+git clone --recurse-submodules https://github.com/0xcafed00d/tac08.git
 ```
 
 2. install sdl2.0 development libraries:
