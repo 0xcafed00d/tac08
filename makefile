@@ -4,7 +4,7 @@ CXX = g++
 SDL_PATH_LIB = /usr/local/lib
 SDL_PATH_INC = /usr/local/include
 
-SDL_LIB = -L$(SDL_PATH_LIB) -lSDL2 -Wl,-rpath=$(SDL_PATH_LIB)
+SDL_LIB = -L$(SDL_PATH_LIB) -lSDL2
 SDL_INCLUDE = -I$(SDL_PATH_LIB)
 
 LUA_LIB =  -Lsrc/z8lua -llua 
@@ -22,8 +22,7 @@ all: $(EXE)
 
 $(EXE): bin/main.o bin/hal_core.o bin/hal_audio.o bin/pico_core.o bin/pico_audio.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o bin/utils.o bin/log.o
 	$(CXX) $^ $(LDFLAGS) -o $@
-	cp tac08 ~/bin/ || true
-	@cowsay "Built All The Things!!!" || true
+	@echo "Built All The Things!!!"
 	
 bin/main.o: src/main.cpp src/hal_core.h src/hal_audio.h src/pico_core.h src/pico_audio.h src/pico_data.h src/pico_data.h src/pico_script.h src/pico_cart.h src/config.h src/log.h 
 	$(CXX) $(CXXFLAGS) $< -o $@
@@ -62,9 +61,11 @@ bin/utf8-util.o: $(UTF8_UTIL_BASE)/utf8-util.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
-	rm bin/*.o || true 
-	rm $(EXE) || true
+	@rm bin/*.o || true 
+	@rm $(EXE) || true
 	
 run: all
-	./$(EXE) ../../pico-8/gridbug/gridbug.p8 
+	./$(EXE) ../../pico-8-games/gridbug/gridbugx.p8 
 
+copy: all
+	@cp tac08 ~/bin/ || true
