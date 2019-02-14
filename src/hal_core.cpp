@@ -155,6 +155,10 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	SDL_UnlockTexture(sdlTex);
 }
 
+void GFX_ShowHWMouse(bool show) {
+	SDL_ShowCursor(show);
+}
+
 static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	int winx, winy;
 	SDL_GetWindowSize(win, &winx, &winy);

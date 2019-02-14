@@ -23,6 +23,7 @@ void GFX_Flip();
 void GFX_RestorePalette();
 void GFX_RestorePaletteIndex(uint8_t i);
 void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
+void GFX_ShowHWMouse(bool show);
 
 std::string FILE_LoadFile(std::string name);
 std::string FILE_LoadGameState(std::string name);

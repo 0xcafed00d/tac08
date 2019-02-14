@@ -1188,4 +1188,8 @@ namespace pico_apix {
 		currentGraphicsState->extendedPalette = enable;
 	}
 
+	void cursor(bool enable) {
+		GFX_ShowHWMouse(enable);
+	}
+
 }  // namespace pico_apix

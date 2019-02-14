@@ -766,6 +766,13 @@ static int implx_xpal(lua_State* ls) {
 	return 0;
 }
 
+static int implx_cursor(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto enable = lua_toboolean(ls, 1);
+	pico_apix::cursor(enable);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -825,6 +832,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("resetpal", implx_resetpal);
 	register_ext_cfunc("screen", implx_screen);
 	register_ext_cfunc("xpal", implx_xpal);
+	register_ext_cfunc("cursor", implx_cursor);
 }
 
 namespace pico_script {

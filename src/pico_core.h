@@ -109,6 +109,7 @@ namespace pico_apix {
 	void resetpal(uint8_t i);
 	void screen(uint16_t w, uint16_t h);
 	void xpal(bool enable);
+	void cursor(bool enable);
 }  // namespace pico_apix
 
 namespace pico_control {
