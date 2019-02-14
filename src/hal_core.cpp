@@ -37,7 +37,12 @@ void SYSLOG_LogMessage(const char* msg) {
 void GFX_Init(int x, int y) {
 	TraceFunction();
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
+	int init_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
+#ifndef TAC08_NO_JOYSTICK
+	init_flags = init_flags | SDL_INIT_JOYSTICK;
+#endif
+
+	if (SDL_Init(init_flags) != 0) {
 		throw_error("SDL_Init Error: ");
 	}
 
@@ -208,15 +213,15 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 	} else if (ev.type == SDL_MOUSEWHEEL) {
 		mouseWheel += ev.wheel.y;
 	} else if (ev.type == SDL_JOYAXISMOTION) {
-		logr << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value;
+		// logr << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value;
 		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -500);
 		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 500);
 		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -500);
 		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 500);
 	} else if (ev.type == SDL_JOYHATMOTION) {
-		logr << "hat: " << (int)ev.jhat.hat << "=" << ev.jhat.value;
+		// logr << "hat: " << (int)ev.jhat.hat << "=" << ev.jhat.value;
 	} else if (ev.type == SDL_JOYBUTTONDOWN || ev.type == SDL_JOYBUTTONUP) {
-		logr << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state;
+		// logr << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state;
 		set_state_bit(joyState, 4, ev.jbutton.button == 1, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 5, ev.jbutton.button == 0, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);
