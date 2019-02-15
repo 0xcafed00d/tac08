@@ -1192,4 +1192,9 @@ namespace pico_apix {
 		GFX_ShowHWMouse(enable);
 	}
 
+	void menu() {
+		if (!pico_control::is_pause_menu())
+			pauseMenuRequested = true;
+	}
+
 }  // namespace pico_apix

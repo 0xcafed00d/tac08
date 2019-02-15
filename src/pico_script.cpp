@@ -773,6 +773,12 @@ static int implx_cursor(lua_State* ls) {
 	return 0;
 }
 
+static int implx_showmenu(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	pico_apix::menu();
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -833,6 +839,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("screen", implx_screen);
 	register_ext_cfunc("xpal", implx_xpal);
 	register_ext_cfunc("cursor", implx_cursor);
+	register_ext_cfunc("showmenu", implx_showmenu);
 }
 
 namespace pico_script {

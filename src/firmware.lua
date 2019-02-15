@@ -82,6 +82,14 @@ __tac08__.resetgame = function ()
 	run()
 end
 
+__tac08__.p_in_r = function (px, py, rx, ry, rw, rh)
+	if (px < rx) return false
+	if (py < ry) return false
+	if (px > rx+rw) return false
+	if (py > ry+rh) return false
+	return true
+end
+
 
 -- pause menu 
 __tac08__.menu = {
@@ -98,6 +106,7 @@ __tac08__.menu = {
 	bg = 0,
 	t1 = 7,
 	t2 = 6,
+	old_lmb = 0,
 
 	resetmenu = function(m)
 		for i = 1, 5 do
@@ -142,10 +151,11 @@ __tac08__.menu = {
 		return false; 
 	end, 
 
+	-- returns true if menu is to dismissed
 	draw = function(m)
 		pal()
-		local w = 0
-		local h = 0 
+		local w = 0 -- width of menu
+		local h = 0 -- height of menu
 		for i in all(m.items) do
 			if i[1] ~= nil then
 				w = max(w, #i[1])
@@ -161,8 +171,24 @@ __tac08__.menu = {
 		rect(x+1, y+1, x+w-1, y+h-1, m.t1)
 		y += 8
 
+		local mx = stat(32)
+		local my = stat(33)
+		local lmb = band(stat(34), 1)
+
 		for i = 1, #m.items do
 			if m.items[i][1] ~= nil then
+				if __tac08__.p_in_r(mx, my, x, y, w, 7)  then
+					if lmb == 1 then 
+						m.current = i - 1
+					end
+					if lmb == 0 and m.old_lmb == 1 then
+						local f = m.items[m.current+1][2]
+						m.old_lmb = 0
+						if (f) f()
+						return true		
+					end 
+				end
+				
 				if i == m.current+1 then
 					print (">", x+6, y, m.t1)
 					print (m.items[i][1], x+12, y, m.t1)
@@ -172,6 +198,8 @@ __tac08__.menu = {
 				y += 8
 			end
 		end
+		m.old_lmb = lmb
+		return false
 	end
 }
 
@@ -179,8 +207,7 @@ __tac08__.do_menu = function()
 	if __tac08__.menu:update() then
 		return true
 	else
-		__tac08__.menu:draw()
-		return false
+		return __tac08__.menu:draw()
 	end
 end
 

@@ -3,6 +3,15 @@ version 16
 __lua__
 function _init()
 	poke(0x5f2d, 1)
+	apix = __tac08__
+	if apix then
+		apix.cursor(true)
+	end
+
+	menuitem (1, "item 1", function () printh("Item 1") end)
+	menuitem (2, "item 2", function () printh("Item 2") end)
+	menuitem (3, "item 3", function () printh("Item 3") end)
+	menuitem (4, "item 4", function () printh("Item 4") end)
 end
 
 function _update()
@@ -10,6 +19,9 @@ function _update()
 	y = stat(33)
 	b = stat(34)
 	w = stat(36)
+	if btnp(5) then
+		apix.showmenu()
+	end
 end
 
 function _draw()
