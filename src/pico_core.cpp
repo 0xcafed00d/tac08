@@ -1137,6 +1137,9 @@ namespace pico_api {
 			case 36:
 				ival = mouseState.wheel;
 				return 2;
+			case 102:
+				sval = TOSTRING(TAC08_PLATFORM);
+				return 1;
 			case 400:
 				sval = pico_cart::getCart()["base_path"];
 				return 1;

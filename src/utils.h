@@ -22,4 +22,7 @@ namespace utils {
 	}
 }  // namespace utils
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 #endif

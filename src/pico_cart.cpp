@@ -35,6 +35,7 @@ namespace pico_cart {
 
 		while (std::getline(s, line)) {  // TODO: handle errors
 
+
 			if (valid_sections.find(line) != valid_sections.end()) {
 				cur_sect = line;
 			} else {
