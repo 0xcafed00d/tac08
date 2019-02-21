@@ -310,7 +310,7 @@ std::string FILE_LoadFile(std::string name) {
 }
 
 std::string FILE_LoadGameState(std::string name) {
-	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
+	const char* path = SDL_GetPrefPath("0xcafed00d", "tac08");
 	name = std::string(path) + name;
 	SDL_free((void*)path);
 
@@ -318,7 +318,7 @@ std::string FILE_LoadGameState(std::string name) {
 }
 
 void FILE_SaveGameState(std::string name, const std::string& data) {
-	const char* path = SDL_GetPrefPath("simulatedsimian", "tac08");
+	const char* path = SDL_GetPrefPath("0xcafed00d", "tac08");
 	name = std::string(path) + name;
 	SDL_free((void*)path);
 
