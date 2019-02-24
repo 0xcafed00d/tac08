@@ -27,19 +27,25 @@ namespace pico_cart {
 	static std::set<std::string> valid_sections = {"__lua__", "__gfx__",   "__gff__",  "__map__",
 	                                               "__sfx__", "__music__", "__label__"};
 
-	void do_load(std::istream& s, sections& sect) {
-		path::test();
-
+	void do_load(std::istream& s, sections& cart) {
 		std::string line;
-		std::string cur_sect = "header";
 
-		while (std::getline(s, line)) {  // TODO: handle errors
-
-
-			if (valid_sections.find(line) != valid_sections.end()) {
-				cur_sect = line;
+		while (std::getline(s, line)) {
+			if (line.size() && line[0] == '#' && line.find("#include") == 0) {
+				std::string incfile = cart["base_path"] + utils::trimboth(line.substr(8));
+				logr << "Loading include file " << incfile;
+				std::string data = FILE_LoadFile(incfile);
+				if (data.size() == 0) {
+					throw error(std::string("failed to open include file: ") + incfile);
+				}
+				std::istringstream s(data);
+				do_load(s, cart);
 			} else {
-				sect[cur_sect] += line + "\n";
+				if (valid_sections.find(line) != valid_sections.end()) {
+					cart["cur_sect"] = line;
+				} else {
+					cart[cart["cur_sect"]] += line + "\n";
+				}
 			}
 		}
 	}
@@ -76,6 +82,7 @@ namespace pico_cart {
 	// if the filename begins with a $ then the path of the new cart of relative to the one callng
 	// load
 	void load(std::string filename) {
+		path::test();
 		logr << "Request cart load: " << filename;
 
 		filename = path::normalisePath(filename);
@@ -94,6 +101,7 @@ namespace pico_cart {
 		cart["filename"] = filename;
 		cart["base_path"] = path::getPath(filename);
 		cart["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
+		cart["cur_sect"] = "header";
 
 		std::istringstream s(data);
 		do_load(s, cart);

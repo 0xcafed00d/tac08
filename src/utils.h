@@ -20,6 +20,25 @@ namespace utils {
 			return max;
 		return n;
 	}
+
+	inline std::string trimleft(const std::string& str, const char* wschars = " \t") {
+		std::string result = str;
+
+		result.erase(0, str.find_first_not_of(wschars));
+		return result;
+	}
+
+	inline std::string trimright(const std::string& str, const char* wschars = " \t") {
+		std::string result = str;
+
+		result.erase(str.find_last_not_of(wschars) + 1);
+		return result;
+	}
+
+	inline std::string trimboth(const std::string& str, const char* wschars = " \t") {
+		return trimleft(trimright(str, wschars), wschars);
+	}
+
 }  // namespace utils
 
 #define STRINGIFY(x) #x
