@@ -27,12 +27,12 @@ namespace pico_cart {
 	static std::set<std::string> valid_sections = {"__lua__", "__gfx__",   "__gff__",  "__map__",
 	                                               "__sfx__", "__music__", "__label__"};
 
-	void do_load(std::istream& s, sections& cart) {
+	void do_load(std::istream& s, Cart& cart) {
 		std::string line;
 
 		while (std::getline(s, line)) {
 			if (line.size() && line[0] == '#' && line.find("#include") == 0) {
-				std::string incfile = cart["base_path"] + utils::trimboth(line.substr(8));
+				std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
 				logr << "Loading include file " << incfile;
 				std::string data = FILE_LoadFile(incfile);
 				if (data.size() == 0) {
@@ -42,9 +42,9 @@ namespace pico_cart {
 				do_load(s, cart);
 			} else {
 				if (valid_sections.find(line) != valid_sections.end()) {
-					cart["cur_sect"] = line;
+					cart.sections["cur_sect"] = line;
 				} else {
-					cart[cart["cur_sect"]] += line + "\n";
+					cart.sections[cart.sections["cur_sect"]] += line + "\n";
 				}
 			}
 		}
@@ -73,9 +73,9 @@ namespace pico_cart {
 		return res;
 	}
 
-	static sections cart;
+	static Cart cart;
 
-	sections& getCart() {
+	Cart& getCart() {
 		return cart;
 	}
 
@@ -87,8 +87,9 @@ namespace pico_cart {
 
 		filename = path::normalisePath(filename);
 
-		if (cart.find("base_path") != cart.end() && filename.length() && filename[0] == '$') {
-			filename = cart["base_path"] + filename.substr(1);
+		if (cart.sections.find("base_path") != cart.sections.end() && filename.length() &&
+		    filename[0] == '$') {
+			filename = cart.sections["base_path"] + filename.substr(1);
 		}
 
 		std::string data = FILE_LoadFile(filename);
@@ -98,21 +99,21 @@ namespace pico_cart {
 
 		logr << "Loading cart: " << filename;
 
-		cart["filename"] = filename;
-		cart["base_path"] = path::getPath(filename);
-		cart["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
-		cart["cur_sect"] = "header";
+		cart.sections["filename"] = filename;
+		cart.sections["base_path"] = path::getPath(filename);
+		cart.sections["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
+		cart.sections["cur_sect"] = "header";
 
 		std::istringstream s(data);
 		do_load(s, cart);
 	}
 
-	void extractCart(sections& sect) {
-		pico_control::set_sprite_data(sect["__gfx__"], sect["__gff__"]);
-		pico_control::set_map_data(sect["__map__"]);
-		pico_control::set_music_from_cart(sect["__music__"]);
-		pico_control::set_sfx_from_cart(sect["__sfx__"]);
-		pico_script::load(convert_emojis(sect["__lua__"]));
+	void extractCart(Cart& cart) {
+		pico_control::set_sprite_data(cart.sections["__gfx__"], cart.sections["__gff__"]);
+		pico_control::set_map_data(cart.sections["__map__"]);
+		pico_control::set_music_from_cart(cart.sections["__music__"]);
+		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);
+		pico_script::load(convert_emojis(cart.sections["__lua__"]));
 	}
 
 }  // namespace pico_cart

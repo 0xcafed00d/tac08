@@ -1141,10 +1141,10 @@ namespace pico_api {
 				sval = TOSTRING(TAC08_PLATFORM);
 				return 1;
 			case 400:
-				sval = pico_cart::getCart()["base_path"];
+				sval = pico_cart::getCart().sections["base_path"];
 				return 1;
 			case 401:
-				sval = pico_cart::getCart()["cart_name"];
+				sval = pico_cart::getCart().sections["cart_name"];
 				return 1;
 		}
 

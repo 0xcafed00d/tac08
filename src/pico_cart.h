@@ -11,11 +11,13 @@ namespace pico_cart {
 		using std::runtime_error::runtime_error;
 	};
 
-	typedef std::map<std::string, std::string> sections;
+	struct Cart {
+		std::map<std::string, std::string> sections;
+	};
 
 	void load(std::string filename);
-	void extractCart(sections& cart);
-	sections& getCart();
+	void extractCart(Cart& cart);
+	Cart& getCart();
 
 	std::string convert_emojis(std::string& lua);
 

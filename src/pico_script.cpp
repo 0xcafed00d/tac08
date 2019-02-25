@@ -7,6 +7,7 @@
 
 #include "hal_audio.h"
 #include "hal_core.h"
+#include "log.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
@@ -849,7 +850,9 @@ namespace pico_script {
 		init_scripting();
 		register_cfuncs();
 
+		logr << "loading file.....";
 		throw_error(luaL_loadbuffer(lstate, script.c_str(), script.size(), "main"));
+		logr << "running file.....";
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}
 

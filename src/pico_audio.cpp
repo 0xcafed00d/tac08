@@ -45,8 +45,9 @@ namespace pico_private {
 	void load_wavs() {
 		sfx_map[-1] = -1;
 		for (int n = 0; n < 64; n++) {
-			std::string name = pico_cart::getCart()["base_path"] +
-			                   pico_cart::getCart()["cart_name"] + std::to_string(n) + ".wav";
+			std::string name = pico_cart::getCart().sections["base_path"] +
+			                   pico_cart::getCart().sections["cart_name"] + std::to_string(n) +
+			                   ".wav";
 			try {
 				int id = AUDIO_LoadWav(name.c_str());
 				sfx_map[n] = id;
