@@ -44,10 +44,18 @@ namespace pico_cart {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
 				} else {
-					cart.sections[cart.sections["cur_sect"]] += line + "\n";
+					if (cart.sections["cur_sect"] == "__lua__") {
+						cart.source.push_back(line);
+					} else {
+						cart.sections[cart.sections["cur_sect"]] += line + "\n";
+					}
 				}
 			}
 		}
+	}
+
+	Cart::lineinfo getLineInfo(const Cart& cart, size_t lineNum) {
+		return Cart::lineinfo{};
 	}
 
 	std::string getCartName() {
@@ -58,7 +66,7 @@ namespace pico_cart {
 		return "";
 	}
 
-	std::string convert_emojis(std::string& lua) {
+	std::string convert_emojis(const std::string& lua) {
 		std::string res;
 		for (char32_t codepoint : utf8::CodepointIterator(lua)) {
 			if (codepoint < 0x80) {
@@ -83,6 +91,7 @@ namespace pico_cart {
 	// load
 	void load(std::string filename) {
 		path::test();
+
 		logr << "Request cart load: " << filename;
 
 		filename = path::normalisePath(filename);
@@ -97,8 +106,8 @@ namespace pico_cart {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
 
+		cart = Cart{};
 		logr << "Loading cart: " << filename;
-
 		cart.sections["filename"] = filename;
 		cart.sections["base_path"] = path::getPath(filename);
 		cart.sections["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
@@ -113,7 +122,7 @@ namespace pico_cart {
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);
 		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);
-		pico_script::load(convert_emojis(cart.sections["__lua__"]));
+		pico_script::load(cart);
 	}
 
 }  // namespace pico_cart

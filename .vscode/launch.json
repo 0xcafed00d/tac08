@@ -8,9 +8,9 @@
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/thing",
+			"program": "${workspaceFolder}/tac08",
 			"args": [
-				"../pico-8/roadstorm.p8"
+				"../pico-8-games/jetdude/jetdude.p8"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

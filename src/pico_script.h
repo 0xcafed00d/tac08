@@ -5,13 +5,15 @@
 
 #include "string"
 
+#include "pico_cart.h"
+
 namespace pico_script {
 
 	struct error : public std::runtime_error {
 		using std::runtime_error::runtime_error;
 	};
 
-	void load(std::string script);
+	void load(const pico_cart::Cart& cart);
 	bool run(std::string function, bool optional, bool& restarted);
 	bool do_menu();
 	void unload_scripting();

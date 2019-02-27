@@ -25,13 +25,20 @@ static std::deque<deferredAPICall_t> deferredAPICalls;
 
 static void throw_error(int err) {
 	if (err) {
-		pico_script::error e(lua_tostring(lstate, -1));
+		std::string msg = lua_tostring(lstate, -1);
+		auto errlnstart = msg.find(":");
+		auto errlnend = msg.find(":", errlnstart + 1);
+		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1));
+
+		logr << errline;
+
+		pico_script::error e(msg);
 		lua_pop(lstate, 1);
 		throw e;
 	}
 }
 
-//#define API_TRACE
+#define API_TRACE
 
 #ifdef API_TRACE
 
@@ -845,14 +852,17 @@ static void register_cfuncs() {
 
 namespace pico_script {
 
-	void load(std::string script) {
+	void load(const pico_cart::Cart& cart) {
 		unload_scripting();
 		init_scripting();
 		register_cfuncs();
 
-		logr << "loading file.....";
-		throw_error(luaL_loadbuffer(lstate, script.c_str(), script.size(), "main"));
-		logr << "running file.....";
+		std::string code;
+
+		for (size_t i = 0; i < cart.source.size(); i++) {
+			code += pico_cart::convert_emojis(cart.source[i]) + "\n";
+		}
+		throw_error(luaL_loadbuffer(lstate, code.c_str(), code.size(), "main"));
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}
 
