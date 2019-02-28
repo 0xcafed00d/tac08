@@ -30,12 +30,12 @@ static void throw_error(int err) {
 		auto errlnend = msg.find(":", errlnstart + 1);
 		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1)) - 1;
 
-		logr << errline;
-
 		auto li = pico_cart::getLineInfo(pico_cart::getCart(), errline);
-		std::string message = li.filename + " " + li.sourceLine + " " + msg.substr(errlnend);
 
-		pico_script::error e(message);
+		std::stringstream ss;
+		ss << li.filename << ":" << li.localLineNum << ":" << li.sourceLine << msg.substr(errlnend);
+
+		pico_script::error e(ss.str());
 		lua_pop(lstate, 1);
 		throw e;
 	}

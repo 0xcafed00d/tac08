@@ -28,8 +28,9 @@ namespace pico_cart {
 
 	void do_load(std::istream& s, Cart& cart, std::string filename);
 
-	bool check_include_file(const std::string& line, Cart& cart) {
+	bool check_include_file(const std::string& line, Cart& cart, int filenum) {
 		if (line.size() && line[0] == '#' && line.find("#include") == 0) {
+			cart.source.push_back(Cart::line{filenum, "-- " + line});
 			std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
 			logr << "Loading include file " << incfile;
 			std::string data = FILE_LoadFile(incfile);
@@ -49,7 +50,7 @@ namespace pico_cart {
 
 		std::string line;
 		while (std::getline(s, line)) {
-			if (!check_include_file(line, cart)) {
+			if (!check_include_file(line, cart, filenum)) {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
 				} else {
@@ -67,6 +68,19 @@ namespace pico_cart {
 		LineInfo li;
 		li.sourceLine = cart.source[lineNum].line;
 		li.filename = cart.files[cart.source[lineNum].file];
+		li.localLineNum = 0;
+
+		auto filenum = cart.source[lineNum].file;
+		for (int l = lineNum; l >= 0; l--) {
+			if (cart.source[l].file == filenum) {
+				li.localLineNum++;
+			}
+		}
+
+		// if its the main p8 file add extra to skip file header.
+		if (cart.source[lineNum].file == 0) {
+			li.localLineNum += 3;
+		}
 
 		return li;
 	}
