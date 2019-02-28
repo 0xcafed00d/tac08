@@ -28,11 +28,14 @@ static void throw_error(int err) {
 		std::string msg = lua_tostring(lstate, -1);
 		auto errlnstart = msg.find(":");
 		auto errlnend = msg.find(":", errlnstart + 1);
-		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1));
+		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1)) - 1;
 
 		logr << errline;
 
-		pico_script::error e(msg);
+		auto li = pico_cart::getLineInfo(pico_cart::getCart(), errline);
+		std::string message = li.filename + " " + li.sourceLine + " " + msg.substr(errlnend);
+
+		pico_script::error e(message);
 		lua_pop(lstate, 1);
 		throw e;
 	}
@@ -860,7 +863,7 @@ namespace pico_script {
 		std::string code;
 
 		for (size_t i = 0; i < cart.source.size(); i++) {
-			code += pico_cart::convert_emojis(cart.source[i]) + "\n";
+			code += pico_cart::convert_emojis(cart.source[i].line) + "\n";
 		}
 		throw_error(luaL_loadbuffer(lstate, code.c_str(), code.size(), "main"));
 		throw_error(lua_pcall(lstate, 0, 0, 0));

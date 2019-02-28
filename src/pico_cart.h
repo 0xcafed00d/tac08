@@ -14,20 +14,26 @@ namespace pico_cart {
 	};
 
 	struct Cart {
-		struct lineinfo {
-			std::string file;
-			size_t line;
+		struct line {
+			int file;
+			std::string line;
 		};
 
 		std::map<std::string, std::string> sections;
-		std::vector<std::string> source;
+		std::vector<line> source;
+		std::vector<std::string> files;
 	};
 
 	void load(std::string filename);
 	void extractCart(Cart& cart);
 	Cart& getCart();
 
-	Cart::lineinfo getLineInfo(const Cart& cart, size_t lineNum);
+	struct LineInfo {
+		std::string filename;
+		int localLineNum;
+		std::string sourceLine;
+	};
+	LineInfo getLineInfo(const Cart& cart, int lineNum);
 	std::string convert_emojis(const std::string& lua);
 
 }  // namespace pico_cart

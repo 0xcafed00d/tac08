@@ -22,30 +22,39 @@ std::map<char32_t, uint8_t> emoji = {
     {0x25a5, 0x99}};
 
 namespace pico_cart {
-	typedef std::map<std::string, std::string> sections;
 
 	static std::set<std::string> valid_sections = {"__lua__", "__gfx__",   "__gff__",  "__map__",
 	                                               "__sfx__", "__music__", "__label__"};
 
-	void do_load(std::istream& s, Cart& cart) {
-		std::string line;
+	void do_load(std::istream& s, Cart& cart, std::string filename);
 
+	bool check_include_file(const std::string& line, Cart& cart) {
+		if (line.size() && line[0] == '#' && line.find("#include") == 0) {
+			std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
+			logr << "Loading include file " << incfile;
+			std::string data = FILE_LoadFile(incfile);
+			if (data.size() == 0) {
+				throw error(std::string("failed to open include file: ") + incfile);
+			}
+			std::istringstream s(data);
+			do_load(s, cart, incfile);
+			return true;
+		}
+		return false;
+	}
+
+	void do_load(std::istream& s, Cart& cart, std::string filename) {
+		cart.files.push_back(filename);
+		int filenum = cart.files.size() - 1;
+
+		std::string line;
 		while (std::getline(s, line)) {
-			if (line.size() && line[0] == '#' && line.find("#include") == 0) {
-				std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
-				logr << "Loading include file " << incfile;
-				std::string data = FILE_LoadFile(incfile);
-				if (data.size() == 0) {
-					throw error(std::string("failed to open include file: ") + incfile);
-				}
-				std::istringstream s(data);
-				do_load(s, cart);
-			} else {
+			if (!check_include_file(line, cart)) {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
 				} else {
 					if (cart.sections["cur_sect"] == "__lua__") {
-						cart.source.push_back(line);
+						cart.source.push_back(Cart::line{filenum, line});
 					} else {
 						cart.sections[cart.sections["cur_sect"]] += line + "\n";
 					}
@@ -54,8 +63,12 @@ namespace pico_cart {
 		}
 	}
 
-	Cart::lineinfo getLineInfo(const Cart& cart, size_t lineNum) {
-		return Cart::lineinfo{};
+	LineInfo getLineInfo(const Cart& cart, int lineNum) {
+		LineInfo li;
+		li.sourceLine = cart.source[lineNum].line;
+		li.filename = cart.files[cart.source[lineNum].file];
+
+		return li;
 	}
 
 	std::string getCartName() {
@@ -87,8 +100,8 @@ namespace pico_cart {
 		return cart;
 	}
 
-	// if the filename begins with a $ then the path of the new cart of relative to the one callng
-	// load
+	// if the filename begins with a $ then the path of the new cart of relative to the one
+	// callng load
 	void load(std::string filename) {
 		path::test();
 
@@ -114,7 +127,7 @@ namespace pico_cart {
 		cart.sections["cur_sect"] = "header";
 
 		std::istringstream s(data);
-		do_load(s, cart);
+		do_load(s, cart, filename);
 	}
 
 	void extractCart(Cart& cart) {
