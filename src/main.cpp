@@ -45,12 +45,14 @@ int safe_main(int argc, char** argv) {
 
 	bool init = false;
 	bool restarted = true;
+	bool script_error = false;
 
 	while (EVT_ProcessEvents()) {
 		using namespace pico_api;
 
 		if (restarted == true) {
 			restarted = false;
+			script_error = false;
 			init = false;
 		}
 
@@ -60,27 +62,35 @@ int safe_main(int argc, char** argv) {
 			pico_control::set_input_state(INP_GetInputState());
 			pico_control::set_mouse_state(INP_GetMouseState());
 
-			if (!init) {
-				pico_script::run("_init", true, restarted);
-				init = true;
-			}
-
-			if (pico_control::is_pause_menu()) {
-				if (pico_script::do_menu()) {
-					pico_control::end_pause_menu();
-				}
-			} else {
-				uint64_t updateTimeStart = TIME_GetProfileTime();
-				if (!pico_script::run("_update", true, restarted)) {
-					if (pico_script::run("_update60", true, restarted)) {
-						target_ticks = 1;
+			if (!script_error) {
+				try {
+					if (!init) {
+						pico_script::run("_init", true, restarted);
+						init = true;
 					}
-				}
-				updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
-				uint64_t drawTimeStart = TIME_GetProfileTime();
-				pico_script::run("_draw", true, restarted);
-				drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
+					if (pico_control::is_pause_menu()) {
+						if (pico_script::do_menu()) {
+							pico_control::end_pause_menu();
+						}
+					} else {
+						uint64_t updateTimeStart = TIME_GetProfileTime();
+						if (!pico_script::run("_update", true, restarted)) {
+							if (pico_script::run("_update60", true, restarted)) {
+								target_ticks = 1;
+							}
+						}
+						updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
+
+						uint64_t drawTimeStart = TIME_GetProfileTime();
+						pico_script::run("_draw", true, restarted);
+						drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
+					}
+				} catch (pico_script::error& e) {
+					pico_control::displayerror(e.what());
+					logr << e.what();
+					script_error = true;
+				}
 			}
 
 			int buffer_w;
@@ -131,16 +141,6 @@ int main(int argc, char** argv) {
 	} catch (gfx_exception& err) {
 		logr << err.what();
 	} catch (pico_script::error& err) {
-		pico_control::displayerror(err.what());
-		int buffer_w;
-		int buffer_h;
-		pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
-		GFX_SetBackBufferSize(buffer_w, buffer_h);
-		GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
-		GFX_Flip();
-		TIME_Sleep(10000);
-
-		logr << err.what();
 	} catch (pico_cart::error& err) {
 		logr << err.what();
 	}
