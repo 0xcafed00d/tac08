@@ -131,6 +131,15 @@ int main(int argc, char** argv) {
 	} catch (gfx_exception& err) {
 		logr << err.what();
 	} catch (pico_script::error& err) {
+		pico_control::displayerror(err.what());
+		int buffer_w;
+		int buffer_h;
+		pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
+		GFX_SetBackBufferSize(buffer_w, buffer_h);
+		GFX_CopyBackBuffer(buffer, buffer_w, buffer_h);
+		GFX_Flip();
+		TIME_Sleep(10000);
+
 		logr << err.what();
 	} catch (pico_cart::error& err) {
 		logr << err.what();

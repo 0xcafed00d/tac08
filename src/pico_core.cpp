@@ -677,6 +677,23 @@ namespace pico_control {
 		pico_cart::extractCart(pico_cart::getCart());
 	}
 
+	void displayerror(const std::string& msg) {
+		using namespace pico_api;
+		using namespace pico_apix;
+		screen(256, 256);
+		cls();
+		pal();
+		palt();
+		size_t pos = 0;
+		int y = 8;
+		print("script error:", 0, 0);
+		while (pos < msg.size()) {
+			print(msg.substr(pos, 64), 0, y);
+			pos += 64;
+			y += 8;
+		}
+	}
+
 }  // namespace pico_control
 
 namespace pico_api {

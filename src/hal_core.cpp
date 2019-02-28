@@ -270,6 +270,10 @@ uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start) {
 	return ((now - start) * 1000) / SDL_GetPerformanceFrequency();
 }
 
+void TIME_Sleep(int ms) {
+	SDL_Delay(ms);
+}
+
 static void scaleMouse(int& x, int& y) {
 	double scale;
 	SDL_Rect r = getDisplayArea(sdlWin, &scale);

@@ -133,6 +133,8 @@ namespace pico_control {
 	uint8_t* get_sfx_data();
 	void restartCart();
 
+	void displayerror(const std::string& msg);
+
 }  // namespace pico_control
 
 #endif /* PICO_CORE_H */
