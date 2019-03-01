@@ -686,9 +686,9 @@ namespace pico_control {
 		palt();
 		size_t pos = 0;
 		int y = 8;
-		print("script error:", 0, 0);
+		print("script error:", 0, 0, 7);
 		while (pos < msg.size()) {
-			print(msg.substr(pos, 64), 0, y);
+			print(msg.substr(pos, 64), 0, y, 7);
 			pos += 64;
 			y += 8;
 		}
