@@ -67,7 +67,7 @@ clean:
 	@rm $(EXE) || true
 	
 run: all
-	./$(EXE) ../../pico-8-games/gridbug/gridbugx.p8 
+	./$(EXE)  
 
 copy: all
 	@cp tac08 ~/bin/ || true

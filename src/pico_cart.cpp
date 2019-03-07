@@ -32,6 +32,7 @@ namespace pico_cart {
 		if (line.size() && line[0] == '#' && line.find("#include") == 0) {
 			cart.source.push_back(Cart::line{filenum, "-- " + line});
 			std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
+			incfile = path::removeRelative(incfile);
 			logr << "Loading include file " << incfile;
 			std::string data = FILE_LoadFile(incfile);
 			if (data.size() == 0) {

@@ -2,8 +2,10 @@
 #define UTILS_H
 
 #include <string>
+#include <vector>
 
 namespace path {
+	std::string removeRelative(std::string path);
 	std::string normalisePath(std::string path);
 	std::string getPath(std::string path);
 	std::string getFilename(std::string path);
@@ -38,6 +40,10 @@ namespace utils {
 	inline std::string trimboth(const std::string& str, const char* wschars = " \t") {
 		return trimleft(trimright(str, wschars), wschars);
 	}
+
+	void splitString(const std::string& input,
+	                 std::vector<std::string>& output,
+	                 const char* sep_chars);
 
 }  // namespace utils
 
