@@ -13,14 +13,15 @@ namespace pico_cart {
 		using std::runtime_error::runtime_error;
 	};
 
+	struct Line {
+		int file;
+		std::string line;
+	};
+
 	struct Cart {
-		struct line {
-			int file;
-			std::string line;
-		};
 
 		std::map<std::string, std::string> sections;
-		std::vector<line> source;
+		std::vector<Line> source;
 		std::vector<std::string> files;
 	};
 

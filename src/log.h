@@ -96,6 +96,10 @@ class logr_trace_func__ {
 	}
 };
 
-#define TraceFunction() logr_trace_func__ trace_func_log__(__PRETTY_FUNCTION__)
+#ifdef _MSC_VER 
+	#define TraceFunction() logr_trace_func__ trace_func_log__(__FUNCSIG__)
+#else
+	#define TraceFunction() logr_trace_func__ trace_func_log__(__PRETTY_FUNCTION__)
+#endif
 
 #endif /* LOG_H */

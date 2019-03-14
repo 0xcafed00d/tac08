@@ -30,7 +30,7 @@ namespace pico_cart {
 
 	bool check_include_file(const std::string& line, Cart& cart, int filenum) {
 		if (line.size() && line[0] == '#' && line.find("#include") == 0) {
-			cart.source.push_back(Cart::line{filenum, "-- " + line});
+			cart.source.push_back(Line{filenum, std::string("-- ") + line});
 			std::string incfile = cart.sections["base_path"] + utils::trimboth(line.substr(8));
 			incfile = path::removeRelative(incfile);
 			logr << "Loading include file " << incfile;
@@ -56,7 +56,7 @@ namespace pico_cart {
 					cart.sections["cur_sect"] = line;
 				} else {
 					if (cart.sections["cur_sect"] == "__lua__") {
-						cart.source.push_back(Cart::line{filenum, line});
+						cart.source.push_back(Line{filenum, line});
 					} else {
 						cart.sections[cart.sections["cur_sect"]] += line + "\n";
 					}
@@ -154,3 +154,4 @@ namespace pico_cart {
 	}
 
 }  // namespace pico_cart
+ 
