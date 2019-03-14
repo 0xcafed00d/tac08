@@ -41,7 +41,7 @@ static void throw_error(int err) {
 	}
 }
 
-// #define API_TRACE
+//#define API_TRACE
 
 #ifdef API_TRACE
 
@@ -118,7 +118,7 @@ static int impl_cls(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::cls();
 	} else {
-		auto n = lua_tonumber(ls, 1);
+		auto n = lua_tonumber(ls, 1).toInt();
 		pico_api::cls(n);
 	}
 	return 0;
@@ -126,22 +126,22 @@ static int impl_cls(lua_State* ls) {
 
 static int impl_poke(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
-	auto v = luaL_checknumber(ls, 2);
+	auto a = luaL_checknumber(ls, 1).toInt();
+	auto v = luaL_checknumber(ls, 2).toInt();
 	pico_api::poke(a, v);
 	return 0;
 }
 
 static int impl_peek(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
+	auto a = luaL_checknumber(ls, 1).toInt();
 	lua_pushnumber(ls, pico_api::peek(a));
 	return 1;
 }
 
 static int impl_poke4(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
+	auto a = luaL_checknumber(ls, 1).toInt();
 	auto v = luaL_checknumber(ls, 2);
 	pico_api::poke4(a, v.bits());
 	return 0;
@@ -149,7 +149,7 @@ static int impl_poke4(lua_State* ls) {
 
 static int impl_peek4(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
+	auto a = luaL_checknumber(ls, 1).toInt();
 	uint32_t v = pico_api::peek4(a);
 	lua_pushnumber(ls, z8::fix32::frombits(v));
 	return 1;
@@ -157,7 +157,7 @@ static int impl_peek4(lua_State* ls) {
 
 static int impl_dget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
+	auto a = luaL_checknumber(ls, 1).toInt();
 	uint32_t v = pico_api::dget(a);
 	lua_pushnumber(ls, z8::fix32::frombits(v));
 	return 1;
@@ -165,7 +165,7 @@ static int impl_dget(lua_State* ls) {
 
 static int impl_dset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = luaL_checknumber(ls, 1);
+	auto a = luaL_checknumber(ls, 1).toInt();
 	auto v = luaL_checknumber(ls, 2);
 	pico_api::dset(a, v.bits());
 	return 0;
@@ -179,8 +179,8 @@ static int impl_btn(lua_State* ls) {
 		return 1;
 	}
 
-	auto n = luaL_checknumber(ls, 1);
-	auto p = luaL_optnumber(ls, 2, 0);
+	auto n = luaL_checknumber(ls, 1).toInt();
+	auto p = luaL_optnumber(ls, 2, 0).toInt();
 
 	auto val = pico_api::btn(n, p);
 
@@ -196,8 +196,8 @@ static int impl_btnp(lua_State* ls) {
 		return 1;
 	}
 
-	auto n = luaL_checknumber(ls, 1);
-	auto p = luaL_optnumber(ls, 2, 0);
+	auto n = luaL_checknumber(ls, 1).toInt();
+	auto p = luaL_optnumber(ls, 2, 0).toInt();
 
 	auto val = pico_api::btnp(n, p);
 
@@ -207,8 +207,8 @@ static int impl_btnp(lua_State* ls) {
 
 static int impl_mget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 
 	lua_pushnumber(ls, pico_api::mget(x, y));
 	return 1;
@@ -216,9 +216,9 @@ static int impl_mget(lua_State* ls) {
 
 static int impl_mset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
-	auto v = lua_tonumber(ls, 3);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
+	auto v = lua_tonumber(ls, 3).toInt();
 
 	pico_api::mset(x, y, v);
 	return 0;
@@ -226,11 +226,11 @@ static int impl_mset(lua_State* ls) {
 
 static int impl_fget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto n = lua_tonumber(ls, 1);
+	auto n = lua_tonumber(ls, 1).toInt();
 	if (lua_gettop(ls) == 1) {
 		lua_pushnumber(ls, pico_api::fget(n));
 	} else {
-		auto index = lua_tonumber(ls, 2);
+		auto index = lua_tonumber(ls, 2).toInt();
 		lua_pushboolean(ls, pico_api::fget(n, index));
 	}
 	return 1;
@@ -238,13 +238,13 @@ static int impl_fget(lua_State* ls) {
 
 static int impl_fset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto n = lua_tonumber(ls, 1);
+	auto n = lua_tonumber(ls, 1).toInt();
 	if (lua_gettop(ls) > 2) {
-		auto index = lua_tonumber(ls, 2);
+		auto index = lua_tonumber(ls, 2).toInt();
 		auto val = lua_toboolean(ls, 3);
 		pico_api::fset(n, index, val);
 	} else {
-		auto val = lua_tonumber(ls, 2);
+		auto val = lua_tonumber(ls, 2).toInt();
 		pico_api::fset(n, val);
 	}
 
@@ -256,7 +256,7 @@ static int impl_palt(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::palt();
 	} else {
-		auto a = lua_tonumber(ls, 1);
+		auto a = lua_tonumber(ls, 1).toInt();
 		auto f = lua_toboolean(ls, 2);
 		pico_api::palt(a, f);
 	}
@@ -267,28 +267,28 @@ static int impl_map(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto count = lua_gettop(ls);
 
-	auto cell_x = lua_tonumber(ls, 1);
-	auto cell_y = lua_tonumber(ls, 2);
+	auto cell_x = lua_tonumber(ls, 1).toInt();
+	auto cell_y = lua_tonumber(ls, 2).toInt();
 	if (count <= 2) {
 		pico_api::map(cell_x, cell_y);
 		return 0;
 	}
 
-	auto screen_x = lua_tonumber(ls, 3);
-	auto screen_y = lua_tonumber(ls, 4);
+	auto screen_x = lua_tonumber(ls, 3).toInt();
+	auto screen_y = lua_tonumber(ls, 4).toInt();
 	if (count <= 4) {
 		pico_api::map(cell_x, cell_y, screen_x, screen_y);
 		return 0;
 	}
 
-	auto cell_w = lua_tonumber(ls, 5);
-	auto cell_h = lua_tonumber(ls, 6);
+	auto cell_w = lua_tonumber(ls, 5).toInt();
+	auto cell_h = lua_tonumber(ls, 6).toInt();
 	if (count <= 6) {
 		pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h);
 		return 0;
 	}
 
-	auto layer = lua_tonumber(ls, 7);
+	auto layer = lua_tonumber(ls, 7).toInt();
 	pico_api::map(cell_x, cell_y, screen_x, screen_y, cell_w, cell_h, layer);
 	return 0;
 }
@@ -298,8 +298,8 @@ static int impl_pal(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::pal();
 	} else {
-		auto a = lua_tonumber(ls, 1);
-		auto b = lua_tonumber(ls, 2);
+		auto a = lua_tonumber(ls, 1).toInt();
+		auto b = lua_tonumber(ls, 2).toInt();
 		pico_api::pal(a, b);
 	}
 	return 0;
@@ -307,17 +307,17 @@ static int impl_pal(lua_State* ls) {
 
 static int impl_spr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto n = lua_tonumber(ls, 1);
-	auto x = lua_tonumber(ls, 2);
-	auto y = lua_tonumber(ls, 3);
+	auto n = lua_tonumber(ls, 1).toInt();
+	auto x = lua_tonumber(ls, 2).toInt();
+	auto y = lua_tonumber(ls, 3).toInt();
 
 	if (lua_gettop(ls) <= 3) {
 		pico_api::spr(n, x, y);
 		return 0;
 	}
 
-	auto w = lua_tonumber(ls, 4);
-	auto h = lua_tonumber(ls, 5);
+	auto w = lua_tonumber(ls, 4).toInt();
+	auto h = lua_tonumber(ls, 5).toInt();
 
 	if (lua_gettop(ls) <= 5) {
 		pico_api::spr(n, x, y, w, h);
@@ -334,20 +334,20 @@ static int impl_spr(lua_State* ls) {
 
 static int impl_sspr(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto sx = lua_tonumber(ls, 1);
-	auto sy = lua_tonumber(ls, 2);
-	auto sw = lua_tonumber(ls, 3);
-	auto sh = lua_tonumber(ls, 4);
-	auto dx = lua_tonumber(ls, 5);
-	auto dy = lua_tonumber(ls, 6);
+	auto sx = lua_tonumber(ls, 1).toInt();
+	auto sy = lua_tonumber(ls, 2).toInt();
+	auto sw = lua_tonumber(ls, 3).toInt();
+	auto sh = lua_tonumber(ls, 4).toInt();
+	auto dx = lua_tonumber(ls, 5).toInt();
+	auto dy = lua_tonumber(ls, 6).toInt();
 
 	if (lua_gettop(ls) <= 6) {
 		pico_api::sspr(sx, sy, sw, sh, dx, dy);
 		return 0;
 	}
 
-	auto dw = lua_tonumber(ls, 7);
-	auto dh = lua_tonumber(ls, 8);
+	auto dw = lua_tonumber(ls, 7).toInt();
+	auto dh = lua_tonumber(ls, 8).toInt();
 	auto flip_x = lua_toboolean(ls, 9);
 	auto flip_y = lua_toboolean(ls, 10);
 	pico_api::sspr(sx, sy, sw, sh, dx, dy, dw, dh, flip_x, flip_y);
@@ -357,15 +357,15 @@ static int impl_sspr(lua_State* ls) {
 
 static int impl_sset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 
 	if (lua_gettop(ls) <= 2) {
 		pico_api::sset(x, y);
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 3);
+	auto c = lua_tonumber(ls, 3).toInt();
 	pico_api::sset(x, y, c);
 
 	return 0;
@@ -373,8 +373,8 @@ static int impl_sset(lua_State* ls) {
 
 static int impl_sget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 
 	lua_pushnumber(ls, pico_api::sget(x, y));
 	return 1;
@@ -390,15 +390,15 @@ static int impl_print(lua_State* ls) {
 		return 0;
 	}
 
-	auto x = lua_tonumber(ls, 2);
-	auto y = lua_tonumber(ls, 3);
+	auto x = lua_tonumber(ls, 2).toInt();
+	auto y = lua_tonumber(ls, 3).toInt();
 	if (lua_gettop(ls) <= 3) {
 		auto s = luaL_tolstring(ls, 1, nullptr);
 		pico_api::print(s, x, y);
 		lua_remove(ls, -1);
 		return 0;
 	}
-	auto c = lua_tonumber(ls, 4);
+	auto c = lua_tonumber(ls, 4).toInt();
 	auto s = luaL_tolstring(ls, 1, nullptr);
 	pico_api::print(s, x, y, c);
 	lua_remove(ls, -1);
@@ -408,16 +408,16 @@ static int impl_print(lua_State* ls) {
 static int impl_cursor(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 	pico_api::cursor(x, y);
 	return 0;
 }
 
 static int impl_pget(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 
 	pico_api::colour_t p = pico_api::pget(x, y);
 	lua_pushnumber(ls, p);
@@ -426,15 +426,15 @@ static int impl_pget(lua_State* ls) {
 
 static int impl_pset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
 
 	if (lua_gettop(ls) <= 2) {
 		pico_api::pset(x, y);
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 3);
+	auto c = lua_tonumber(ls, 3).toInt();
 	pico_api::pset(x, y, c);
 	return 0;
 }
@@ -444,10 +444,10 @@ static int impl_clip(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::clip();
 	} else {
-		auto x = lua_tonumber(ls, 1);
-		auto y = lua_tonumber(ls, 2);
-		auto w = lua_tonumber(ls, 3);
-		auto h = lua_tonumber(ls, 4);
+		auto x = lua_tonumber(ls, 1).toInt();
+		auto y = lua_tonumber(ls, 2).toInt();
+		auto w = lua_tonumber(ls, 3).toInt();
+		auto h = lua_tonumber(ls, 4).toInt();
 
 		pico_api::clip(x, y, w, h);
 	}
@@ -457,17 +457,17 @@ static int impl_clip(lua_State* ls) {
 
 static int impl_rectfill(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = lua_tonumber(ls, 1);
-	auto y0 = lua_tonumber(ls, 2);
-	auto x1 = lua_tonumber(ls, 3);
-	auto y1 = lua_tonumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1).toInt();
+	auto y0 = lua_tonumber(ls, 2).toInt();
+	auto x1 = lua_tonumber(ls, 3).toInt();
+	auto y1 = lua_tonumber(ls, 4).toInt();
 
 	if (lua_gettop(ls) <= 4) {
 		pico_api::rectfill(x0, y0, x1, y1);
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 5);
+	auto c = lua_tonumber(ls, 5).toInt();
 	pico_api::rectfill(x0, y0, x1, y1, c);
 
 	return 0;
@@ -475,16 +475,16 @@ static int impl_rectfill(lua_State* ls) {
 
 static int impl_rect(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = lua_tonumber(ls, 1);
-	auto y0 = lua_tonumber(ls, 2);
-	auto x1 = lua_tonumber(ls, 3);
-	auto y1 = lua_tonumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1).toInt();
+	auto y0 = lua_tonumber(ls, 2).toInt();
+	auto x1 = lua_tonumber(ls, 3).toInt();
+	auto y1 = lua_tonumber(ls, 4).toInt();
 
 	if (lua_gettop(ls) <= 4) {
 		pico_api::rect(x0, y0, x1, y1);
 		return 0;
 	}
-	auto c = lua_tonumber(ls, 5);
+	auto c = lua_tonumber(ls, 5).toInt();
 	pico_api::rect(x0, y0, x1, y1, c);
 
 	return 0;
@@ -492,16 +492,16 @@ static int impl_rect(lua_State* ls) {
 
 static int impl_circfill(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
-	auto r = lua_tonumber(ls, 3);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
+	auto r = lua_tonumber(ls, 3).toInt();
 
 	if (lua_gettop(ls) <= 3) {
 		pico_api::circfill(x, y, r);
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 4);
+	auto c = lua_tonumber(ls, 4).toInt();
 	pico_api::circfill(x, y, r, c);
 
 	return 0;
@@ -509,15 +509,15 @@ static int impl_circfill(lua_State* ls) {
 
 static int impl_circ(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x = lua_tonumber(ls, 1);
-	auto y = lua_tonumber(ls, 2);
-	auto r = lua_tonumber(ls, 3);
+	auto x = lua_tonumber(ls, 1).toInt();
+	auto y = lua_tonumber(ls, 2).toInt();
+	auto r = lua_tonumber(ls, 3).toInt();
 
 	if (lua_gettop(ls) <= 3) {
 		pico_api::circ(x, y, r);
 		return 0;
 	}
-	auto c = lua_tonumber(ls, 4);
+	auto c = lua_tonumber(ls, 4).toInt();
 	pico_api::circ(x, y, r, c);
 
 	return 0;
@@ -525,17 +525,17 @@ static int impl_circ(lua_State* ls) {
 
 static int impl_line(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto x0 = lua_tonumber(ls, 1);
-	auto y0 = lua_tonumber(ls, 2);
-	auto x1 = lua_tonumber(ls, 3);
-	auto y1 = lua_tonumber(ls, 4);
+	auto x0 = lua_tonumber(ls, 1).toInt();
+	auto y0 = lua_tonumber(ls, 2).toInt();
+	auto x1 = lua_tonumber(ls, 3).toInt();
+	auto y1 = lua_tonumber(ls, 4).toInt();
 
 	if (lua_gettop(ls) <= 4) {
 		pico_api::line(x0, y0, x1, y1);
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 5);
+	auto c = lua_tonumber(ls, 5).toInt();
 	pico_api::line(x0, y0, x1, y1, c);
 	return 0;
 }
@@ -545,7 +545,7 @@ static int impl_fillp(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::fillp();
 	} else {
-		auto n = lua_tonumber(ls, 1);
+		auto n = lua_tonumber(ls, 1).toInt();
 		pico_api::fillp(n);
 	}
 	return 0;
@@ -555,13 +555,13 @@ static int impl_time(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	uint64_t t = TIME_GetTime_ms();
 	t = (t << 16) / 1000;
-	lua_pushnumber(ls, z8::fix32::frombits(t));
+	lua_pushnumber(ls, z8::fix32::frombits((uint32_t)t));
 	return 1;
 }
 
 static int impl_color(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto c = luaL_optnumber(ls, 1, 0);
+	auto c = luaL_optnumber(ls, 1, 0).toInt();
 	pico_api::color(c);
 	return 0;
 }
@@ -571,8 +571,8 @@ static int impl_camera(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::camera();
 	} else {
-		auto x = lua_tonumber(ls, 1);
-		auto y = lua_tonumber(ls, 2);
+		auto x = lua_tonumber(ls, 1).toInt();
+		auto y = lua_tonumber(ls, 2).toInt();
 		pico_api::camera(x, y);
 	}
 	return 0;
@@ -580,7 +580,7 @@ static int impl_camera(lua_State* ls) {
 
 static int impl_stat(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto k = luaL_checknumber(ls, 1);
+	auto k = luaL_checknumber(ls, 1).toInt();
 
 	std::string s;
 	int i;
@@ -600,9 +600,9 @@ static int impl_stat(lua_State* ls) {
 static int impl_music(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto nargs = lua_gettop(ls);
-	auto n = lua_tonumber(ls, 1);
-	auto fadems = lua_tonumber(ls, 2);
-	auto channelmask = lua_tonumber(ls, 3);
+	auto n = lua_tonumber(ls, 1).toInt();
+	auto fadems = lua_tonumber(ls, 2).toInt();
+	auto channelmask = lua_tonumber(ls, 3).toInt();
 
 	if (nargs == 1) {
 		pico_api::music(n);
@@ -618,10 +618,10 @@ static int impl_music(lua_State* ls) {
 static int impl_sfx(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto nargs = lua_gettop(ls);
-	auto n = lua_tonumber(ls, 1);
-	auto channel = lua_tonumber(ls, 2);
-	auto offset = lua_tonumber(ls, 3);
-	auto length = lua_tonumber(ls, 4);
+	auto n = lua_tonumber(ls, 1).toInt();
+	auto channel = lua_tonumber(ls, 2).toInt();
+	auto offset = lua_tonumber(ls, 3).toInt();
+	auto length = lua_tonumber(ls, 4).toInt();
 
 	if (nargs == 1) {
 		pico_api::sfx(n);
@@ -637,18 +637,18 @@ static int impl_sfx(lua_State* ls) {
 
 static int impl_memcpy(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto src_a = lua_tonumber(ls, 1);
-	auto dest_a = lua_tonumber(ls, 2);
-	auto len = lua_tonumber(ls, 3);
+	auto src_a = lua_tonumber(ls, 1).toInt();
+	auto dest_a = lua_tonumber(ls, 2).toInt();
+	auto len = lua_tonumber(ls, 3).toInt();
 	pico_api::memory_cpy(src_a, dest_a, len);
 	return 0;
 }
 
 static int impl_memset(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto a = lua_tonumber(ls, 1);
-	auto val = lua_tonumber(ls, 2);
-	auto len = lua_tonumber(ls, 3);
+	auto a = lua_tonumber(ls, 1).toInt();
+	auto val = lua_tonumber(ls, 2).toInt();
+	auto len = lua_tonumber(ls, 3).toInt();
 	pico_api::memory_set(a, val, len);
 	return 0;
 }
@@ -697,7 +697,7 @@ static int implx_wavload(lua_State* ls) {
 	try {
 		int id = AUDIO_LoadWav(name);
 		lua_pushnumber(ls, id);
-	} catch (audio_exception& e) {
+	} catch (audio_exception&) {
 		lua_pushnil(ls);
 	}
 	return 1;
@@ -705,36 +705,36 @@ static int implx_wavload(lua_State* ls) {
 
 static int implx_wavplay(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto id = luaL_checknumber(ls, 1);
-	auto chan = luaL_checknumber(ls, 2);
+	auto id = luaL_checknumber(ls, 1).toInt();
+	auto chan = luaL_checknumber(ls, 2).toInt();
 	if (lua_gettop(ls) == 3) {
 		bool loop = lua_toboolean(ls, 3);
 		AUDIO_Play(id, chan, loop);
 		return 0;
 	}
-	auto loop_start = luaL_checknumber(ls, 3);
-	auto loop_end = luaL_checknumber(ls, 4);
+	auto loop_start = luaL_checknumber(ls, 3).toInt();
+	auto loop_end = luaL_checknumber(ls, 4).toInt();
 	AUDIO_Play(id, chan, loop_start, loop_end);
 	return 0;
 }
 
 static int implx_wavstop(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto chan = luaL_checknumber(ls, 1);
+	auto chan = luaL_checknumber(ls, 1).toInt();
 	AUDIO_Stop(chan);
 	return 0;
 }
 
 static int implx_wavstoploop(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto chan = luaL_checknumber(ls, 1);
+	auto chan = luaL_checknumber(ls, 1).toInt();
 	AUDIO_StopLoop(chan);
 	return 0;
 }
 
 static int implx_wavplaying(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto chan = luaL_checknumber(ls, 1);
+	auto chan = luaL_checknumber(ls, 1).toInt();
 	bool b = AUDIO_isPlaying(chan);
 	lua_pushboolean(ls, b);
 	return 1;
@@ -742,10 +742,10 @@ static int implx_wavplaying(lua_State* ls) {
 
 static int implx_setpal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto i = luaL_checknumber(ls, 1);
-	auto r = luaL_checknumber(ls, 2);
-	auto g = luaL_checknumber(ls, 3);
-	auto b = luaL_checknumber(ls, 4);
+	auto i = luaL_checknumber(ls, 1).toInt();
+	auto r = luaL_checknumber(ls, 2).toInt();
+	auto g = luaL_checknumber(ls, 3).toInt();
+	auto b = luaL_checknumber(ls, 4).toInt();
 	pico_apix::setpal(i, r, g, b);
 	return 0;
 }
@@ -753,7 +753,7 @@ static int implx_setpal(lua_State* ls) {
 static int implx_resetpal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	if (lua_gettop(ls) == 1) {
-		auto i = luaL_checknumber(ls, 1);
+		auto i = luaL_checknumber(ls, 1).toInt();
 		pico_apix::resetpal(i);
 	} else {
 		pico_apix::resetpal();
@@ -764,8 +764,8 @@ static int implx_resetpal(lua_State* ls) {
 
 static int implx_screen(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	auto w = luaL_checknumber(ls, 1);
-	auto h = luaL_checknumber(ls, 2);
+	auto w = luaL_checknumber(ls, 1).toInt();
+	auto h = luaL_checknumber(ls, 2).toInt();
 	pico_apix::screen(w, h);
 	return 0;
 }

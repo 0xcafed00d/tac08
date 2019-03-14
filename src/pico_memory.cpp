@@ -12,7 +12,7 @@ namespace pico_ram {
 	}
 
 	void RAM::addMemoryArea(IMemoryArea* area) {
-		for (size_t i = 0; i < area->size() / 256; i++) {
+		for (int32_t i = 0; i < (int32_t)(area->size() / 256); i++) {
 			m_pages[(area->address() >> 8) + i] = area;
 		}
 	}

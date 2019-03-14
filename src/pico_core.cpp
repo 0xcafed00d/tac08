@@ -176,7 +176,7 @@ namespace pico_private {
 
 	static void restore_palette() {
 		for (size_t n = 0; n < currentGraphicsState->palette_map.size(); n++) {
-			currentGraphicsState->palette_map[n] = n;
+			currentGraphicsState->palette_map[n] = (colour_t)n;
 		}
 	}
 
@@ -498,7 +498,7 @@ namespace pico_private {
 		std::string result;
 		char buffer[16];
 		int pos = 0;
-		for (size_t n = addr; n < (addr + len); n += 4) {
+		for (int32_t n = addr; n < (addr + len); n += 4) {
 			sprintf(buffer, "%08x", peek4(n));
 			result += buffer;
 			pos++;
@@ -523,7 +523,7 @@ namespace pico_private {
 					buf[0] = data[n++];
 					buf[1] = data[n];
 				}
-				pico_api::poke(addr++, strtol(buf, nullptr, 16));
+				pico_api::poke(addr++, (uint8_t)strtol(buf, nullptr, 16));
 			}
 		}
 	}

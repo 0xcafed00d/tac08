@@ -51,6 +51,7 @@ namespace pico_cart {
 
 		std::string line;
 		while (std::getline(s, line)) {
+			line = utils::trimboth(line, " \n\r");
 			if (!check_include_file(line, cart, filenum)) {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
@@ -130,6 +131,7 @@ namespace pico_cart {
 		}
 
 		std::string data = FILE_LoadFile(filename);
+		logr << "loaded: " << data.size() << "bytes";
 		if (data.size() == 0) {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}

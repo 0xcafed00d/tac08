@@ -168,13 +168,13 @@ static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	double yscale = (double)winy / (double)screenHeight;
 
 	if (xscale * screenHeight > winy) {
-		r.w = yscale * screenWidth;
-		r.x = winx / 2 - r.w / 2;
+		r.w = (int)(yscale * screenWidth);
+		r.x = (int)(winx / 2 - r.w / 2);
 		if (scale)
 			*scale = yscale;
 	} else {
-		r.h = xscale * screenHeight;
-		r.y = winy / 2 - r.h / 2;
+		r.h = (int)(xscale * screenHeight);
+		r.y = (int)(winy / 2 - r.h / 2);
 		if (scale)
 			*scale = xscale;
 	}
@@ -279,8 +279,8 @@ static void scaleMouse(int& x, int& y) {
 	SDL_Rect r = getDisplayArea(sdlWin, &scale);
 	x -= r.x;
 	y -= r.y;
-	x = x / scale;
-	y = y / scale;
+	x = (int)(x / scale);
+	y = (int)(y / scale);
 }
 
 MouseState INP_GetMouseState() {
@@ -302,7 +302,7 @@ std::string FILE_LoadFile(std::string name) {
 	std::string data;
 	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "r");
 	if (file) {
-		size_t sz = SDL_RWsize(file);
+		size_t sz = (size_t)SDL_RWsize(file);
 		if (sz) {
 			data.resize(sz, ' ');
 			SDL_RWread(file, &data[0], sz, 1);
