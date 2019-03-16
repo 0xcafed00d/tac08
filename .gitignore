@@ -1,3 +1,7 @@
 *.o
 tac08
 todo.txt
+win-tac08/.vs/
+win-tac08/Release/
+win-tac08/Debug/
+      
