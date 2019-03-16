@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\utf8util">
+      <UniqueIdentifier>{020b8e3d-cfc8-4909-ae67-a60a51518519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\z8lua">
+      <UniqueIdentifier>{db242c36-ee19-4376-8878-b226d25c80df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win-tac08.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hal_audio.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hal_core.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\log.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_audio.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_cart.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_core.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_data.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_memory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pico_script.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utf8-util\utf8-util\utf8-util.h">
+      <Filter>Source Files\utf8util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\fix32.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lapi.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lauxlib.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lcode.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lctype.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\ldebug.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\ldo.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lfunc.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lgc.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\llex.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\llimits.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lmem.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lobject.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lopcodes.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lparser.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lstate.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lstring.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\ltable.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\ltests.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\ltm.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lua.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\luaconf.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lualib.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lundump.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lvm.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\z8lua\lzio.h">
+      <Filter>Source Files\z8lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="win-tac08.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="win-tac08.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\hal_audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hal_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_cart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pico_script.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utf8-util\utf8-util\utf8-util.cpp">
+      <Filter>Source Files\utf8util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lapi.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lauxlib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lbaselib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lbitlib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lcode.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lcorolib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lctype.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ldblib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ldebug.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ldo.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ldump.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lfunc.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lgc.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\linit.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\liolib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\llex.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lmathlib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lmem.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\loadlib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lobject.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lopcodes.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\loslib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lparser.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lpico8lib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lstate.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lstring.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lstrlib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ltable.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ltablib.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ltests.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\ltm.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lundump.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lvm.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\z8lua\lzio.c">
+      <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
