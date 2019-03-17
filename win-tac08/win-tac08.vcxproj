@@ -69,6 +69,14 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libsdl\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>copy /y $(SolutionDir)libsdl\lib\x86\SDL2.dll  $(OutDir)</Command>
+      <Message>copy SDL2.dll to output directory</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -92,6 +100,16 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libsdl\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>copy /y $(SolutionDir)libsdl\lib\x86\SDL2.dll  $(OutDir)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>copy SDL2.dll to output directory</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\config.h" />
