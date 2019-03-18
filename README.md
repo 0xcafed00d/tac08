@@ -48,7 +48,18 @@ where "cart" is the name of your original cartridge file. You need to have these
 
 
 ## How do I build tac08
-A makefile is supplied that will build tac08 for linux systems. It has been tested on Ubuntu 16.04 & 18.04, Rasbian on a Raspberry Pi 3, and a Crostini hosted debian install on a chromebook. It will probably work with little modification on a Apple Mac too, but I am not able to test that.
+
+### Windows
+
+A Visual Studio 2017 solution is provided in the tac08\win-tac08 directory. A copy of Visual Studio 2017 Community with C++ components installed is sufficient to build tac08.
+
+A copy of the libSDL2 header files, libraries and DLLs are included with the solution and do not need to be downloaded separately. 
+
+Simply open the solution file (tac08\win-tac08\win-tac08.sln) with VS2017, and select Build Solution. Binaries will be place in either the Release or Debug directories, depending on which build mode is selected. 
+
+### Linux & Mac
+
+A makefile is supplied that will build tac08 for linux systems & Mac OSX. It has been tested on Ubuntu 16.04 & 18.04, Rasbian on a Raspberry Pi 3, a Crostini hosted debian install on a chromebook, and a Mac. 
 
 Build scripts for other environments are not currently provided (because I have not written them yet :-). tac08 is written in standard c++11. The lua interpreter is a version of lua 5.2 modified to support the syntax changes Pico-8 requires, while the lua interpreter is written in C, the modifications require it to be compiled as C++. This modification was performed by Sam Hocevar https://github.com/samhocevar/z8lua
 
@@ -60,9 +71,14 @@ git clone --recurse-submodules https://github.com/0xcafed00d/tac08.git
 ```
 
 2. install sdl2.0 development libraries:
+
+For Debian based Linux distributions use apt. 
 ```
 sudo apt install libsdl2-dev
 ```
+Other distributions and the Mac will have other mechanisms for installing libraries.
+
+You may need to modify the SDL_PATH_LIB & SDL_PATH_INC variables in the makefile if your SDL libraries are not installed in a standard location. 
 
 3. build lua interpreter:
 ```
