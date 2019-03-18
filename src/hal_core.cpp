@@ -229,6 +229,10 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		set_state_bit(joyState, 4, ev.jbutton.button == 1, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 5, ev.jbutton.button == 0, (bool)ev.jbutton.state);
 		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);
+	} else if (ev.type == SDL_FINGERDOWN || ev.type == SDL_FINGERMOTION ||
+	           ev.type == SDL_FINGERUP) {
+		logr << "touch: "
+		     << "x=" << ev.tfinger.x << " y=" << ev.tfinger.y;
 	}
 }
 
