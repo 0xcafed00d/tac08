@@ -65,7 +65,7 @@ int safe_main(int argc, char** argv) {
 			if (!script_error) {
 				try {
 					if (!init) {
-						pico_script::run("_init", false, restarted);
+						pico_script::run("_init", true, restarted);
 						init = true;
 					}
 
@@ -75,7 +75,7 @@ int safe_main(int argc, char** argv) {
 						}
 					} else {
 						uint64_t updateTimeStart = TIME_GetProfileTime();
-						if (!pico_script::run("_update", false, restarted)) {
+						if (!pico_script::run("_update", true, restarted)) {
 							if (pico_script::run("_update60", true, restarted)) {
 								target_ticks = 1;
 							}
@@ -83,7 +83,7 @@ int safe_main(int argc, char** argv) {
 						updateTime += TIME_GetElapsedProfileTime_us(updateTimeStart);
 
 						uint64_t drawTimeStart = TIME_GetProfileTime();
-						pico_script::run("_draw", false, restarted);
+						pico_script::run("_draw", true, restarted);
 						drawTime += TIME_GetElapsedProfileTime_us(drawTimeStart);
 					}
 				} catch (pico_script::error& e) {
