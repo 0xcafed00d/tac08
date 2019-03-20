@@ -203,6 +203,52 @@ static inline void set_state_bit(uint8_t& state, uint8_t bit, bool condition, bo
 	}
 }
 
+struct touchInfo {
+	enum State { None = 0, JustPressed = 1, Pressed = 2, JustReleased = 4 };
+	int x = 0;
+	int y = 0;
+	int state = None;
+};
+
+static std::array<touchInfo, 8> touchState;
+
+static void flushTouchEvents() {
+	for (touchInfo& t : touchState) {
+		if (t.state & touchInfo::JustPressed) {
+			t.state &= ~touchInfo::JustPressed;
+		}
+
+		if (t.state == touchInfo::JustReleased) {
+			t.state = touchInfo::None;
+		}
+	}
+}
+
+static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
+	if (ev.fingerId < touchState.size()) {
+		touchInfo& ti = touchState[ev.fingerId];
+
+		int winx, winy;
+		SDL_GetWindowSize(sdlWin, &winx, &winy);
+
+		ti.x = ev.x * winx;
+		ti.y = ev.y * winy;
+		scaleMouse(ti.x, ti.y);
+
+		if (ev.type == SDL_FINGERDOWN) {
+			ti.state |= touchInfo::JustPressed;
+		}
+		if (ev.type == SDL_FINGERMOTION) {
+			ti.state |= touchInfo::JustPressed;
+		}
+		if (ev.type == SDL_FINGERUP) {
+			ti.state = touchInfo::JustReleased;
+		}
+	}
+
+	logr << "touch: x=" << ev.x << " y=" << ev.y << " fid=" << ev.fingerId << " tid=" << ev.touchId;
+}
+
 void INP_ProcessInputEvents(const SDL_Event& ev) {
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
@@ -231,13 +277,13 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		set_state_bit(joyState, 6, ev.jbutton.button == 7, (bool)ev.jbutton.state);
 	} else if (ev.type == SDL_FINGERDOWN || ev.type == SDL_FINGERMOTION ||
 	           ev.type == SDL_FINGERUP) {
-		logr << "touch: "
-		     << "x=" << ev.tfinger.x << " y=" << ev.tfinger.y;
+		processTouchEvent(ev.tfinger);
 	}
 }
 
 bool EVT_ProcessEvents() {
 	SDL_Event e;
+	flushTouchEvents();
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			return false;
