@@ -57,6 +57,7 @@ int safe_main(int argc, char** argv) {
 		}
 
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
+			HAL_StartFrame();
 			pico_control::frame_start();
 
 			pico_control::set_input_state(INP_GetInputState());
@@ -105,6 +106,7 @@ int safe_main(int argc, char** argv) {
 			gameFrameCount++;
 			pico_control::sound_tick();
 			pico_control::frame_end();
+			HAL_EndFrame();
 		}
 		systemFrameCount++;
 		GFX_Flip();

@@ -63,4 +63,7 @@ struct TouchInfo {
 uint8_t INP_GetTouchMask();
 TouchInfo INP_GetTouchInfo(int idx);
 
+void HAL_StartFrame();
+void HAL_EndFrame();
+
 #endif /* GFX_CORE_H */

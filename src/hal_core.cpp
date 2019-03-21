@@ -226,10 +226,10 @@ TouchInfo INP_GetTouchInfo(int idx) {
 static void flushTouchEvents() {
 	for (TouchInfo& t : touchState) {
 		if (t.state & TouchInfo::JustPressed) {
-			t.state &= ~TouchInfo::JustPressed;
+			t.state &= (~TouchInfo::JustPressed);
 		}
 
-		if (t.state == TouchInfo::JustReleased) {
+		if (t.state & TouchInfo::JustReleased) {
 			t.state = TouchInfo::None;
 		}
 	}
@@ -249,13 +249,13 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 		scaleMouse(ti.x, ti.y);
 
 		if (ev.type == SDL_FINGERDOWN) {
-			ti.state |= TouchInfo::JustPressed;
+			ti.state |= (TouchInfo::JustPressed | TouchInfo::Pressed);
 		}
 		if (ev.type == SDL_FINGERMOTION) {
-			ti.state |= TouchInfo::JustPressed;
+			ti.state |= TouchInfo::Pressed;
 		}
 		if (ev.type == SDL_FINGERUP) {
-			ti.state = TouchInfo::JustReleased;
+			ti.state |= TouchInfo::JustReleased;
 		}
 	}
 
@@ -296,7 +296,6 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 
 bool EVT_ProcessEvents() {
 	SDL_Event e;
-	flushTouchEvents();
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			return false;
@@ -410,4 +409,11 @@ std::string FILE_ReadClip() {
 
 void FILE_WriteClip(const std::string& data) {
 	SDL_SetClipboardText(data.c_str());
+}
+
+void HAL_StartFrame() {
+}
+
+void HAL_EndFrame() {
+	flushTouchEvents();
 }
