@@ -203,30 +203,43 @@ static inline void set_state_bit(uint8_t& state, uint8_t bit, bool condition, bo
 	}
 }
 
-struct touchInfo {
-	enum State { None = 0, JustPressed = 1, Pressed = 2, JustReleased = 4 };
-	int x = 0;
-	int y = 0;
-	int state = None;
-};
+static std::array<TouchInfo, 8> touchState;
 
-static std::array<touchInfo, 8> touchState;
+uint8_t INP_GetTouchMask() {
+	uint8_t mask = 0;
+	for (size_t n = 0; n < touchState.size(); n++) {
+		if (touchState[n].state != TouchInfo::None) {
+			mask |= (1 << n);
+		}
+	}
+	return mask;
+}
+
+TouchInfo INP_GetTouchInfo(int idx) {
+	if (idx < 0 && idx >= touchState.size()) {
+		return TouchInfo{};
+	} else {
+		return touchState[idx];
+	}
+}
 
 static void flushTouchEvents() {
-	for (touchInfo& t : touchState) {
-		if (t.state & touchInfo::JustPressed) {
-			t.state &= ~touchInfo::JustPressed;
+	for (TouchInfo& t : touchState) {
+		if (t.state & TouchInfo::JustPressed) {
+			t.state &= ~TouchInfo::JustPressed;
 		}
 
-		if (t.state == touchInfo::JustReleased) {
-			t.state = touchInfo::None;
+		if (t.state == TouchInfo::JustReleased) {
+			t.state = TouchInfo::None;
 		}
 	}
 }
 
+static void scaleMouse(int& x, int& y);
+
 static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 	if (ev.fingerId < touchState.size()) {
-		touchInfo& ti = touchState[ev.fingerId];
+		TouchInfo& ti = touchState[ev.fingerId];
 
 		int winx, winy;
 		SDL_GetWindowSize(sdlWin, &winx, &winy);
@@ -236,13 +249,13 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 		scaleMouse(ti.x, ti.y);
 
 		if (ev.type == SDL_FINGERDOWN) {
-			ti.state |= touchInfo::JustPressed;
+			ti.state |= TouchInfo::JustPressed;
 		}
 		if (ev.type == SDL_FINGERMOTION) {
-			ti.state |= touchInfo::JustPressed;
+			ti.state |= TouchInfo::JustPressed;
 		}
 		if (ev.type == SDL_FINGERUP) {
-			ti.state = touchInfo::JustReleased;
+			ti.state = TouchInfo::JustReleased;
 		}
 	}
 

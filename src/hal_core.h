@@ -53,4 +53,14 @@ struct MouseState {
 
 MouseState INP_GetMouseState();
 
+struct TouchInfo {
+	enum State { None = 0, JustPressed = 1, Pressed = 2, JustReleased = 4 };
+	int x = 0;
+	int y = 0;
+	int state = None;
+};
+
+uint8_t INP_GetTouchMask();
+TouchInfo INP_GetTouchInfo(int idx);
+
 #endif /* GFX_CORE_H */
