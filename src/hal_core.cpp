@@ -216,7 +216,7 @@ uint8_t INP_GetTouchMask() {
 }
 
 TouchInfo INP_GetTouchInfo(int idx) {
-	if (idx < 0 && idx >= touchState.size()) {
+	if (idx < 0 && idx >= (int)touchState.size()) {
 		return TouchInfo{};
 	} else {
 		return touchState[idx];
@@ -238,7 +238,7 @@ static void flushTouchEvents() {
 static void scaleMouse(int& x, int& y);
 
 static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
-	if (ev.fingerId < touchState.size()) {
+	if (ev.fingerId < (int)touchState.size()) {
 		TouchInfo& ti = touchState[ev.fingerId];
 
 		int winx, winy;

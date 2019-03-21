@@ -790,6 +790,23 @@ static int implx_showmenu(lua_State* ls) {
 	return 0;
 }
 
+static int implx_touchmask(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	uint8_t m = INP_GetTouchMask();
+	lua_pushnumber(ls, m);
+	return 1;
+}
+
+static int implx_touchstate(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto idx = luaL_checknumber(ls, 1).toInt();
+	TouchInfo ti = INP_GetTouchInfo(idx);
+	lua_pushnumber(ls, ti.x);
+	lua_pushnumber(ls, ti.y);
+	lua_pushnumber(ls, ti.state);
+	return 3;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -851,6 +868,8 @@ static void register_cfuncs() {
 	register_ext_cfunc("xpal", implx_xpal);
 	register_ext_cfunc("cursor", implx_cursor);
 	register_ext_cfunc("showmenu", implx_showmenu);
+	register_ext_cfunc("touchmask", implx_touchmask);
+	register_ext_cfunc("touchstate", implx_touchstate);
 }
 
 namespace pico_script {
