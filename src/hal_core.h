@@ -33,6 +33,7 @@ void FILE_WriteClip(const std::string& data);
 
 bool EVT_ProcessEvents();
 uint8_t INP_GetInputState();
+void INP_SetSimState(uint8_t state);
 
 uint32_t TIME_GetTime_ms();
 uint32_t TIME_GetElapsedTime_ms(uint32_t start);

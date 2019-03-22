@@ -191,6 +191,7 @@ void GFX_Flip() {
 
 static uint8_t keyState = 0;
 static uint8_t joyState = 0;
+static uint8_t simState = 0;
 static int mouseWheel = 0;
 
 static inline void set_state_bit(uint8_t& state, uint8_t bit, bool condition, bool value) {
@@ -307,7 +308,11 @@ bool EVT_ProcessEvents() {
 }
 
 uint8_t INP_GetInputState() {
-	return keyState | joyState;
+	return keyState | joyState | simState;
+}
+
+void INP_SetSimState(uint8_t state) {
+	simState = state;
 }
 
 uint32_t TIME_GetTime_ms() {
@@ -412,6 +417,7 @@ void FILE_WriteClip(const std::string& data) {
 }
 
 void HAL_StartFrame() {
+	simState = 0;
 }
 
 void HAL_EndFrame() {

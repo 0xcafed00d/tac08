@@ -807,6 +807,13 @@ static int implx_touchstate(lua_State* ls) {
 	return 3;
 }
 
+static int implx_siminput(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto state = luaL_checknumber(ls, 1).toInt();
+	pico_apix::siminput((uint8_t)state);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -870,6 +877,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("showmenu", implx_showmenu);
 	register_ext_cfunc("touchmask", implx_touchmask);
 	register_ext_cfunc("touchstate", implx_touchstate);
+	register_ext_cfunc("siminput", implx_siminput);
 }
 
 namespace pico_script {

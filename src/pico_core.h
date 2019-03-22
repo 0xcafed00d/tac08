@@ -111,6 +111,7 @@ namespace pico_apix {
 	void xpal(bool enable);
 	void cursor(bool enable);
 	void menu();
+	void siminput(uint8_t state);
 
 }  // namespace pico_apix
 

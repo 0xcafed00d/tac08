@@ -1217,4 +1217,8 @@ namespace pico_apix {
 			pauseMenuRequested = true;
 	}
 
+	void siminput(uint8_t state) {
+		INP_SetSimState(state);
+	}
+
 }  // namespace pico_apix
