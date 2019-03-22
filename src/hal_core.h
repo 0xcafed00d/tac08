@@ -61,6 +61,7 @@ struct TouchInfo {
 	int state = None;
 };
 
+bool INP_TouchAvailable();
 uint8_t INP_GetTouchMask();
 TouchInfo INP_GetTouchInfo(int idx);
 

@@ -797,6 +797,13 @@ static int implx_touchmask(lua_State* ls) {
 	return 1;
 }
 
+static int implx_touchavail(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	bool avail = INP_TouchAvailable();
+	lua_pushboolean(ls, avail);
+	return 1;
+}
+
 static int implx_touchstate(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto idx = luaL_checknumber(ls, 1).toInt();
@@ -877,6 +884,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("showmenu", implx_showmenu);
 	register_ext_cfunc("touchmask", implx_touchmask);
 	register_ext_cfunc("touchstate", implx_touchstate);
+	register_ext_cfunc("touchavail", implx_touchavail);
 	register_ext_cfunc("siminput", implx_siminput);
 }
 

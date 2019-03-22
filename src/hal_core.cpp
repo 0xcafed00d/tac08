@@ -74,6 +74,9 @@ void GFX_Init(int x, int y) {
 			logr << "Opened joystick 0";
 		}
 	}
+
+	int num = SDL_GetNumTouchDevices();
+	logr << "num touch devices: " << num;
 }
 
 void GFX_End() {
@@ -206,6 +209,10 @@ static inline void set_state_bit(uint8_t& state, uint8_t bit, bool condition, bo
 
 static std::array<TouchInfo, 8> touchState;
 
+bool INP_TouchAvailable() {
+	return SDL_GetNumTouchDevices() > 0;
+}
+
 uint8_t INP_GetTouchMask() {
 	uint8_t mask = 0;
 	for (size_t n = 0; n < touchState.size(); n++) {
@@ -260,7 +267,8 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 		}
 	}
 
-	logr << "touch: x=" << ev.x << " y=" << ev.y << " fid=" << ev.fingerId << " tid=" << ev.touchId;
+	// logr << "touch: x=" << ev.x << " y=" << ev.y << " fid=" << ev.fingerId << " tid=" <<
+	// ev.touchId;
 }
 
 void INP_ProcessInputEvents(const SDL_Event& ev) {
