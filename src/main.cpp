@@ -60,15 +60,16 @@ int safe_main(int argc, char** argv) {
 			HAL_StartFrame();
 			pico_control::frame_start();
 
-			pico_control::set_input_state(INP_GetInputState());
-			pico_control::set_mouse_state(INP_GetMouseState());
-
 			if (!script_error) {
 				try {
 					if (!init) {
 						pico_script::run("_init", true, restarted);
 						init = true;
 					}
+
+					pico_script::run("_pre_update", true, restarted);
+					pico_control::set_input_state(INP_GetInputState());
+					pico_control::set_mouse_state(INP_GetMouseState());
 
 					if (pico_control::is_pause_menu()) {
 						if (pico_script::do_menu()) {
