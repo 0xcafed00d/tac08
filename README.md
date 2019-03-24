@@ -55,7 +55,12 @@ A Visual Studio 2017 solution is provided in the tac08\win-tac08 directory. A co
 
 A copy of the libSDL2 header files, libraries and DLLs are included with the solution and do not need to be downloaded separately. 
 
-Simply open the solution file (tac08\win-tac08\win-tac08.sln) with VS2017, and select Build Solution. Binaries will be place in either the Release or Debug directories, depending on which build mode is selected. 
+1. first clone tac08 from github: 
+```
+git clone --recurse-submodules https://github.com/0xcafed00d/tac08.git
+```
+
+2. Simply open the solution file (tac08\win-tac08\win-tac08.sln) with VS2017, and select Build Solution. Binaries will be place in either the Release or Debug directories, depending on which build mode is selected. 
 
 ### Linux & Mac
 
