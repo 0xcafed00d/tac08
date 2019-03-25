@@ -247,13 +247,13 @@ static void scaleMouse(int& x, int& y);
 
 static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 	if (ev.fingerId < (int)touchState.size()) {
-		TouchInfo& ti = touchState[ev.fingerId];
+		TouchInfo& ti = touchState[(int)ev.fingerId];
 
 		int winx, winy;
 		SDL_GetWindowSize(sdlWin, &winx, &winy);
 
-		ti.x = ev.x * winx;
-		ti.y = ev.y * winy;
+		ti.x = (int)(ev.x * winx);
+		ti.y = (int)(ev.y * winy);
 		scaleMouse(ti.x, ti.y);
 
 		if (ev.type == SDL_FINGERDOWN) {
