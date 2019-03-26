@@ -52,7 +52,7 @@ namespace pico_private {
 				int id = AUDIO_LoadWav(name.c_str());
 				sfx_map[n] = id;
 			} catch (audio_exception& e) {
-				logr << "failed to load wav: " << e.what();
+				// logr << "failed to load wav: " << e.what();
 			}
 		}
 	}
