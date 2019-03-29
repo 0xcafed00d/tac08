@@ -165,7 +165,8 @@ __tac08__.menu = {
 		w = w*4+18
 		h = (h+2)*8-4
 
-		local x, y = 64 - w / 2, 64 - h / 2
+		local x = stat(410)/2 - w/2
+		local y = stat(411)/2 - h/2
 
 		rectfill(x, y, x+w, y+h, m.bg)
 		rect(x+1, y+1, x+w-1, y+h-1, m.t1)
