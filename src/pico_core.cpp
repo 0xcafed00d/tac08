@@ -1163,6 +1163,12 @@ namespace pico_api {
 			case 401:
 				sval = pico_cart::getCart().sections["cart_name"];
 				return 1;
+			case 410:
+				ival = buffer_size_x;
+				return 2;
+			case 411:
+				ival = buffer_size_y;
+				return 2;
 		}
 
 		ival = 0;
