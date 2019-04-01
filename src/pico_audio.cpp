@@ -173,6 +173,8 @@ namespace pico_api {
 					int lend = speed * (sfx_ptr->loopend + 1) - 1;
 					AUDIO_Play(wavid, channel, lstart, lend);
 				}
+			} else {
+				AUDIO_Stop(channel);
 			}
 		}
 		if (n == -1) {
