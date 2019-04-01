@@ -206,6 +206,8 @@ namespace pico_api {
 				int start = speed * offset;
 				int end = speed * (offset + length);
 				AUDIO_Play(wavid, channel, start, end, false);
+			} else {
+				AUDIO_Stop(channel);
 			}
 		}
 	}
