@@ -23,8 +23,8 @@ std::map<char32_t, uint8_t> emoji = {
 
 namespace pico_cart {
 
-	static std::set<std::string> valid_sections = {"__lua__", "__gfx__",   "__gff__",  "__map__",
-	                                               "__sfx__", "__music__", "__label__"};
+	static std::set<std::string> valid_sections = {"__lua__", "__gfx__", "__gfx8__",  "__gff__",
+	                                               "__map__", "__sfx__", "__music__", "__label__"};
 
 	void do_load(std::istream& s, Cart& cart, std::string filename);
 
@@ -147,8 +147,18 @@ namespace pico_cart {
 		do_load(s, cart, filename);
 	}
 
+	template <typename maptype, typename keytype>
+	bool keyInMap(const maptype& map, const keytype& key) {
+		return map.find(key) != map.end();
+	}
+
 	void extractCart(Cart& cart) {
-		pico_control::set_sprite_data(cart.sections["__gfx__"], cart.sections["__gff__"]);
+		if (keyInMap(cart.sections, "__gfx__")) {
+			pico_control::set_sprite_data(cart.sections["__gfx__"], cart.sections["__gff__"]);
+		}
+		if (keyInMap(cart.sections, "__gfx8__")) {
+			pico_control::set_sprite_data(cart.sections["__gfx8__"], cart.sections["__gff__"]);
+		}
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);
 		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);
@@ -156,4 +166,3 @@ namespace pico_cart {
 	}
 
 }  // namespace pico_cart
- 

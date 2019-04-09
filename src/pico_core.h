@@ -120,7 +120,7 @@ namespace pico_control {
 	void frame_start();
 	void frame_end();
 	pico_api::colour_t* get_buffer(int& width, int& height);
-	void set_sprite_data(std::string data, std::string flags);
+	void set_sprite_data(std::string data, std::string flags, bool tac08 = false);
 	void set_map_data(std::string data);
 	void set_font_data(std::string data);
 	void set_input_state(int state, int player = 0);

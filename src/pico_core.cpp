@@ -612,9 +612,9 @@ namespace pico_control {
 		return backbuffer;
 	}
 
-	void set_sprite_data(std::string data, std::string flags) {
+	void set_sprite_data(std::string data, std::string flags, bool tac08) {
 		TraceFunction();
-		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data);
+		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data, !tac08);
 		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
 	}
 
