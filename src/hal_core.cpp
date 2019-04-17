@@ -7,6 +7,7 @@
 #include "hal_core.h"
 
 #include "config.h"
+#include "crypt.h"
 #include "log.h"
 
 static SDL_Window* sdlWin = nullptr;
@@ -384,7 +385,7 @@ std::string FILE_LoadFile(std::string name) {
 		}
 		SDL_RWclose(file);
 	}
-
+	decrypt(data);
 	return data;
 }
 
@@ -396,7 +397,9 @@ std::string FILE_LoadGameState(std::string name) {
 	return FILE_LoadFile(name);
 }
 
-void FILE_SaveGameState(std::string name, const std::string& data) {
+void FILE_SaveGameState(std::string name, std::string data) {
+	encrypt(data);
+
 	const char* path = SDL_GetPrefPath("0xcafed00d", "tac08");
 	name = std::string(path) + name;
 	SDL_free((void*)path);
