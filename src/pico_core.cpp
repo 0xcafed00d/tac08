@@ -87,6 +87,8 @@ struct GraphicsState {
 	int clip_y2 = 128;
 	int camera_x = 0;
 	int camera_y = 0;
+	int line_x = 0;
+	int line_y = 0;
 	std::array<pico_api::colour_t, 256> palette_map;
 	std::array<bool, 256> transparent;
 	bool extendedPalette = false;
@@ -726,6 +728,12 @@ namespace pico_api {
 		return ram.peek(a);
 	}
 
+	uint16_t peek2(uint16_t a) {
+		uint16_t v = peek(a);
+		v |= uint32_t(peek(a + 1)) << 8;
+		return v;
+	}
+
 	uint32_t peek4(uint16_t a) {
 		uint32_t v = peek(a);
 		v |= uint32_t(peek(a + 1)) << 8;
@@ -741,6 +749,11 @@ namespace pico_api {
 		} else {
 			ram.poke(a, v);
 		}
+	}
+
+	void poke2(uint16_t a, uint16_t v) {
+		poke(a, v);
+		poke(a + 1, v >> 8);
 	}
 
 	void poke4(uint16_t a, uint32_t v) {
@@ -967,11 +980,18 @@ namespace pico_api {
 		}
 	}
 
+	void line(int x, int y) {
+		line(currentGraphicsState->line_x, currentGraphicsState->line_y, x, y,
+		     currentGraphicsState->fg);
+	}
+
 	void line(int x0, int y0, int x1, int y1) {
 		line(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
 	void line(int x0, int y0, int x1, int y1, uint16_t c) {
+		currentGraphicsState->line_x = x1;
+		currentGraphicsState->line_y = y1;
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
 		color(c);
@@ -1044,6 +1064,12 @@ namespace pico_api {
 	}
 
 	void cursor(int x, int y) {
+		currentGraphicsState->text_x = x;
+		currentGraphicsState->text_y = y;
+	}
+
+	void cursor(int x, int y, uint16_t c) {
+		color(c);
 		currentGraphicsState->text_x = x;
 		currentGraphicsState->text_y = y;
 	}

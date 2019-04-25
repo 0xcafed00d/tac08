@@ -31,8 +31,7 @@ function del(a, val)
 	if a != nil then
 		for k, v in ipairs(a) do
 			if val == v then
-				table.remove(a, k)
-				return
+				return table.remove(a, k)
 			end
 		end
 	end

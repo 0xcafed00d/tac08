@@ -19,9 +19,13 @@ namespace pico_api {
 	void palt();
 
 	uint8_t peek(uint16_t a);
+	uint16_t peek2(uint16_t a);
 	uint32_t peek4(uint16_t a);
+
 	void poke(uint16_t a, uint8_t v);
+	void poke2(uint16_t a, uint16_t v);
 	void poke4(uint16_t a, uint32_t v);
+
 	void memory_set(uint16_t a, uint8_t val, uint16_t len);
 	void memory_cpy(uint16_t dest_a, uint16_t src_a, uint16_t len);
 
@@ -62,6 +66,7 @@ namespace pico_api {
 	void circfill(int x, int y, int r);
 	void circfill(int x, int y, int r, uint16_t c);
 
+	void line(int x, int y);
 	void line(int x0, int y0, int x1, int y1);
 	void line(int x0, int y0, int x1, int y1, uint16_t c);
 
@@ -73,6 +78,7 @@ namespace pico_api {
 	void mset(int x, int y, uint8_t v);
 
 	void cursor(int x, int y);
+	void cursor(int x, int y, uint16_t c);
 	void print(std::string str);
 	void print(std::string str, int x, int y);
 	void print(std::string str, int x, int y, uint16_t c);

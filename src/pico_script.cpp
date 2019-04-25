@@ -139,6 +139,22 @@ static int impl_peek(lua_State* ls) {
 	return 1;
 }
 
+static int impl_poke2(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto a = luaL_checknumber(ls, 1).toInt();
+	auto v = luaL_checknumber(ls, 2);
+	pico_api::poke2(a, v.bits());
+	return 0;
+}
+
+static int impl_peek2(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto a = luaL_checknumber(ls, 1).toInt();
+	uint16_t v = pico_api::peek2(a);
+	lua_pushnumber(ls, z8::fix32::frombits(v));
+	return 1;
+}
+
 static int impl_poke4(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto a = luaL_checknumber(ls, 1).toInt();
@@ -410,7 +426,12 @@ static int impl_cursor(lua_State* ls) {
 
 	auto x = lua_tonumber(ls, 1).toInt();
 	auto y = lua_tonumber(ls, 2).toInt();
-	pico_api::cursor(x, y);
+	if (lua_gettop(ls) <= 2) {
+		pico_api::cursor(x, y);
+	} else {
+		auto c = lua_tonumber(ls, 3).toInt();
+		pico_api::cursor(x, y, c);
+	}
 	return 0;
 }
 
@@ -527,6 +548,12 @@ static int impl_line(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto x0 = lua_tonumber(ls, 1).toInt();
 	auto y0 = lua_tonumber(ls, 2).toInt();
+
+	if (lua_gettop(ls) <= 2) {
+		pico_api::line(x0, y0);
+		return 0;
+	}
+
 	auto x1 = lua_tonumber(ls, 3).toInt();
 	auto y1 = lua_tonumber(ls, 4).toInt();
 
@@ -830,6 +857,8 @@ static void register_cfuncs() {
 	register_cfunc("cls", impl_cls);
 	register_cfunc("poke", impl_poke);
 	register_cfunc("peek", impl_peek);
+	register_cfunc("poke2", impl_poke2);
+	register_cfunc("peek2", impl_peek2);
 	register_cfunc("poke4", impl_poke4);
 	register_cfunc("peek4", impl_peek4);
 	register_cfunc("dget", impl_dget);
