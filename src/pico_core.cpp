@@ -119,6 +119,7 @@ static uint8_t sfx_data[pico_ram::MEM_SFX_SIZE] = {0};
 
 static MapSheet mapSheet;
 static MapSheet* currentMapData = &mapSheet;
+static std::map<int, MapSheet> extendedMapSheets;
 
 static pico_ram::RAM ram;
 static pico_ram::SplitNibbleMemoryArea mem_gfx(spriteSheet.sprite_data,
@@ -1263,6 +1264,17 @@ namespace pico_apix {
 			memset(&extendedSpriteSheets[page], 0, sizeof(SpriteSheet));
 		}
 		currentSprData = &extendedSpriteSheets[page];
+	}
+
+	void maps() {
+		currentMapData = &mapSheet;
+	}
+
+	void maps(int page) {
+		if (extendedMapSheets.find(page) == extendedMapSheets.end()) {
+			memset(&extendedMapSheets[page], 0, sizeof(MapSheet));
+		}
+		currentMapData = &extendedMapSheets[page];
 	}
 
 }  // namespace pico_apix
