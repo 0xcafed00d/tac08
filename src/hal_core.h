@@ -27,7 +27,7 @@ void GFX_ShowHWMouse(bool show);
 
 std::string FILE_LoadFile(std::string name);
 std::string FILE_LoadGameState(std::string name);
-void FILE_SaveGameState(std::string name, const std::string& data);
+void FILE_SaveGameState(std::string name, std::string data);
 std::string FILE_ReadClip();
 void FILE_WriteClip(const std::string& data);
 
