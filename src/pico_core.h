@@ -119,6 +119,9 @@ namespace pico_apix {
 	void menu();
 	void siminput(uint8_t state);
 
+	void sprites();
+	void sprites(int page);
+
 }  // namespace pico_apix
 
 namespace pico_control {

@@ -106,6 +106,7 @@ struct SpriteSheet {
 static SpriteSheet fontSheet;
 static SpriteSheet spriteSheet;
 static SpriteSheet* currentSprData = &spriteSheet;
+static std::map<int, SpriteSheet> extendedSpriteSheets;
 
 struct MapSheet {
 	uint8_t map_data[128 * 64];
@@ -1251,6 +1252,17 @@ namespace pico_apix {
 
 	void siminput(uint8_t state) {
 		INP_SetSimState(state);
+	}
+
+	void sprites() {
+		currentSprData = &spriteSheet;
+	}
+
+	void sprites(int page) {
+		if (extendedSpriteSheets.find(page) == extendedSpriteSheets.end()) {
+			memset(&extendedSpriteSheets[page], 0, sizeof(SpriteSheet));
+		}
+		currentSprData = &extendedSpriteSheets[page];
 	}
 
 }  // namespace pico_apix

@@ -848,6 +848,16 @@ static int implx_siminput(lua_State* ls) {
 	return 0;
 }
 
+static int implx_sprites(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	if (lua_gettop(ls) == 0) {
+		pico_apix::sprites();
+	}
+	auto page = luaL_checknumber(ls, 1).toInt();
+	pico_apix::sprites(page);
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -915,6 +925,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("touchstate", implx_touchstate);
 	register_ext_cfunc("touchavail", implx_touchavail);
 	register_ext_cfunc("siminput", implx_siminput);
+	register_ext_cfunc("sprites", implx_sprites);
 }
 
 namespace pico_script {
