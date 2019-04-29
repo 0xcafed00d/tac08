@@ -382,8 +382,8 @@ std::string FILE_LoadFile(std::string name) {
 		if (sz) {
 			data.resize(sz, ' ');
 			SDL_RWread(file, &data[0], sz, 1);
+			SDL_RWclose(file);
 		}
-		SDL_RWclose(file);
 	}
 	decrypt(data);
 	return data;
@@ -407,8 +407,8 @@ void FILE_SaveGameState(std::string name, std::string data) {
 	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "w");
 	if (file) {
 		SDL_RWwrite(file, data.c_str(), data.length(), 1);
+		SDL_RWclose(file);
 	}
-	SDL_RWclose(file);
 }
 
 std::string FILE_ReadClip() {
