@@ -47,7 +47,12 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_Init Error: ");
 	}
 
-	sdlWin = SDL_CreateWindow("tac08", 100, 100, x, y, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	int window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+#ifdef TAC08_FULL_SCREEN
+	window_flags = window_flags | SDL_WINDOW_FULLSCREEN;
+#endif
+
+	sdlWin = SDL_CreateWindow("tac08", 100, 100, x, y, window_flags);
 	if (sdlWin == nullptr) {
 		throw_error("SDL_CreateWindow Error: ");
 	}
