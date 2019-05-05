@@ -380,6 +380,7 @@ MouseState INP_GetMouseState() {
 }
 
 std::string FILE_LoadFile(std::string name) {
+	logr << "loading file: " << name;
 	std::string data;
 	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "r");
 	if (file) {
@@ -387,6 +388,8 @@ std::string FILE_LoadFile(std::string name) {
 		if (sz) {
 			data.resize(sz, ' ');
 			SDL_RWread(file, &data[0], sz, 1);
+			logr << "  " << sz << " bytes loaded";
+
 			SDL_RWclose(file);
 		}
 	}
@@ -409,10 +412,13 @@ void FILE_SaveGameState(std::string name, std::string data) {
 	name = std::string(path) + name;
 	SDL_free((void*)path);
 
+	logr << "writing file: " << name << " bytes: " << data.length();
+
 	SDL_RWops* file = SDL_RWFromFile(name.c_str(), "w");
 	if (file) {
 		SDL_RWwrite(file, data.c_str(), data.length(), 1);
 		SDL_RWclose(file);
+		logr << "    file writen ";
 	}
 }
 
