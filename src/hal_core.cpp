@@ -438,6 +438,14 @@ void FILE_WriteClip(const std::string& data) {
 	SDL_SetClipboardText(data.c_str());
 }
 
+std::string FILE_GetDefaultCartName() {
+	const char* val = SDL_GetHint("TAC08_DEFAULT_CART_NAME");
+	if (val == nullptr) {
+		return "cart.p8";
+	}
+	return val;
+}
+
 void HAL_StartFrame() {
 	simState = 0;
 }

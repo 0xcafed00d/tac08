@@ -20,7 +20,7 @@ int safe_main(int argc, char** argv) {
 	pico_data::load_font_data();
 
 	if (argc == 1) {
-		pico_cart::load("cart.p8");
+		pico_cart::load(FILE_GetDefaultCartName());
 		pico_cart::extractCart(pico_cart::getCart());
 	} else {
 		if (argc > 1) {
