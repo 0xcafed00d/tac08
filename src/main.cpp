@@ -59,6 +59,7 @@ int safe_main(int argc, char** argv) {
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 			HAL_StartFrame();
 			pico_control::frame_start();
+			pico_control::sound_tick();
 
 			if (!script_error) {
 				try {
@@ -105,7 +106,7 @@ int safe_main(int argc, char** argv) {
 
 			ticks = TIME_GetTime_ms();
 			gameFrameCount++;
-			pico_control::sound_tick();
+
 			pico_control::frame_end();
 			HAL_EndFrame();
 		}

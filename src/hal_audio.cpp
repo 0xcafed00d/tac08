@@ -20,7 +20,7 @@ struct Wav {
 };
 
 struct Channel {
-	Wav* wav = nullptr;
+	Wav wav = {0};
 	uint32_t current = 0;
 	bool loop = false;
 	bool playing = false;
@@ -51,7 +51,7 @@ inline int16_t getNextSample(Channel& c) {
 			return 0;
 		}
 	}
-	return c.wav->sampleData[c.current++];
+	return c.wav.sampleData[c.current++];
 }
 
 inline int16_t clamp(int32_t s) {
@@ -76,6 +76,7 @@ static void callback(void* userdata, uint8_t* stream, int len) {
 
 void AUDIO_Init() {
 	TraceFunction();
+
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
 		throw_error("SDL_Init Error: ");
 	}
@@ -133,20 +134,26 @@ int AUDIO_LoadWav(const char* name, bool trim) {
 	loadedWavs.push_back(wav);
 	SDL_UnlockAudioDevice(audioDevice);
 
-	logr << "loaded wav: " << name << " freq: " << wav.spec.freq << " samples: " << wav.numSamples
+	int id = loadedWavs.size() - 1;
+
+	logr << "loaded wav: " << name << " id: " << id << " freq: " << wav.spec.freq
+	     << " samples: " << wav.numSamples
 	     << " duration: " << (double)wav.numSamples / (double)wav.spec.freq;
 
-	return loadedWavs.size() - 1;
+	return id;
 }
 
 void AUDIO_Play(int id, int chan, bool loop) {
+	if (id >= (int)loadedWavs.size())
+		return;
+
 	Channel ci;
-	ci.wav = &loadedWavs[id];
+	ci.wav = loadedWavs[id];
 	ci.loop = loop;
 	ci.playing = true;
 
 	ci.start = 0;
-	ci.end = ci.wav->numSamples;
+	ci.end = ci.wav.numSamples;
 	ci.loop_start = ci.start;
 	ci.loop_end = ci.end;
 	ci.current = ci.start;
@@ -162,13 +169,16 @@ static uint32_t pos2sample(int pos, int frequency) {
 }
 
 void AUDIO_Play(int id, int chan, int start, int end, bool loop) {
+	if (id >= (int)loadedWavs.size())
+		return;
+
 	Channel ci;
-	ci.wav = &loadedWavs[id];
+	ci.wav = loadedWavs[id];
 	ci.loop = loop;
 	ci.playing = true;
 
-	ci.start = std::min(pos2sample(start, ci.wav->spec.freq), ci.wav->numSamples);
-	ci.end = std::min(pos2sample(end, ci.wav->spec.freq), ci.wav->numSamples);
+	ci.start = std::min(pos2sample(start, ci.wav.spec.freq), ci.wav.numSamples);
+	ci.end = std::min(pos2sample(end, ci.wav.spec.freq), ci.wav.numSamples);
 	ci.loop_start = ci.start;
 	ci.loop_end = ci.end;
 	ci.current = ci.start;
@@ -179,15 +189,18 @@ void AUDIO_Play(int id, int chan, int start, int end, bool loop) {
 }
 
 void AUDIO_Play(int id, int chan, int loop_start, int loop_end) {
+	if (id >= (int)loadedWavs.size())
+		return;
+
 	Channel ci;
-	ci.wav = &loadedWavs[id];
+	ci.wav = loadedWavs[id];
 	ci.loop = true;
 	ci.playing = true;
 
 	ci.start = 0;
-	ci.end = ci.wav->numSamples;
-	ci.loop_start = std::min(pos2sample(loop_start, ci.wav->spec.freq), ci.end);
-	ci.loop_end = std::min(pos2sample(loop_end, ci.wav->spec.freq), ci.end);
+	ci.end = ci.wav.numSamples;
+	ci.loop_start = std::min(pos2sample(loop_start, ci.wav.spec.freq), ci.end);
+	ci.loop_end = std::min(pos2sample(loop_end, ci.wav.spec.freq), ci.end);
 	ci.current = ci.start;
 
 	SDL_LockAudioDevice(audioDevice);
