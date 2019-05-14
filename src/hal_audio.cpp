@@ -15,19 +15,19 @@ static const int NUM_CHANNELS = config::AUDIO_CHANNELS;
 
 struct Wav {
 	SDL_AudioSpec spec;
-	int16_t* sampleData;
-	uint32_t numSamples;
+	int16_t* sampleData = 0;
+	uint32_t numSamples = 0;
 };
 
 struct Channel {
-	Wav wav = {0};
+	Wav wav;
 	uint32_t current = 0;
 	bool loop = false;
 	bool playing = false;
-	uint32_t start;
-	uint32_t end;
-	uint32_t loop_start;
-	uint32_t loop_end;
+	uint32_t start = 0;
+	uint32_t end = 0;
+	uint32_t loop_start = 0;
+	uint32_t loop_end = 0;
 };
 
 std::vector<Wav> loadedWavs;
