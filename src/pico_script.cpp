@@ -721,12 +721,12 @@ static int implx_wrstr(lua_State* ls) {
 static int implx_wavload(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto name = luaL_checkstring(ls, 1);
-	try {
-		int id = AUDIO_LoadWav(name);
-		lua_pushnumber(ls, id);
-	} catch (audio_exception&) {
+	int id = pico_apix::wavload(name);
+	if (id < 0)
 		lua_pushnil(ls);
-	}
+	else
+		lua_pushnumber(ls, id);
+
 	return 1;
 }
 

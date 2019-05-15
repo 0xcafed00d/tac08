@@ -220,3 +220,14 @@ namespace pico_api {
 	}
 
 }  // namespace pico_api
+
+namespace pico_apix {
+	int wavload(std::string filename) {
+		filename = pico_cart::getCart().sections["base_path"] + filename;
+		try {
+			return AUDIO_LoadWav(filename.c_str());
+		} catch (audio_exception&) {
+			return -1;
+		}
+	}
+}  // namespace pico_apix
