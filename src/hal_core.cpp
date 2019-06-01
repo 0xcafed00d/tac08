@@ -47,7 +47,7 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_Init Error: ");
 	}
 
-	int window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+	int window_flags = SDL_WINDOW_SHOWN;
 #ifdef TAC08_FULL_SCREEN
 	window_flags = window_flags | SDL_WINDOW_FULLSCREEN;
 #endif
@@ -100,6 +100,11 @@ void GFX_End() {
 		SDL_DestroyTexture(sdlTex);
 	}
 	SDL_Quit();
+}
+
+void GFX_ToggleFullScreen() {
+	bool fullNow = (SDL_GetWindowFlags(sdlWin) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
+	SDL_SetWindowFullscreen(sdlWin, fullNow ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
 
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
@@ -278,6 +283,10 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 }
 
 void INP_ProcessInputEvents(const SDL_Event& ev) {
+	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_F11) {
+		GFX_ToggleFullScreen();
+		return;
+	}
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);
