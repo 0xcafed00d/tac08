@@ -301,10 +301,10 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 		mouseWheel += ev.wheel.y;
 	} else if (ev.type == SDL_JOYAXISMOTION) {
 		// logr << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value;
-		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -500);
-		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 500);
-		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -500);
-		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 500);
+		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -1500);
+		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 1500);
+		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -1500);
+		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 1500);
 	} else if (ev.type == SDL_JOYHATMOTION) {
 		// logr << "hat: " << (int)ev.jhat.hat << "=" << ev.jhat.value;
 	} else if (ev.type == SDL_JOYBUTTONDOWN || ev.type == SDL_JOYBUTTONUP) {
