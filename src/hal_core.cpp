@@ -47,7 +47,7 @@ void GFX_Init(int x, int y) {
 		throw_error("SDL_Init Error: ");
 	}
 
-	int window_flags = SDL_WINDOW_SHOWN;
+	int window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 #ifdef TAC08_FULL_SCREEN
 	window_flags = window_flags | SDL_WINDOW_FULLSCREEN;
 #endif
