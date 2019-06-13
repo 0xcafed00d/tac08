@@ -69,4 +69,6 @@ TouchInfo INP_GetTouchInfo(int idx);
 void HAL_StartFrame();
 void HAL_EndFrame();
 
+void PLATFORM_OpenURL(std::string url);
+
 #endif /* GFX_CORE_H */

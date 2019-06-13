@@ -3,6 +3,9 @@
 #include <SDL2/SDL_rwops.h>
 #include <array>
 #include <string>
+#ifdef __ANDROID__
+#include <jni.h>
+#endif
 
 #include "hal_core.h"
 
@@ -461,4 +464,23 @@ void HAL_StartFrame() {
 
 void HAL_EndFrame() {
 	flushTouchEvents();
+}
+
+void PLATFORM_OpenURL(std::string url) {
+#ifdef __ANDROID__
+	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+	jclass clazz(env->GetObjectClass(activity));
+	jmethodID method_id = env->GetMethodID(clazz, "openURL", "(Ljava/lang/String;)V");
+
+	if (method_id) {
+		jstring jurl = env->NewStringUTF(url.c_str());
+		env->CallVoidMethod(activity, method_id, jurl);
+	} else {
+		logr << "SDLActivity.openURL not found";
+	}
+
+	env->DeleteLocalRef(activity);
+	env->DeleteLocalRef(clazz);
+#endif
 }

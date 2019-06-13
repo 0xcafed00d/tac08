@@ -868,6 +868,15 @@ static int implx_maps(lua_State* ls) {
 	return 0;
 }
 
+static int implx_open_url(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto s = luaL_checkstring(ls, 1);
+	if (s) {
+		PLATFORM_OpenURL(s);
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -937,6 +946,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("siminput", implx_siminput);
 	register_ext_cfunc("sprites", implx_sprites);
 	register_ext_cfunc("maps", implx_maps);
+	register_ext_cfunc("open_url", implx_open_url);
 }
 
 namespace pico_script {
