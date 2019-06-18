@@ -176,6 +176,10 @@ void GFX_ShowHWMouse(bool show) {
 	SDL_ShowCursor(show);
 }
 
+void GFX_GetDisplayArea(int* w, int* h){
+	SDL_GetRendererOutputSize(sdlRen, w, h);
+}
+
 static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	int winx, winy;
 	SDL_GetWindowSize(win, &winx, &winy);
