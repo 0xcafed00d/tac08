@@ -288,8 +288,11 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 void INP_ProcessInputEvents(const SDL_Event& ev) {
 	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_F11) {
 		GFX_ToggleFullScreen();
-		return;
+		return true;
 	}
+	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_q && ev.key.keysym.mod == KMOD_CTLR) {
+		return false;
+	}	
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);
@@ -319,6 +322,7 @@ void INP_ProcessInputEvents(const SDL_Event& ev) {
 	           ev.type == SDL_FINGERUP) {
 		processTouchEvent(ev.tfinger);
 	}
+	return true;
 }
 
 bool EVT_ProcessEvents() {
@@ -327,7 +331,7 @@ bool EVT_ProcessEvents() {
 		if (e.type == SDL_QUIT) {
 			return false;
 		} else {
-			INP_ProcessInputEvents(e);
+			return INP_ProcessInputEvents(e);
 		}
 	}
 	return true;
