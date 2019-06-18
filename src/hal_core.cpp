@@ -176,7 +176,7 @@ void GFX_ShowHWMouse(bool show) {
 	SDL_ShowCursor(show);
 }
 
-void GFX_GetDisplayArea(int* w, int* h){
+void GFX_GetDisplayArea(int* w, int* h) {
 	SDL_GetRendererOutputSize(sdlRen, w, h);
 }
 
@@ -289,14 +289,14 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 	// ev.touchId;
 }
 
-void INP_ProcessInputEvents(const SDL_Event& ev) {
+bool INP_ProcessInputEvents(const SDL_Event& ev) {
 	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_F11) {
 		GFX_ToggleFullScreen();
 		return true;
 	}
-	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_q && ev.key.keysym.mod == KMOD_CTLR) {
+	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_q && (ev.key.keysym.mod & KMOD_CTRL)) {
 		return false;
-	}	
+	}
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);

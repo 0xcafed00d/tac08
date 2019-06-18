@@ -880,7 +880,7 @@ static int implx_open_url(lua_State* ls) {
 static int implx_dispsize(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	int x, y;
-	TouchInfo ti = GFX_GetDisplayArea(&x, &y);
+	GFX_GetDisplayArea(&x, &y);
 	lua_pushnumber(ls, x);
 	lua_pushnumber(ls, y);
 	return 2;
