@@ -877,6 +877,15 @@ static int implx_open_url(lua_State* ls) {
 	return 0;
 }
 
+static int implx_dispsize(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	int x, y;
+	TouchInfo ti = GFX_GetDisplayArea(&x, &y);
+	lua_pushnumber(ls, x);
+	lua_pushnumber(ls, y);
+	return 2;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -947,6 +956,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("sprites", implx_sprites);
 	register_ext_cfunc("maps", implx_maps);
 	register_ext_cfunc("open_url", implx_open_url);
+	register_ext_cfunc("dispsize", implx_dispsize);
 }
 
 namespace pico_script {
