@@ -212,6 +212,7 @@ void GFX_Flip() {
 
 static uint8_t keyState = 0;
 static uint8_t joyState = 0;
+static uint8_t hatState = 0;
 static uint8_t simState = 0;
 static int mouseWheel = 0;
 
@@ -316,7 +317,13 @@ bool INP_ProcessInputEvents(const SDL_Event& ev) {
 		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -1500);
 		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 1500);
 	} else if (ev.type == SDL_JOYHATMOTION) {
-		// logr << "hat: " << (int)ev.jhat.hat << "=" << ev.jhat.value;
+		// logr << "hat: " << (int)ev.jhat.hat << "=" << (int)SDL_JoystickGetHat(joystick, 0);
+		auto hatval = SDL_JoystickGetHat(joystick, 0);
+		set_state_bit(hatState, 0, true, hatval & SDL_HAT_LEFT);
+		set_state_bit(hatState, 1, true, hatval & SDL_HAT_RIGHT);
+		set_state_bit(hatState, 2, true, hatval & SDL_HAT_UP);
+		set_state_bit(hatState, 3, true, hatval & SDL_HAT_DOWN);
+
 	} else if (ev.type == SDL_JOYBUTTONDOWN || ev.type == SDL_JOYBUTTONUP) {
 		// logr << "btn: " << (int)ev.jbutton.button << "=" << (bool)ev.jbutton.state;
 		set_state_bit(joyState, 4, ev.jbutton.button == 1, (bool)ev.jbutton.state);
@@ -342,7 +349,7 @@ bool EVT_ProcessEvents() {
 }
 
 uint8_t INP_GetInputState() {
-	return keyState | joyState | simState;
+	return keyState | joyState | hatState | simState;
 }
 
 void INP_SetSimState(uint8_t state) {
