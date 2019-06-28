@@ -30,10 +30,17 @@ static PaletteInfo zx_palette{
     16,
 };
 
+// Alternative Gameboy palette by Andrade. https://lospec.com/palette-list/andrade-gameboy
+static PaletteInfo gameboy_palette{
+    {0x202020, 0x5e6745, 0xaeba89, 0xe3eec0},
+    4,
+};
+
 static std::map<std::string, const PaletteInfo&> palette_map = {
     {"pico8", pico8_palette},
     {"aap64", aap64_palette},
     {"zx", zx_palette},
+    {"gameboy", gameboy_palette},
 };
 
 const PaletteInfo& GFX_GetPaletteInfo(const std::string& name) {
