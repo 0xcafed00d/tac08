@@ -17,6 +17,8 @@ namespace pico_script {
 	bool run(std::string function, bool optional, bool& restarted);
 	bool do_menu();
 	void unload_scripting();
+	void tron();
+	void troff();
 
 }  // namespace pico_script
 

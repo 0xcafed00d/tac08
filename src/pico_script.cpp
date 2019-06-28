@@ -22,6 +22,7 @@ static lua_State* lstate = nullptr;
 
 typedef std::function<void()> deferredAPICall_t;
 static std::deque<deferredAPICall_t> deferredAPICalls;
+static bool traceAPI = false;
 
 static void throw_error(int err) {
 	if (err) {
@@ -41,10 +42,6 @@ static void throw_error(int err) {
 	}
 }
 
-//#define API_TRACE
-
-#ifdef API_TRACE
-
 static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << funcname + 5 << "(";
 	int params = lua_gettop(ls);
@@ -56,16 +53,17 @@ static void dump_func(lua_State* ls, const char* funcname) {
 	std::cout << ")" << std::endl;
 }
 
-#define DEBUG_DUMP_FUNCTION         \
-	pico_control::test_integrity(); \
-	dump_func(ls, __FUNCTION__);
-#else
-#define DEBUG_DUMP_FUNCTION
-#endif
+#define DEBUG_DUMP_FUNCTION             \
+	if (traceAPI) {                     \
+		pico_control::test_integrity(); \
+		dump_func(ls, __FUNCTION__);    \
+	}
 
 static void init_scripting() {
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
+
+	traceAPI = false;
 
 	std::string fw = pico_cart::convert_emojis(firmware);
 
@@ -886,6 +884,18 @@ static int implx_dispsize(lua_State* ls) {
 	return 2;
 }
 
+static int implx_tron(lua_State* ls) {
+	traceAPI = true;
+	DEBUG_DUMP_FUNCTION
+	return 0;
+}
+
+static int implx_troff(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	traceAPI = false;
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -957,6 +967,8 @@ static void register_cfuncs() {
 	register_ext_cfunc("maps", implx_maps);
 	register_ext_cfunc("open_url", implx_open_url);
 	register_ext_cfunc("dispsize", implx_dispsize);
+	register_ext_cfunc("tron", implx_tron);
+	register_ext_cfunc("troff", implx_troff);
 }
 
 namespace pico_script {
@@ -1015,6 +1027,14 @@ namespace pico_script {
 		lua_pop(lstate, 1);
 
 		return res;
+	}
+
+	void tron() {
+		traceAPI = true;
+	}
+
+	void troff() {
+		traceAPI = false;
 	}
 
 }  // namespace pico_script
