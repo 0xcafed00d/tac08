@@ -29,6 +29,8 @@ uint32_t palette_rgb[palette_sz] = {0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab
                                     0xc2c3c7, 0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436,
                                     0x29adff, 0x83769c, 0xff77a8, 0xffccaa};
 
+static bool debug_trace_state = false;
+
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
 	throw(gfx_exception(msg));
@@ -40,6 +42,8 @@ void SYSLOG_LogMessage(const char* msg) {
 
 void GFX_Init(int x, int y) {
 	TraceFunction();
+
+	debug_trace_state = false;
 
 	int init_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
 #ifndef TAC08_NO_JOYSTICK
@@ -298,6 +302,10 @@ bool INP_ProcessInputEvents(const SDL_Event& ev) {
 	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_q && (ev.key.keysym.mod & KMOD_CTRL)) {
 		return false;
 	}
+	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_t && (ev.key.keysym.mod & KMOD_CTRL)) {
+		DEBUG_Trace(!DEBUG_Trace());
+		return true;
+	}
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);
@@ -498,4 +506,12 @@ void PLATFORM_OpenURL(std::string url) {
 	env->DeleteLocalRef(activity);
 	env->DeleteLocalRef(clazz);
 #endif
+}
+
+bool DEBUG_Trace() {
+	return debug_trace_state;
+}
+
+void DEBUG_Trace(bool enable) {
+	debug_trace_state = enable;
 }

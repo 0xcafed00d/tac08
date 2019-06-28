@@ -54,7 +54,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 }
 
 #define DEBUG_DUMP_FUNCTION             \
-	if (traceAPI) {                     \
+	if (traceAPI | DEBUG_Trace()) {     \
 		pico_control::test_integrity(); \
 		dump_func(ls, __FUNCTION__);    \
 	}
