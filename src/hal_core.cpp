@@ -8,6 +8,7 @@
 #endif
 
 #include "hal_core.h"
+#include "hal_palette.h"
 
 #include "config.h"
 #include "crypt.h"
@@ -23,11 +24,6 @@ static int screenHeight = config::INIT_SCREEN_HEIGHT;
 
 static std::array<pixel_t, 256> original_palette;
 static std::array<pixel_t, 256> palette;
-
-const size_t palette_sz = 16;
-uint32_t palette_rgb[palette_sz] = {0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f,
-                                    0xc2c3c7, 0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436,
-                                    0x29adff, 0x83769c, 0xff77a8, 0xffccaa};
 
 static bool debug_trace_state = false;
 static bool reload_requested = false;
@@ -131,17 +127,25 @@ void GFX_CreateBackBuffer(int x, int y) {
 	}
 
 	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
-	for (size_t i = 0; i < palette_sz; i++) {
-		auto pal = palette_rgb[i];
-		original_palette[i] = GFX_GetPixel((pal >> 16) & 0xff, (pal >> 8) & 0xff, pal & 0xff);
-	}
 
+	GFX_SelectPalette("pico8");
 	GFX_RestorePalette();
 }
 
 void GFX_SetBackBufferSize(int x, int y) {
 	screenWidth = x;
 	screenHeight = y;
+}
+
+void GFX_SelectPalette(const std::string& name) {
+	auto pal = GFX_GetPaletteInfo(name);
+
+	for (size_t i = 0; i < pal.size; i++) {
+		auto p = pal.pal[i];
+		pixel_t pix = GFX_GetPixel((p >> 16) & 0xff, (p >> 8) & 0xff, p & 0xff);
+		original_palette[i] = pix;
+		palette[i] = pix;
+	}
 }
 
 void GFX_RestorePalette() {

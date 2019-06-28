@@ -1234,6 +1234,10 @@ namespace pico_apix {
 		GFX_SetPaletteIndex(i, r, g, b);
 	}
 
+	void selpal(const std::string& name) {
+		GFX_SelectPalette(name);
+	}
+
 	void resetpal() {
 		GFX_RestorePalette();
 	}

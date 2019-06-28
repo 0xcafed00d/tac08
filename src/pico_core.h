@@ -112,6 +112,7 @@ namespace pico_apix {
 	std::string rdstr(const std::string& name);
 
 	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
+	void selpal(const std::string& name);
 	void resetpal();
 	void resetpal(uint8_t i);
 	void screen(uint16_t w, uint16_t h);

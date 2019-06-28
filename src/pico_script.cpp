@@ -778,6 +778,13 @@ static int implx_setpal(lua_State* ls) {
 	return 0;
 }
 
+static int implx_selpal(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto name = luaL_checkstring(ls, 1);
+	pico_apix::selpal(name);
+	return 0;
+}
+
 static int implx_resetpal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	if (lua_gettop(ls) == 1) {
@@ -957,6 +964,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("wavstoploop", implx_wavstoploop);
 	register_ext_cfunc("wavplaying", implx_wavplaying);
 	register_ext_cfunc("setpal", implx_setpal);
+	register_ext_cfunc("selpal", implx_selpal);
 	register_ext_cfunc("resetpal", implx_resetpal);
 	register_ext_cfunc("screen", implx_screen);
 	register_ext_cfunc("xpal", implx_xpal);
