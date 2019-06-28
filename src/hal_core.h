@@ -74,5 +74,6 @@ void PLATFORM_OpenURL(std::string url);
 
 bool DEBUG_Trace();
 void DEBUG_Trace(bool enable);
+bool DEBUG_ReloadRequested();
 
 #endif /* GFX_CORE_H */

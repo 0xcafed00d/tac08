@@ -30,6 +30,7 @@ uint32_t palette_rgb[palette_sz] = {0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab
                                     0x29adff, 0x83769c, 0xff77a8, 0xffccaa};
 
 static bool debug_trace_state = false;
+static bool reload_requested = false;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -306,6 +307,10 @@ bool INP_ProcessInputEvents(const SDL_Event& ev) {
 		DEBUG_Trace(!DEBUG_Trace());
 		return true;
 	}
+	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_r && (ev.key.keysym.mod & KMOD_CTRL)) {
+		reload_requested = true;
+		return true;
+	}
 	if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 		set_state_bit(keyState, 0, ev.key.keysym.sym == SDLK_LEFT, ev.type == SDL_KEYDOWN);
 		set_state_bit(keyState, 1, ev.key.keysym.sym == SDLK_RIGHT, ev.type == SDL_KEYDOWN);
@@ -483,6 +488,7 @@ std::string FILE_GetDefaultCartName() {
 
 void HAL_StartFrame() {
 	simState = 0;
+	reload_requested = false;
 }
 
 void HAL_EndFrame() {
@@ -514,4 +520,8 @@ bool DEBUG_Trace() {
 
 void DEBUG_Trace(bool enable) {
 	debug_trace_state = enable;
+}
+
+bool DEBUG_ReloadRequested() {
+	return reload_requested;
 }

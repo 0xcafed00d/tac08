@@ -70,6 +70,8 @@ struct InputState {
 	}
 };
 
+static std::string lastLoadedCart;
+
 static InputState inputState[4];
 static MouseState mouseState;
 static std::string cartDataName;
@@ -705,7 +707,13 @@ namespace pico_api {
 	void load(std::string cartname) {
 		TraceFunction();
 		pico_cart::load(cartname);
+		lastLoadedCart = cartname;
 		pico_control::restartCart();
+	}
+
+	void reload() {
+		TraceFunction();
+		load(lastLoadedCart);
 	}
 
 	void run() {

@@ -7,6 +7,7 @@ namespace pico_api {
 	typedef uint8_t colour_t;
 
 	void load(std::string cartname);
+	void reload();
 	void run();
 
 	void cls(colour_t c);

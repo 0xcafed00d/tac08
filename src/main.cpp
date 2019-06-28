@@ -20,11 +20,11 @@ int safe_main(int argc, char** argv) {
 	pico_data::load_font_data();
 
 	if (argc == 1) {
-		pico_cart::load(FILE_GetDefaultCartName());
+		pico_api::load(FILE_GetDefaultCartName());
 		pico_cart::extractCart(pico_cart::getCart());
 	} else {
 		if (argc > 1) {
-			pico_cart::load(argv[1]);
+			pico_api::load(argv[1]);
 			pico_cart::extractCart(pico_cart::getCart());
 		} else {
 			logr << "no cart specified";
@@ -49,6 +49,11 @@ int safe_main(int argc, char** argv) {
 
 	while (EVT_ProcessEvents()) {
 		using namespace pico_api;
+
+		if (DEBUG_ReloadRequested()) {
+			restarted = true;
+			pico_api::reload();
+		}
 
 		if (restarted == true) {
 			restarted = false;
