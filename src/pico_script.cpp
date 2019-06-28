@@ -43,20 +43,23 @@ static void throw_error(int err) {
 }
 
 static void dump_func(lua_State* ls, const char* funcname) {
-	std::cout << funcname + 5 << "(";
+	std::stringstream str;
+
+	str << funcname + 5 << "(";
 	int params = lua_gettop(ls);
 	for (int n = 1; n <= params; n++) {
 		auto s = luaL_tolstring(ls, n, nullptr);
-		std::cout << s << ",";
+		str << s << ",";
 		lua_remove(ls, -1);
 	}
-	std::cout << ")" << std::endl;
+	str << ")";
+	logr << str.str();
 }
 
-#define DEBUG_DUMP_FUNCTION             \
-	if (traceAPI | DEBUG_Trace()) {     \
-		pico_control::test_integrity(); \
-		dump_func(ls, __FUNCTION__);    \
+#define DEBUG_DUMP_FUNCTION                  \
+	if (traceAPI | DEBUG_Trace()) {          \
+		/* pico_control::test_integrity();*/ \
+		dump_func(ls, __FUNCTION__);         \
 	}
 
 static void init_scripting() {
