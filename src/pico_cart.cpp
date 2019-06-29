@@ -157,7 +157,8 @@ namespace pico_cart {
 			pico_control::set_sprite_data(cart.sections["__gfx__"], cart.sections["__gff__"]);
 		}
 		if (keyInMap(cart.sections, "__gfx8__")) {
-			pico_control::set_sprite_data(cart.sections["__gfx8__"], cart.sections["__gff__"]);
+			pico_control::set_sprite_data(cart.sections["__gfx8__"], cart.sections["__gff__"],
+			                              true);
 		}
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);

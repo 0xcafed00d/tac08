@@ -534,6 +534,25 @@ namespace pico_private {
 		}
 	}
 
+	void copy_data_to_sprites(const std::string& data, bool bits8) {
+		uint16_t i = 0;
+
+		for (size_t n = 0; n < data.length(); n++) {
+			char buf[3] = {0};
+
+			if (data[n] > ' ') {
+				buf[1] = data[n++];
+				buf[0] = data[n];
+				if (bits8) {
+					currentSprData->sprite_data[i] = (uint8_t)strtol(buf, nullptr, 16);
+				} else {
+					pico_api::poke(pico_ram::MEM_GFX_ADDR + i, (uint8_t)strtol(buf, nullptr, 16));
+				}
+				i++;
+			}
+		}
+	}
+
 	inline colour_t fgcolor(uint16_t c) {
 		if (currentGraphicsState->extendedPalette) {
 			return c & 0xff;
@@ -620,7 +639,7 @@ namespace pico_control {
 
 	void set_sprite_data(std::string data, std::string flags, bool tac08) {
 		TraceFunction();
-		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_ADDR, data, !tac08);
+		pico_private::copy_data_to_sprites(data, tac08);
 		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
 	}
 
