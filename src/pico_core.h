@@ -127,6 +127,9 @@ namespace pico_apix {
 	void maps();
 	void maps(int page);
 
+	void fonts();
+	void fonts(int page);
+
 }  // namespace pico_apix
 
 namespace pico_control {

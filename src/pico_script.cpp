@@ -876,6 +876,16 @@ static int implx_maps(lua_State* ls) {
 	return 0;
 }
 
+static int implx_fonts(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	if (lua_gettop(ls) == 0) {
+		pico_apix::fonts();
+	}
+	auto page = luaL_checknumber(ls, 1).toInt();
+	pico_apix::fonts(page);
+	return 0;
+}
+
 static int implx_open_url(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto s = luaL_checkstring(ls, 1);
@@ -976,6 +986,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("siminput", implx_siminput);
 	register_ext_cfunc("sprites", implx_sprites);
 	register_ext_cfunc("maps", implx_maps);
+	register_ext_cfunc("fonts", implx_fonts);
 	register_ext_cfunc("open_url", implx_open_url);
 	register_ext_cfunc("dispsize", implx_dispsize);
 	register_ext_cfunc("tron", implx_tron);

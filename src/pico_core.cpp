@@ -105,10 +105,13 @@ struct SpriteSheet {
 	uint8_t flags[256];
 };
 
-static SpriteSheet fontSheet;
 static SpriteSheet spriteSheet;
 static SpriteSheet* currentSprData = &spriteSheet;
 static std::map<int, SpriteSheet> extendedSpriteSheets;
+
+static SpriteSheet fontSheet;
+static SpriteSheet* currentFontData = &fontSheet;
+static std::map<int, SpriteSheet> extendedFontSheets;
 
 struct MapSheet {
 	uint8_t map_data[128 * 64];
@@ -144,8 +147,6 @@ static pico_ram::LinearMemoryArea mem_flags(spriteSheet.flags,
 static pico_ram::SplitNibbleMemoryArea mem_screen(backbuffer,
                                                   pico_ram::MEM_SCREEN_ADDR,
                                                   pico_ram::MEM_SCREEN_SIZE);
-
-static pico_ram::SplitNibbleMemoryArea mem_font(fontSheet.sprite_data, 0x8000, 0x2000);
 
 static pico_ram::LinearMemoryAreaDF mem_cart_data(cart_data,
                                                   pico_ram::MEM_CART_DATA_ADDR,
@@ -603,7 +604,6 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_map);
 		ram.addMemoryArea(&mem_flags);
 		ram.addMemoryArea(&mem_screen);
-		ram.addMemoryArea(&mem_font);
 		ram.addMemoryArea(&mem_cart_data);
 		ram.addMemoryArea(&mem_scratch_data);
 		ram.addMemoryArea(&mem_music_data);
@@ -654,13 +654,12 @@ namespace pico_control {
 
 	void set_font_data(std::string data) {
 		TraceFunction();
-		pico_private::copy_data_to_sprites(fontSheet, data, false);
+		pico_private::copy_data_to_sprites(*currentFontData, data, false);
 	}
 
 	void set_map_data(std::string data) {
 		TraceFunction();
 		pico_private::copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data);
-		// ram.dump(0x0000, 0x4000);
 	}
 
 	void set_input_state(int state, int player) {
@@ -1136,12 +1135,13 @@ namespace pico_api {
 			uint8_t ch = str[n];
 			if (ch >= 0x20 && ch < 0x80) {
 				int index = ch - 32;
-				pico_private::blitter(fontSheet, x, y, (index % 32) * 4, (index / 32) * 6, 4, 5);
+				pico_private::blitter(*currentFontData, x, y, (index % 32) * 4, (index / 32) * 6, 4,
+				                      5);
 				x += 4;
 			} else if (ch >= 0x80 && ch <= 0x99) {
 				int index = ch - 0x80;
-				pico_private::blitter(fontSheet, x, y, (index % 16) * 8, (index / 16) * 6 + 18, 8,
-				                      5);
+				pico_private::blitter(*currentFontData, x, y, (index % 16) * 8,
+				                      (index / 16) * 6 + 18, 8, 5);
 				x += 8;
 			} else if (ch == '\n') {
 				x = currentGraphicsState->text_x;
@@ -1315,6 +1315,17 @@ namespace pico_apix {
 			memset(&extendedMapSheets[page], 0, sizeof(MapSheet));
 		}
 		currentMapData = &extendedMapSheets[page];
+	}
+
+	void fonts() {
+		currentFontData = &fontSheet;
+	}
+
+	void fonts(int page) {
+		if (extendedFontSheets.find(page) == extendedFontSheets.end()) {
+			memset(&extendedFontSheets[page], 0, sizeof(SpriteSheet));
+		}
+		currentFontData = &extendedFontSheets[page];
 	}
 
 }  // namespace pico_apix
