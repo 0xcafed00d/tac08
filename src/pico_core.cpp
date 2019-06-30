@@ -1233,6 +1233,18 @@ namespace pico_api {
 			case 411:
 				ival = buffer_size_y;
 				return 2;
+			case 412: {
+				int x, y;
+				GFX_GetDisplayArea(&x, &y);
+				ival = x;
+				return 2;
+			}
+			case 413: {
+				int x, y;
+				GFX_GetDisplayArea(&x, &y);
+				ival = y;
+				return 2;
+			}
 		}
 
 		ival = 0;
