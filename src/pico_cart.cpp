@@ -147,19 +147,10 @@ namespace pico_cart {
 		do_load(s, cart, filename);
 	}
 
-	template <typename maptype, typename keytype>
-	bool keyInMap(const maptype& map, const keytype& key) {
-		return map.find(key) != map.end();
-	}
-
 	void extractCart(Cart& cart) {
-		if (keyInMap(cart.sections, "__gfx__")) {
-			pico_control::set_sprite_data(cart.sections["__gfx__"], cart.sections["__gff__"]);
-		}
-		if (keyInMap(cart.sections, "__gfx8__")) {
-			pico_control::set_sprite_data(cart.sections["__gfx8__"], cart.sections["__gff__"],
-			                              true);
-		}
+		pico_control::set_sprite_data_4bit(cart.sections["__gfx__"]);
+		pico_control::set_sprite_data_8bit(cart.sections["__gfx8__"]);
+		pico_control::set_sprite_flags(cart.sections["__gff__"]);
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);
 		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);

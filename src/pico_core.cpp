@@ -517,24 +517,19 @@ namespace pico_private {
 		return result;
 	}
 
-	void copy_data_to_ram(uint16_t addr, const std::string& data, bool gfx = true) {
+	void copy_data_to_ram(uint16_t addr, const std::string& data) {
 		for (size_t n = 0; n < data.length(); n++) {
 			char buf[3] = {0};
 
 			if (data[n] > ' ') {
-				if (gfx) {
-					buf[1] = data[n++];
-					buf[0] = data[n];
-				} else {
-					buf[0] = data[n++];
-					buf[1] = data[n];
-				}
+				buf[0] = data[n++];
+				buf[1] = data[n];
 				pico_api::poke(addr++, (uint8_t)strtol(buf, nullptr, 16));
 			}
 		}
 	}
 
-	void copy_data_to_sprites(const std::string& data, bool bits8) {
+	void copy_data_to_sprites(SpriteSheet& sprites, const std::string& data, bool bits8) {
 		uint16_t i = 0;
 
 		for (size_t n = 0; n < data.length(); n++) {
@@ -543,12 +538,13 @@ namespace pico_private {
 			if (data[n] > ' ') {
 				buf[1] = data[n++];
 				buf[0] = data[n];
+				auto val = (uint8_t)strtol(buf, nullptr, 16);
 				if (bits8) {
-					currentSprData->sprite_data[i] = (uint8_t)strtol(buf, nullptr, 16);
+					sprites.sprite_data[i++] = val;
 				} else {
-					pico_api::poke(pico_ram::MEM_GFX_ADDR + i, (uint8_t)strtol(buf, nullptr, 16));
+					sprites.sprite_data[i++] = val & 0x0f;
+					sprites.sprite_data[i++] = val >> 4;
 				}
-				i++;
 			}
 		}
 	}
@@ -637,20 +633,33 @@ namespace pico_control {
 		return backbuffer;
 	}
 
-	void set_sprite_data(std::string data, std::string flags, bool tac08) {
+	void set_sprite_data_4bit(std::string data) {
 		TraceFunction();
-		pico_private::copy_data_to_sprites(data, tac08);
-		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags, false);
+		if (data.size()) {
+			pico_private::copy_data_to_sprites(*currentSprData, data, false);
+		}
+	}
+
+	void set_sprite_data_8bit(std::string data) {
+		TraceFunction();
+		if (data.size()) {
+			pico_private::copy_data_to_sprites(*currentSprData, data, true);
+		}
+	}
+
+	void set_sprite_flags(std::string flags) {
+		TraceFunction();
+		pico_private::copy_data_to_ram(pico_ram::MEM_GFX_PROPS_ADDR, flags);
 	}
 
 	void set_font_data(std::string data) {
 		TraceFunction();
-		pico_private::copy_data_to_ram(0x8000, data);
+		pico_private::copy_data_to_sprites(fontSheet, data, false);
 	}
 
 	void set_map_data(std::string data) {
 		TraceFunction();
-		pico_private::copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data, false);
+		pico_private::copy_data_to_ram(pico_ram::MEM_MAP_ADDR, data);
 		// ram.dump(0x0000, 0x4000);
 	}
 
