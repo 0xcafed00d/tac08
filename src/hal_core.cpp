@@ -67,8 +67,15 @@ void GFX_Init(int x, int y) {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
+	int joystick_index = -1;
+
 	for (int n = 0; n < SDL_NumJoysticks(); n++) {
 		SDL_Joystick* js = SDL_JoystickOpen(n);
+
+		int numbuttons = SDL_JoystickNumButtons(js);
+		if (joystick_index != -1 && numbuttons > 1) {
+			joystick_index = n;
+		}
 
 		logr << "Joystick: " << n;
 		logr << "  name: " << SDL_JoystickName(js);
@@ -78,10 +85,10 @@ void GFX_Init(int x, int y) {
 		SDL_JoystickClose(js);
 	}
 
-	if (SDL_NumJoysticks() > 0) {
-		joystick = SDL_JoystickOpen(0);
+	if (joystick_index >= 0) {
+		joystick = SDL_JoystickOpen(joystick_index);
 		if (joystick) {
-			logr << "Opened joystick 0";
+			logr << "Opened joystick " << joystick_index;
 		}
 	}
 
