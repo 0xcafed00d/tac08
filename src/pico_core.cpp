@@ -740,7 +740,7 @@ namespace pico_api {
 
 	void reload() {
 		TraceFunction();
-		load(lastLoadedCart);
+		load(pico_cart::getCart().sections["basepath"] + pico_cart::getCart().sections["filename"]);
 	}
 
 	void run() {
