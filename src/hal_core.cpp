@@ -73,7 +73,7 @@ void GFX_Init(int x, int y) {
 		SDL_Joystick* js = SDL_JoystickOpen(n);
 
 		int numbuttons = SDL_JoystickNumButtons(js);
-		if (joystick_index != -1 && numbuttons > 1) {
+		if (joystick_index == -1 && numbuttons > 1) {
 			joystick_index = n;
 		}
 
