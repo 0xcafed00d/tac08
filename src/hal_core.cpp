@@ -118,6 +118,10 @@ void GFX_ToggleFullScreen() {
 	SDL_SetWindowFullscreen(sdlWin, fullNow ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
 
+void GFX_SetFullScreen(bool fullscreen) {
+	SDL_SetWindowFullscreen(sdlWin, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
 	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
 }

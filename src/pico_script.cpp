@@ -896,14 +896,26 @@ static int implx_open_url(lua_State* ls) {
 }
 
 static int implx_tron(lua_State* ls) {
-	traceAPI = true;
+	pico_script::tron();
 	DEBUG_DUMP_FUNCTION
 	return 0;
 }
 
 static int implx_troff(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	traceAPI = false;
+	pico_script::troff();
+	return 0;
+}
+
+static int implx_fullscreen(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto enable = lua_toboolean(ls, 1);
+	pico_apix::fullscreen(enable);
+	return 0;
+}
+
+static int implx_window(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
 	return 0;
 }
 
@@ -981,6 +993,8 @@ static void register_cfuncs() {
 	register_ext_cfunc("open_url", implx_open_url);
 	register_ext_cfunc("tron", implx_tron);
 	register_ext_cfunc("troff", implx_troff);
+	register_ext_cfunc("fullscreen", implx_fullscreen);
+	register_ext_cfunc("window", implx_window);
 }
 
 namespace pico_script {

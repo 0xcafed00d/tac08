@@ -130,6 +130,8 @@ namespace pico_apix {
 	void fonts();
 	void fonts(int page);
 
+	void fullscreen(bool enable);
+
 }  // namespace pico_apix
 
 namespace pico_control {

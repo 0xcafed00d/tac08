@@ -1340,4 +1340,8 @@ namespace pico_apix {
 		currentFontData = &extendedFontSheets[page];
 	}
 
+	void fullscreen(bool enable) {
+		GFX_SetFullScreen(enable);
+	}
+
 }  // namespace pico_apix
