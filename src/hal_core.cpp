@@ -114,12 +114,16 @@ void GFX_End() {
 }
 
 void GFX_ToggleFullScreen() {
+#ifndef __ANDROID__
 	bool fullNow = (SDL_GetWindowFlags(sdlWin) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
 	SDL_SetWindowFullscreen(sdlWin, fullNow ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+#endif
 }
 
 void GFX_SetFullScreen(bool fullscreen) {
+#ifndef __ANDROID__
 	SDL_SetWindowFullscreen(sdlWin, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+#endif
 }
 
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
