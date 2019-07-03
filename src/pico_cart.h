@@ -19,13 +19,13 @@ namespace pico_cart {
 	};
 
 	struct Cart {
-
 		std::map<std::string, std::string> sections;
 		std::vector<Line> source;
 		std::vector<std::string> files;
 	};
 
 	void load(std::string filename);
+	void loadassets(std::string filename, Cart& parentCart);
 	void extractCart(Cart& cart);
 	Cart& getCart();
 

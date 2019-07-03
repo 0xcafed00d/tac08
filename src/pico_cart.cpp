@@ -23,8 +23,9 @@ std::map<char32_t, uint8_t> emoji = {
 
 namespace pico_cart {
 
-	static std::set<std::string> valid_sections = {"__lua__", "__gfx__", "__gfx8__",  "__gff__",
-	                                               "__map__", "__sfx__", "__music__", "__label__"};
+	static std::set<std::string> valid_sections = {"__lua__",  "__gfx__",   "__gfx8__",
+	                                               "__font__", "__gff__",   "__map__",
+	                                               "__sfx__",  "__music__", "__label__"};
 
 	void do_load(std::istream& s, Cart& cart, std::string filename);
 
@@ -46,6 +47,7 @@ namespace pico_cart {
 	}
 
 	void do_load(std::istream& s, Cart& cart, std::string filename) {
+		TraceFunction();
 		cart.files.push_back(filename);
 		int filenum = cart.files.size() - 1;
 
@@ -55,6 +57,7 @@ namespace pico_cart {
 			if (!check_include_file(line, cart, filenum)) {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
+					logr << "section " << line;
 				} else {
 					if (cart.sections["cur_sect"] == "__lua__") {
 						cart.source.push_back(Line{filenum, line});
@@ -110,24 +113,25 @@ namespace pico_cart {
 		return res;
 	}
 
-	static Cart cart;
+	static Cart loadedCart;
 
 	Cart& getCart() {
-		return cart;
+		return loadedCart;
 	}
 
 	// if the filename begins with a $ then the path of the new cart of relative to the one
 	// callng load
 	void load(std::string filename) {
 		path::test();
+		TraceFunction();
 
 		logr << "Request cart load: " << filename;
 
 		filename = path::normalisePath(filename);
 
-		if (cart.sections.find("base_path") != cart.sections.end() && filename.length() &&
-		    filename[0] == '$') {
-			filename = cart.sections["base_path"] + filename.substr(1);
+		if (loadedCart.sections.find("base_path") != loadedCart.sections.end() &&
+		    filename.length() && filename[0] == '$') {
+			filename = loadedCart.sections["base_path"] + filename.substr(1);
 		}
 
 		std::string data = FILE_LoadFile(filename);
@@ -136,24 +140,49 @@ namespace pico_cart {
 			throw error(std::string("failed to open cart file: ") + filename);
 		}
 
-		cart = Cart{};
+		loadedCart = Cart{};
 		logr << "Loading cart: " << filename;
-		cart.sections["filename"] = filename;
-		cart.sections["base_path"] = path::getPath(filename);
-		cart.sections["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
-		cart.sections["cur_sect"] = "header";
+		loadedCart.sections["filename"] = filename;
+		loadedCart.sections["base_path"] = path::getPath(filename);
+		loadedCart.sections["cart_name"] = path::splitFilename(path::getFilename(filename)).first;
+		loadedCart.sections["cur_sect"] = "header";
 
 		std::istringstream s(data);
-		do_load(s, cart, filename);
+		do_load(s, loadedCart, filename);
 	}
 
-	void extractCart(Cart& cart) {
+	void extractAssets(Cart& cart);
+
+	void loadassets(std::string filename, Cart& parentCart) {
+		TraceFunction();
+
+		logr << "Request asset load: " << filename;
+		filename = path::normalisePath(filename);
+		filename = loadedCart.sections["base_path"] + filename;
+
+		std::string data = FILE_LoadFile(filename);
+		logr << "loaded: " << data.size() << "bytes";
+		if (data.size() > 0) {
+			Cart c;
+			c.sections["cur_sect"] = "header";
+			std::istringstream s(data);
+			do_load(s, c, filename);
+			extractAssets(c);
+		}
+	}
+
+	void extractAssets(Cart& cart) {
 		pico_control::set_sprite_data_4bit(cart.sections["__gfx__"]);
 		pico_control::set_sprite_data_8bit(cart.sections["__gfx8__"]);
 		pico_control::set_sprite_flags(cart.sections["__gff__"]);
+		pico_control::set_font_data(cart.sections["__font__"]);
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);
 		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);
+	}
+
+	void extractCart(Cart& cart) {
+		extractAssets(cart);
 		pico_script::load(cart);
 	}
 

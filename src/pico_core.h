@@ -132,6 +132,7 @@ namespace pico_apix {
 
 	void fullscreen(bool enable);
 
+	void assetload(std::string filename);
 }  // namespace pico_apix
 
 namespace pico_control {

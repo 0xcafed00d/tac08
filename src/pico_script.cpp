@@ -919,6 +919,15 @@ static int implx_window(lua_State* ls) {
 	return 0;
 }
 
+static int implx_assetload(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto s = luaL_checkstring(ls, 1);
+	if (s) {
+		pico_apix::assetload(s);
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -995,6 +1004,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("troff", implx_troff);
 	register_ext_cfunc("fullscreen", implx_fullscreen);
 	register_ext_cfunc("window", implx_window);
+	register_ext_cfunc("assetload", implx_assetload);
 }
 
 namespace pico_script {

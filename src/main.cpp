@@ -21,11 +21,9 @@ int safe_main(int argc, char** argv) {
 
 	if (argc == 1) {
 		pico_api::load(FILE_GetDefaultCartName());
-		pico_cart::extractCart(pico_cart::getCart());
 	} else {
 		if (argc > 1) {
 			pico_api::load(argv[1]);
-			pico_cart::extractCart(pico_cart::getCart());
 		} else {
 			logr << "no cart specified";
 			return 1;

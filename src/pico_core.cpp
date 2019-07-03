@@ -537,14 +537,14 @@ namespace pico_private {
 			char buf[3] = {0};
 
 			if (data[n] > ' ') {
-				buf[1] = data[n++];
-				buf[0] = data[n];
+				buf[0] = data[n++];
+				buf[1] = data[n];
 				auto val = (uint8_t)strtol(buf, nullptr, 16);
 				if (bits8) {
 					sprites.sprite_data[i++] = val;
 				} else {
-					sprites.sprite_data[i++] = val & 0x0f;
 					sprites.sprite_data[i++] = val >> 4;
+					sprites.sprite_data[i++] = val & 0x0f;
 				}
 			}
 		}
@@ -643,6 +643,7 @@ namespace pico_control {
 	void set_sprite_data_8bit(std::string data) {
 		TraceFunction();
 		if (data.size()) {
+			logr << " loading 8bit sprite data";
 			pico_private::copy_data_to_sprites(*currentSprData, data, true);
 		}
 	}
@@ -1344,4 +1345,7 @@ namespace pico_apix {
 		GFX_SetFullScreen(enable);
 	}
 
+	void assetload(std::string filename) {
+		pico_cart::loadassets(filename, pico_cart::getCart());
+	}
 }  // namespace pico_apix
