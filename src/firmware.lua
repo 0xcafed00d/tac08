@@ -153,6 +153,7 @@ __tac08__.menu = {
 	-- returns true if menu is to dismissed
 	draw = function(m)
 		pal()
+		clip()
 		local w = 0 -- width of menu
 		local h = 0 -- height of menu
 		for i in all(m.items) do
