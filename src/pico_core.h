@@ -1,6 +1,8 @@
 #ifndef PICO_CORE_H
 #define PICO_CORE_H
 
+#include <utility>
+
 #include "hal_core.h"
 
 namespace pico_api {
@@ -133,6 +135,9 @@ namespace pico_apix {
 	void fullscreen(bool enable);
 
 	void assetload(std::string filename);
+
+	std::pair<std::string, bool> dbg_getsrc(std::string src, int line);
+
 }  // namespace pico_apix
 
 namespace pico_control {

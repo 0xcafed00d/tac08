@@ -65,6 +65,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 static void init_scripting() {
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
+	luaopen_debug(lstate);
 
 	traceAPI = false;
 
@@ -928,6 +929,20 @@ static int implx_assetload(lua_State* ls) {
 	return 0;
 }
 
+// dbg_getsrc (source, line)
+static int implx_dbg_getsrc(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto src = luaL_checkstring(ls, 1);
+	auto line = luaL_checknumber(ls, 2).toInt();
+
+	auto l = pico_apix::dbg_getsrc(src, line);
+	if (l.second) {
+		lua_pushstring(ls, l.first.c_str());
+		return 1;
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -1005,6 +1020,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("fullscreen", implx_fullscreen);
 	register_ext_cfunc("window", implx_window);
 	register_ext_cfunc("assetload", implx_assetload);
+	register_ext_cfunc("dbg_getsrc", implx_dbg_getsrc);
 }
 
 namespace pico_script {

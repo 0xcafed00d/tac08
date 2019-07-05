@@ -1348,4 +1348,13 @@ namespace pico_apix {
 	void assetload(std::string filename) {
 		pico_cart::loadassets(filename, pico_cart::getCart());
 	}
+
+	std::pair<std::string, bool> dbg_getsrc(std::string src, int line) {
+		typedef std::pair<std::string, bool> return_t;
+
+		if (size_t(line) <= pico_cart::getCart().source.size()) {
+			return return_t(pico_cart::getCart().source[line - 1].line, true);
+		}
+		return return_t("", false);
+	}
 }  // namespace pico_apix
