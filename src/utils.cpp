@@ -8,6 +8,7 @@
 
 namespace path {
 	std::string removeRelative(std::string path) {
+#ifdef __ANDROID__
 		path = normalisePath(path);
 		bool fromRoot = path.size() && path[0] == '/';
 		std::vector<std::string> pathParts;
@@ -27,6 +28,9 @@ namespace path {
 			}
 		}
 		return newPath;
+#else
+		return path;
+#endif
 	}
 
 	std::string normalisePath(std::string path) {
@@ -77,9 +81,11 @@ namespace path {
 		assert(splitFilename("name") == pair("name", ""));
 		assert(splitFilename(".txt") == pair("", "txt"));
 
+#ifdef __ANDROID__
 		assert(removeRelative("/hello/wibble/../file.txt") == "/hello/file.txt");
 		assert(removeRelative("hello/wibble/../file.txt") == "hello/file.txt");
 		assert(removeRelative("../hello/wibble/../file.txt") == "../hello/file.txt");
+#endif
 	}
 }  // namespace path
 
