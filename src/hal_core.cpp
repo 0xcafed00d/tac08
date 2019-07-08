@@ -179,7 +179,9 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	pixel_t* pixels;
 	int pitch;
 
-	int res = SDL_LockTexture(sdlTex, NULL, (void**)&pixels, &pitch);
+	SDL_Rect r = {0, 0, buffer_w, buffer_h};
+
+	int res = SDL_LockTexture(sdlTex, &r, (void**)&pixels, &pitch);
 	if (res < 0) {
 		throw_error("SDL_LockTexture Error: ");
 	}

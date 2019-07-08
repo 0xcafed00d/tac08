@@ -629,7 +629,7 @@ namespace pico_control {
 	pico_api::colour_t* get_buffer(int& width, int& height) {
 		width = buffer_size_x;
 		height = buffer_size_y;
-		pico_private::check_guards();
+		// pico_private::check_guards();
 		return backbuffer;
 	}
 

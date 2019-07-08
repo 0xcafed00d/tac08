@@ -1053,10 +1053,12 @@ namespace pico_script {
 		}
 		lua_getglobal(lstate, function.c_str());
 		if (!lua_isfunction(lstate, -1)) {
-			if (optional)
+			if (optional) {
+				lua_pop(lstate, 1);
 				return false;
-			else
+			} else {
 				throw pico_script::error(function + " not found");
+			}
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 
