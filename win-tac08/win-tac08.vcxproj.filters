@@ -147,6 +147,12 @@
     <ClInclude Include="..\src\z8lua\lzio.h">
       <Filter>Source Files\z8lua</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\hal_palette.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\crypt.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="win-tac08.rc">
@@ -299,6 +305,12 @@
     </ClCompile>
     <ClCompile Include="..\src\z8lua\lzio.c">
       <Filter>Source Files\z8lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hal_palette.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\crypt.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

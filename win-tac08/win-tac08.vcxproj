@@ -15,19 +15,19 @@
     <ProjectGuid>{83498EA2-8AF8-4DDC-A554-733294D3DB54}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wintac08</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -113,8 +113,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\config.h" />
+    <ClInclude Include="..\src\crypt.h" />
     <ClInclude Include="..\src\hal_audio.h" />
     <ClInclude Include="..\src\hal_core.h" />
+    <ClInclude Include="..\src\hal_palette.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\pico_audio.h" />
     <ClInclude Include="..\src\pico_cart.h" />
@@ -163,8 +165,10 @@
     <Image Include="win-tac08.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\crypt.cpp" />
     <ClCompile Include="..\src\hal_audio.cpp" />
     <ClCompile Include="..\src\hal_core.cpp" />
+    <ClCompile Include="..\src\hal_palette.cpp" />
     <ClCompile Include="..\src\log.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\pico_audio.cpp" />
