@@ -13,7 +13,8 @@
 int safe_main(int argc, char** argv) {
 	TraceFunction();
 
-	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
+	//	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
+	GFX_Init(384 * 3, 256 * 3);
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 	AUDIO_Init();
 	pico_control::init();
@@ -150,6 +151,8 @@ int main(int argc, char** argv) {
 	} catch (pico_script::error& err) {
 		logr << err.what();
 	} catch (pico_cart::error& err) {
+		logr << err.what();
+	} catch (std::exception& err) {
 		logr << err.what();
 	}
 

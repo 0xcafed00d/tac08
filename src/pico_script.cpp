@@ -1,7 +1,9 @@
 #include <assert.h>
+#include <cstring>
 #include <deque>
 #include <functional>
 #include <iostream>
+#include <set>
 
 #include "pico_script.h"
 
@@ -27,6 +29,7 @@ static bool traceAPI = false;
 static void throw_error(int err) {
 	if (err) {
 		std::string msg = lua_tostring(lstate, -1);
+		logr << msg;
 		auto errlnstart = msg.find(":");
 		auto errlnend = msg.find(":", errlnstart + 1);
 		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1)) - 1;
@@ -62,10 +65,14 @@ static void dump_func(lua_State* ls, const char* funcname) {
 		dump_func(ls, __FUNCTION__);         \
 	}
 
+
+static void register_cfuncs();
+
 static void init_scripting() {
 	lstate = luaL_newstate();
 	luaL_openlibs(lstate);
 	luaopen_debug(lstate);
+	luaopen_string(lstate);
 
 	traceAPI = false;
 
@@ -73,6 +80,10 @@ static void init_scripting() {
 
 	throw_error(luaL_loadbuffer(lstate, fw.c_str(), fw.size(), "firmware"));
 	throw_error(lua_pcall(lstate, 0, 0, 0));
+
+	register_cfuncs();
+	luaL_dostring(lstate, "__tac08__.make_api_list()");
+
 }
 
 static void register_cfunc(const char* name, lua_CFunction cf) {
@@ -574,8 +585,11 @@ static int impl_fillp(lua_State* ls) {
 	if (lua_gettop(ls) == 0) {
 		pico_api::fillp();
 	} else {
-		auto n = lua_tonumber(ls, 1).toInt();
-		pico_api::fillp(n);
+		auto n = lua_tonumber(ls, 1);
+		auto bits = n.bits();
+		int pattern = (bits >> 16) & 0xffff;
+		bool transparent = (bits & 0xffff) != 0;
+		pico_api::fillp(pattern, transparent);
 	}
 	return 0;
 }
@@ -929,6 +943,13 @@ static int implx_assetload(lua_State* ls) {
 	return 0;
 }
 
+static int implx_gfxstate(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	int index = lua_tonumber(ls, 1).toInt();
+	pico_apix::gfxstate(index);
+	return 0;
+}
+
 // dbg_getsrc (source, line)
 static int implx_dbg_getsrc(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
@@ -939,6 +960,105 @@ static int implx_dbg_getsrc(lua_State* ls) {
 	if (l.second) {
 		lua_pushstring(ls, l.first.c_str());
 		return 1;
+	}
+	return 0;
+}
+
+static std::set<int> debug_breakpoints;
+static bool debug_singlestep = false;
+static int break_line_number = -1;
+
+static void dbg_hookfunc(lua_State* ls, lua_Debug* ar) {
+	//	logr << "dbg_hookfunc " << ar->currentline << ":"
+	//<< pico_apix::dbg_getsrc("main", ar->currentline).first;
+
+	break_line_number = -1;
+
+	lua_Debug info;
+	lua_getstack(ls, 0, &info);
+	lua_getinfo(ls, "S", &info);
+
+	if (info.source && strcmp(info.source, "main") != 0) {
+		return;
+	}
+
+	if (debug_breakpoints.count(ar->currentline) || debug_singlestep) {
+		debug_singlestep = false;
+		break_line_number = ar->currentline;
+		luaL_dostring(ls, "__tac08__.dbg.locals = __tac08__.dbg.dumplocals(3)");
+		lua_yield(ls, 0);
+	}
+}
+
+// dbg_cocreate (thread_func) -> coroutine
+static int implx_dbg_cocreate(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	luaL_checktype(ls, 1, LUA_TFUNCTION);
+	lua_State* co = lua_newthread(ls);
+	lua_sethook(co, dbg_hookfunc, LUA_MASKLINE, 0);
+	lua_pushvalue(ls, 1); /* move function to top */
+	lua_xmove(ls, co, 1); /* move function from L to NL */
+
+	return 1;
+}
+
+void dumpstack(lua_State* ls, const char* name) {
+	TraceFunction();
+	logr << "dumpstack: " << name << " items: " << lua_gettop(ls);
+	for (int n = 1; n <= lua_gettop(ls); n++) {
+		logr << lua_typename(ls, lua_type(ls, n)) << ": " << lua_tostring(ls, n);
+	}
+}
+
+// dbg_coresume (thread, mode) -> status_str, (error_str|line_number)
+// mode = "run" - runs till breakpoint hit
+// 		  "step" - executes single line of code.
+// status_str = "break" - code hit breakpoint/line stop/function stop
+// 				"done" - code completed execution normally
+//				"error" - code generated an error.
+static int implx_dbg_coresume(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	luaL_checktype(ls, -2, LUA_TTHREAD);
+	lua_State* co = lua_tothread(ls, -2);
+	std::string mode = lua_tostring(ls, -1);
+
+	debug_singlestep = (mode == "step");
+
+	int status = lua_status(co);
+	if (status == LUA_OK || status == LUA_YIELD) {
+		status = lua_resume(co, 0, 0);
+	}
+
+	switch (status) {
+		case LUA_OK:
+			lua_pushstring(ls, "done");
+			return 1;
+
+		case LUA_YIELD:
+			lua_pushstring(ls, "break");
+			lua_pushnumber(ls, break_line_number);
+			return 2;
+
+		default:
+			lua_pushstring(ls, "error");
+			logr << lua_tostring(co, -1);
+			lua_pushstring(ls, lua_tostring(co, -1));
+			return 2;
+	}
+
+	return 0;
+}
+
+// dbg_bpline (line, enabled)
+static int implx_dbg_bpline(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	int line = luaL_checknumber(ls, 1).toInt();
+	bool enabled = lua_toboolean(ls, 2);
+
+	if (enabled) {
+		debug_breakpoints.insert(line);
+	} else {
+		debug_breakpoints.erase(line);
 	}
 	return 0;
 }
@@ -1020,7 +1140,11 @@ static void register_cfuncs() {
 	register_ext_cfunc("fullscreen", implx_fullscreen);
 	register_ext_cfunc("window", implx_window);
 	register_ext_cfunc("assetload", implx_assetload);
+	register_ext_cfunc("gfxstate", implx_gfxstate);
 	register_ext_cfunc("dbg_getsrc", implx_dbg_getsrc);
+	register_ext_cfunc("dbg_cocreate", implx_dbg_cocreate);
+	register_ext_cfunc("dbg_coresume", implx_dbg_coresume);
+	register_ext_cfunc("dbg_bpline", implx_dbg_bpline);
 }
 
 namespace pico_script {
@@ -1028,7 +1152,6 @@ namespace pico_script {
 	void load(const pico_cart::Cart& cart) {
 		unload_scripting();
 		init_scripting();
-		register_cfuncs();
 
 		std::string code;
 
@@ -1047,20 +1170,26 @@ namespace pico_script {
 		deferredAPICalls.clear();
 	}
 
-	bool run(std::string function, bool optional, bool& restarted) {
-		if (restarted) {
-			return true;
-		}
+	bool simpleCall(std::string function, bool optional) {
 		lua_getglobal(lstate, function.c_str());
+
 		if (!lua_isfunction(lstate, -1)) {
 			if (optional) {
 				lua_pop(lstate, 1);
 				return false;
-			} else {
+			} else
 				throw pico_script::error(function + " not found");
-			}
 		}
 		throw_error(lua_pcall(lstate, 0, 0, 0));
+		return true;
+	}
+
+	bool run(std::string function, bool optional, bool& restarted) {
+		if (restarted) {
+			return true;
+		}
+
+		auto ret = simpleCall(function, optional);
 
 		while (!deferredAPICalls.empty()) {
 			deferredAPICall_t apicall = deferredAPICalls.front();
@@ -1068,7 +1197,7 @@ namespace pico_script {
 			apicall();
 			restarted = true;
 		}
-		return true;
+		return ret;
 	}
 
 	// returns true when menu finished

@@ -76,17 +76,21 @@ static InputState inputState[4];
 static MouseState mouseState;
 static std::string cartDataName;
 static bool pauseMenuRequested = false;
+static bool pauseMenuActive = false;
 
 struct GraphicsState {
 	pico_api::colour_t fg = 7;
 	pico_api::colour_t bg = 0;
 	uint16_t pattern = 0;
+	bool pattern_transparent = false;
 	int text_x = 0;
 	int text_y = 0;
 	int clip_x1 = 0;
 	int clip_y1 = 0;
 	int clip_x2 = 128;
 	int clip_y2 = 128;
+	int max_clip_x = 128;
+	int max_clip_y = 128;
 	int camera_x = 0;
 	int camera_y = 0;
 	int line_x = 0;
@@ -96,9 +100,8 @@ struct GraphicsState {
 	bool extendedPalette = false;
 };
 
-static GraphicsState graphicsState;
-static GraphicsState menuGraphicsState;
-static GraphicsState* currentGraphicsState = &graphicsState;
+static GraphicsState* currentGraphicsState = nullptr;
+static std::map<int, GraphicsState> extendedGraphicsStates;
 
 struct SpriteSheet {
 	pico_api::colour_t sprite_data[128 * 128];
@@ -423,14 +426,23 @@ namespace pico_private {
 
 		colour_t* pix = backbuffer + y * buffer_size_x;
 		uint16_t pat = currentGraphicsState->pattern;
+		bool pattr = currentGraphicsState->pattern_transparent;
 
 		if (pat == 0) {
 			memset(pix + x0, fg, x1 - x0);
-		} else if (pat == 0xffff) {
+		} else if (pat == 0xffff && !pattr) {
 			memset(pix + x0, bg, x1 - x0);
 		} else {
-			for (int x = x0; x < x1; x++) {
-				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+			if (pattr) {
+				for (int x = x0; x < x1; x++) {
+					if (((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) == 0) {
+						pix[x] = fg;
+					}
+				}
+			} else {
+				for (int x = x0; x < x1; x++) {
+					pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+				}
 			}
 		}
 	}
@@ -448,10 +460,20 @@ namespace pico_private {
 		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
 		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
 		uint16_t pat = currentGraphicsState->pattern;
+		bool pattr = currentGraphicsState->pattern_transparent;
 
-		for (int y = y0; y < y1; y++) {
-			pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
-			pix += buffer_size_x;
+		if (pattr) {
+			for (int y = y0; y < y1; y++) {
+				if (((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) == 0) {
+					pix[x] = fg;
+				}
+				pix += buffer_size_x;
+			}
+		} else {
+			for (int y = y0; y < y1; y++) {
+				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+				pix += buffer_size_x;
+			}
 		}
 	}
 
@@ -465,13 +487,20 @@ namespace pico_private {
 		uint16_t pat = currentGraphicsState->pattern;
 		colour_t fg = currentGraphicsState->palette_map[currentGraphicsState->fg];
 		colour_t bg = currentGraphicsState->palette_map[currentGraphicsState->bg];
+		bool pattr = currentGraphicsState->pattern_transparent;
 
 		if (pat == 0) {
 			*pix = fg;
-		} else if (pat == 0xffff) {
+		} else if (pat == 0xffff && !pattr) {
 			*pix = bg;
 		} else {
-			*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+			if (pattr) {
+				if (((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) == 0) {
+					pix[x] = fg;
+				}
+			} else {
+				*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
+			}
 		}
 	}
 
@@ -582,7 +611,6 @@ namespace pico_control {
 		backbuffer_guard2 = backbuffer + x * y;
 
 		pico_private::init_guards();
-		pico_api::clip();
 	}
 
 	void init() {
@@ -596,8 +624,9 @@ namespace pico_control {
 		mem_screen.setData(backbuffer);
 
 		cartDataName = "";
-		pico_private::restore_palette();
-		pico_private::restore_transparency();
+		pico_apix::gfxstate(0);
+
+		pauseMenuActive = false;
 
 		ram.addMemoryArea(&mem_gfx);
 		ram.addMemoryArea(&mem_gfx2_map2);
@@ -681,16 +710,18 @@ namespace pico_control {
 	}
 
 	void begin_pause_menu() {
-		currentGraphicsState = &menuGraphicsState;
+		pico_apix::gfxstate(-1);
 		pauseMenuRequested = false;
+		pauseMenuActive = true;
 	}
 
 	bool is_pause_menu() {
-		return currentGraphicsState == &menuGraphicsState;
+		return pauseMenuActive;
 	}
 
 	void end_pause_menu() {
-		currentGraphicsState = &graphicsState;
+		pauseMenuActive = false;
+		pico_apix::gfxstate(0);
 	}
 
 	uint8_t* get_music_data() {
@@ -702,13 +733,15 @@ namespace pico_control {
 
 	void restartCart() {
 		TraceFunction();
+		pauseMenuActive = false;
 		init_backbuffer_mem(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
-		graphicsState = GraphicsState{};
+		extendedGraphicsStates[0] = GraphicsState{};
 		stop_all_audio();
 		audio_init();
 		pico_private::restore_palette();
 		pico_private::restore_transparency();
 		pico_cart::extractCart(pico_cart::getCart());
+		pico_apix::gfxstate(0);
 	}
 
 	void displayerror(const std::string& msg) {
@@ -959,12 +992,24 @@ namespace pico_api {
 		colour_t p2 = currentGraphicsState->palette_map[bgcolor(c)];
 
 		uint16_t pat = currentGraphicsState->pattern;
+		bool pattr = currentGraphicsState->pattern_transparent;
 
-		for (int y = y0; y <= y1; y++) {
-			for (int x = x0; x <= x1; x++) {
-				pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
+		if (pattr) {
+			for (int y = y0; y <= y1; y++) {
+				for (int x = x0; x <= x1; x++) {
+					if (((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) == 0) {
+						pix[x] = p1;
+					}
+				}
+				pix += buffer_size_x;
 			}
-			pix += buffer_size_x;
+		} else {
+			for (int y = y0; y <= y1; y++) {
+				for (int x = x0; x <= x1; x++) {
+					pix[x] = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? p2 : p1;
+				}
+				pix += buffer_size_x;
+			}
 		}
 	}
 
@@ -1185,7 +1230,7 @@ namespace pico_api {
 	}
 
 	void clip() {
-		clip(0, 0, buffer_size_x, buffer_size_y);
+		clip(0, 0, currentGraphicsState->max_clip_x, currentGraphicsState->max_clip_y);
 	}
 
 	void camera() {
@@ -1198,11 +1243,12 @@ namespace pico_api {
 	}
 
 	void fillp() {
-		fillp(0);
+		fillp(0, false);
 	}
 
-	void fillp(int pattern) {
+	void fillp(int pattern, bool transparent) {
 		currentGraphicsState->pattern = pattern;
+		currentGraphicsState->pattern_transparent = transparent;
 	}
 
 	int stat(int key, std::string& sval, int& ival) {
@@ -1289,6 +1335,9 @@ namespace pico_apix {
 
 	void screen(uint16_t w, uint16_t h) {
 		pico_control::init_backbuffer_mem(w, h);
+		currentGraphicsState->max_clip_x = w;
+		currentGraphicsState->max_clip_y = h;
+		pico_api::clip();
 	}
 
 	void xpal(bool enable) {
@@ -1349,11 +1398,31 @@ namespace pico_apix {
 		pico_cart::loadassets(filename, pico_cart::getCart());
 	}
 
+	void gfxstate(int index) {
+		if (extendedGraphicsStates.find(index) == extendedGraphicsStates.end()) {
+			currentGraphicsState = &extendedGraphicsStates[index];
+			pico_private::restore_transparency();
+			pico_private::restore_palette();
+			pico_api::clip();
+		} else {
+			currentGraphicsState = &extendedGraphicsStates[index];
+			GraphicsState* gs = currentGraphicsState;
+			gs->clip_x1 = utils::limit(gs->clip_x1, 0, buffer_size_x);
+			gs->clip_y1 = utils::limit(gs->clip_y1, 0, buffer_size_y);
+			gs->clip_x2 = utils::limit(gs->clip_x2, 0, buffer_size_x);
+			gs->clip_y2 = utils::limit(gs->clip_y2, 0, buffer_size_y);
+			gs->max_clip_x = utils::limit(gs->max_clip_x, 0, buffer_size_x);
+			gs->max_clip_y = utils::limit(gs->max_clip_y, 0, buffer_size_y);
+		}
+	}
+
 	std::pair<std::string, bool> dbg_getsrc(std::string src, int line) {
 		typedef std::pair<std::string, bool> return_t;
 
-		if (size_t(line) <= pico_cart::getCart().source.size()) {
-			return return_t(pico_cart::getCart().source[line - 1].line, true);
+		if (size_t(line) <= pico_cart::getCart().source.size() && line >= 1) {
+			auto l = pico_cart::getCart().source[line - 1].line;
+			std::replace(l.begin(), l.end(), '\t', ' ');
+			return return_t(l, true);
 		}
 		return return_t("", false);
 	}

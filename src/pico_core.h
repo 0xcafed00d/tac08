@@ -98,7 +98,7 @@ namespace pico_api {
 	void clip(int x, int y, int w, int h);
 	void clip();
 
-	void fillp(int pattern);
+	void fillp(int pattern, bool transparent);
 	void fillp();
 
 	int stat(int key, std::string& sval, int& ival);
@@ -135,6 +135,7 @@ namespace pico_apix {
 	void fullscreen(bool enable);
 
 	void assetload(std::string filename);
+	void gfxstate(int index);
 
 	std::pair<std::string, bool> dbg_getsrc(std::string src, int line);
 

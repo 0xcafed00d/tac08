@@ -185,6 +185,7 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	if (res < 0) {
 		throw_error("SDL_LockTexture Error: ");
 	}
+
 	for (int y = 0; y < buffer_h; y++) {
 		for (int x = 0; x < buffer_w; x++) {
 			pixels[x] = palette[buffer[x]];

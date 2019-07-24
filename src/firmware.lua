@@ -48,6 +48,12 @@ function foreach(a, f)
 	end
 end
 
+function __tac08__.foreachpair(a, f)
+	for k, v in pairs(a) do
+		f(k, v)
+	end
+end
+
 __assert = assert
 function assert(cond, msg) 
 	if not cond then
@@ -69,12 +75,21 @@ costatus = coroutine.status
 🅾 = 4
 ❎ = 5
 
+
  -- api implemented in lua
 function menuitem(idx, label, func)
 	__tac08__.menu:menuitem(idx, label, func)
 end
 
 function flip() 
+end
+
+
+function __tac08__.make_api_list ()
+	__tac08__.api = {}
+	__tac08__.foreachpair(_G, function(k,v)
+		__tac08__.api[k] = true
+	end)
 end
 
 __tac08__.resetgame = function ()

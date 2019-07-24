@@ -6,8 +6,8 @@ namespace config {
 	const int INIT_SCREEN_HEIGHT = 128;
 	const int MIN_SCREEN_WIDTH = 64;
 	const int MIN_SCREEN_HEIGHT = 64;
-	const int MAX_SCREEN_WIDTH = 256;
-	const int MAX_SCREEN_HEIGHT = 256;
+	const int MAX_SCREEN_WIDTH = 512;
+	const int MAX_SCREEN_HEIGHT = 512;
 	const int AUDIO_FREQ = 22050;
 	const int AUDIO_BUFFER_SIZE = 2048;
 	const int AUDIO_CHANNELS = 4;
