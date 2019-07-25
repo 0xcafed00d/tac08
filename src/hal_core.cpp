@@ -377,7 +377,9 @@ bool EVT_ProcessEvents() {
 		if (e.type == SDL_QUIT) {
 			return false;
 		} else {
-			return INP_ProcessInputEvents(e);
+			if (!INP_ProcessInputEvents(e)) {
+				return false;
+			}
 		}
 	}
 	return true;
