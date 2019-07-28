@@ -1401,8 +1401,11 @@ namespace pico_apix {
 	void gfxstate(int index) {
 		if (extendedGraphicsStates.find(index) == extendedGraphicsStates.end()) {
 			currentGraphicsState = &extendedGraphicsStates[index];
+			GraphicsState* gs = currentGraphicsState;
 			pico_private::restore_transparency();
 			pico_private::restore_palette();
+			gs->max_clip_x = buffer_size_x;
+			gs->max_clip_y = buffer_size_y;
 			pico_api::clip();
 		} else {
 			currentGraphicsState = &extendedGraphicsStates[index];
