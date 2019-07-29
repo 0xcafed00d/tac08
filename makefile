@@ -7,7 +7,7 @@ SDL_PATH_INC = /usr/local/include
 SDL_LIB = -L$(SDL_PATH_LIB) -lSDL2
 SDL_INCLUDE = -I$(SDL_PATH_LIB)
 
-LUA_LIB =  -Lsrc/z8lua -llua 
+LUA_LIB =  -Lsrc/z8lua -lluaz8 
 UTF8_UTIL_BASE = src/utf8-util/utf8-util
 
 DEFINES = -DTAC08_PLATFORM=PLATFORM_DESKTOP_LINUX
