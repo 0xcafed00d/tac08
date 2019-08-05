@@ -559,6 +559,18 @@ namespace pico_private {
 		}
 	}
 
+	void copy_gfxdata_to_ram(uint16_t addr, const std::string& data) {
+		for (size_t n = 0; n < data.length(); n++) {
+			char buf[3] = {0};
+
+			if (data[n] > ' ') {
+				buf[1] = data[n++];
+				buf[0] = data[n];
+				pico_api::poke(addr++, (uint8_t)strtol(buf, nullptr, 16));
+			}
+		}
+	}
+
 	void copy_data_to_sprites(SpriteSheet& sprites, const std::string& data, bool bits8) {
 		uint16_t i = 0;
 
@@ -665,7 +677,11 @@ namespace pico_control {
 	void set_sprite_data_4bit(std::string data) {
 		TraceFunction();
 		if (data.size()) {
-			pico_private::copy_data_to_sprites(*currentSprData, data, false);
+			if (currentSprData == &spriteSheet) {
+				pico_private::copy_gfxdata_to_ram(pico_ram::MEM_GFX_ADDR, data);
+			} else {
+				pico_private::copy_data_to_sprites(*currentSprData, data, false);
+			}
 		}
 	}
 
