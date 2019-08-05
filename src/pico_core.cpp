@@ -1138,10 +1138,14 @@ namespace pico_api {
 	}
 
 	uint8_t mget(int x, int y) {
+		x &= 0x7f;
+		y &= 0x7f;
 		return currentMapData->map_data[y * 128 + x];
 	}
 
 	void mset(int x, int y, uint8_t v) {
+		x &= 0x7f;
+		y &= 0x7f;
 		currentMapData->map_data[y * 128 + x] = v;
 	}
 
