@@ -68,6 +68,7 @@ struct TouchInfo {
 bool INP_TouchAvailable();
 uint8_t INP_GetTouchMask();
 TouchInfo INP_GetTouchInfo(int idx);
+std::string INP_GetKeyPress();
 
 void HAL_StartFrame();
 void HAL_EndFrame();

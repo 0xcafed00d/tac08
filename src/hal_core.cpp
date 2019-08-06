@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
+#include <algorithm>
 #include <array>
 #include <string>
 #ifdef __ANDROID__
@@ -12,6 +13,7 @@
 
 #include "config.h"
 #include "crypt.h"
+#include "deque"
 #include "log.h"
 
 static SDL_Window* sdlWin = nullptr;
@@ -317,7 +319,46 @@ static void processTouchEvent(const SDL_TouchFingerEvent& ev) {
 	// ev.touchId;
 }
 
+static std::deque<std::string> keypresses;
+static void addKeyPress(const std::string& k) {
+	keypresses.push_back(k);
+	if (keypresses.size() > 8) {
+		keypresses.pop_front();
+	}
+}
+
+std::string INP_GetKeyPress() {
+	if (!SDL_IsTextInputActive()) {
+#ifndef __ANDROID__
+		SDL_StartTextInput();
+#endif
+	}
+	if (keypresses.size() == 0) {
+		return "";
+	}
+	auto k = keypresses[0];
+	keypresses.pop_front();
+	return k;
+}
+
 bool INP_ProcessInputEvents(const SDL_Event& ev) {
+	if (SDL_IsTextInputActive()) {
+		if (ev.type == SDL_TEXTINPUT) {
+			// logr << ev.text.text;
+			addKeyPress(ev.text.text);
+		}
+		if (ev.type == SDL_KEYDOWN) {
+			if (ev.key.keysym.sym < 32 || ev.key.keysym.sym >= 127) {
+				// logr << ev.key.keysym.sym << " " << SDL_GetKeyName(ev.key.keysym.sym);
+
+				std::string k = SDL_GetKeyName(ev.key.keysym.sym);
+				std::transform(k.begin(), k.end(), k.begin(),
+				               [](unsigned char c) { return std::tolower(c); });
+
+				addKeyPress(k);
+			}
+		}
+	}
 	if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_F11) {
 		GFX_ToggleFullScreen();
 		return true;

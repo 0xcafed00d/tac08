@@ -65,7 +65,6 @@ static void dump_func(lua_State* ls, const char* funcname) {
 		dump_func(ls, __FUNCTION__);         \
 	}
 
-
 static void register_cfuncs();
 
 static void init_scripting() {
@@ -83,7 +82,6 @@ static void init_scripting() {
 
 	register_cfuncs();
 	luaL_dostring(lstate, "__tac08__.make_api_list()");
-
 }
 
 static void register_cfunc(const char* name, lua_CFunction cf) {
@@ -1063,6 +1061,16 @@ static int implx_dbg_bpline(lua_State* ls) {
 	return 0;
 }
 
+static int implx_getkey(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto s = pico_apix::getkey();
+	if (s.length()) {
+		lua_pushstring(ls, s.c_str());
+		return 1;
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static void register_cfuncs() {
@@ -1145,6 +1153,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("dbg_cocreate", implx_dbg_cocreate);
 	register_ext_cfunc("dbg_coresume", implx_dbg_coresume);
 	register_ext_cfunc("dbg_bpline", implx_dbg_bpline);
+	register_ext_cfunc("getkey", implx_getkey);
 }
 
 namespace pico_script {

@@ -139,6 +139,8 @@ namespace pico_apix {
 
 	std::pair<std::string, bool> dbg_getsrc(std::string src, int line);
 
+	std::string getkey();
+
 }  // namespace pico_apix
 
 namespace pico_control {

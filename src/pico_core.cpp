@@ -1449,4 +1449,9 @@ namespace pico_apix {
 		}
 		return return_t("", false);
 	}
+
+	std::string getkey() {
+		return INP_GetKeyPress();
+	}
+
 }  // namespace pico_apix
