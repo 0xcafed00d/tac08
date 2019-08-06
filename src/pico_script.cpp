@@ -1039,9 +1039,15 @@ static int implx_dbg_coresume(lua_State* ls) {
 
 		default:
 			lua_pushstring(ls, "error");
-			logr << lua_tostring(co, -1);
 			lua_pushstring(ls, lua_tostring(co, -1));
-			return 2;
+
+			lua_Debug info;
+			lua_getstack(co, 0, &info);
+			lua_getinfo(co, "l", &info);
+
+			lua_pushnumber(ls, info.currentline);
+			luaL_dostring(co, "__tac08__.dbg.locals = __tac08__.dbg.dumplocals(3)");
+			return 3;
 	}
 
 	return 0;
