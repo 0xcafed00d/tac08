@@ -24,7 +24,6 @@ static lua_State* lstate = nullptr;
 
 typedef std::function<void()> deferredAPICall_t;
 static std::deque<deferredAPICall_t> deferredAPICalls;
-static bool traceAPI = false;
 
 static void throw_error(int err) {
 	if (err) {
@@ -60,7 +59,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 }
 
 #define DEBUG_DUMP_FUNCTION                  \
-	if (traceAPI | DEBUG_Trace()) {          \
+	if (DEBUG_Trace()) {                     \
 		/* pico_control::test_integrity();*/ \
 		dump_func(ls, __FUNCTION__);         \
 	}
@@ -73,7 +72,7 @@ static void init_scripting() {
 	luaopen_debug(lstate);
 	luaopen_string(lstate);
 
-	traceAPI = false;
+	DEBUG_Trace(false);
 
 	std::string fw = pico_cart::convert_emojis(firmware);
 
@@ -1228,11 +1227,11 @@ namespace pico_script {
 	}
 
 	void tron() {
-		traceAPI = true;
+		DEBUG_Trace(true);
 	}
 
 	void troff() {
-		traceAPI = false;
+		DEBUG_Trace(false);
 	}
 
 }  // namespace pico_script

@@ -598,6 +598,7 @@ bool DEBUG_Trace() {
 
 void DEBUG_Trace(bool enable) {
 	debug_trace_state = enable;
+	logr.setOutputFilter(LogLevel::trace, enable);
 }
 
 bool DEBUG_ReloadRequested() {
