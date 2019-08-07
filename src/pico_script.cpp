@@ -25,6 +25,8 @@ static lua_State* lstate = nullptr;
 typedef std::function<void()> deferredAPICall_t;
 static std::deque<deferredAPICall_t> deferredAPICalls;
 
+static bool hook_funcs = false;
+
 static void throw_error(int err) {
 	if (err) {
 		std::string msg = lua_tostring(lstate, -1);
@@ -71,6 +73,8 @@ static void init_scripting() {
 	luaL_openlibs(lstate);
 	luaopen_debug(lstate);
 	luaopen_string(lstate);
+
+	hook_funcs = false;
 
 	DEBUG_Trace(false);
 
@@ -1066,6 +1070,10 @@ static int implx_dbg_bpline(lua_State* ls) {
 	return 0;
 }
 
+static int implx_dbg_hooks(lua_State* ls) {
+	return 0;
+}
+
 static int implx_getkey(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto s = pico_apix::getkey();
@@ -1158,6 +1166,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("dbg_cocreate", implx_dbg_cocreate);
 	register_ext_cfunc("dbg_coresume", implx_dbg_coresume);
 	register_ext_cfunc("dbg_bpline", implx_dbg_bpline);
+	register_ext_cfunc("dbg_hooks", implx_dbg_hooks);
 	register_ext_cfunc("getkey", implx_getkey);
 }
 
@@ -1198,9 +1207,23 @@ namespace pico_script {
 		return true;
 	}
 
+	static std::map<std::string, std::string> function_hooks = {
+	    {"_init", "__tac08__dbg_init"},
+	    {"_update", "__tac08__dbg_update"},
+	    {"_update60", "__tac08__dbg_update60"},
+	    {"_draw", "__tac08__dbg_draw"},
+	};
+
 	bool run(std::string function, bool optional, bool& restarted) {
 		if (restarted) {
 			return true;
+		}
+
+		if (hook_funcs) {
+			auto f = function_hooks.find(function);
+			if (f != function_hooks.end()) {
+				function = f->second;
+			}
 		}
 
 		auto ret = simpleCall(function, optional);
