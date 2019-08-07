@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-enum class LogLevel {
+enum class LogLevel : uint32_t {
 	perf = 1,
 	trace = 2,
 	info = 4,
@@ -45,7 +45,7 @@ class Logger {
 
 	template <typename T>
 	LogProxy operator<<(const T& v) {
-		if (m_enabled) {
+		if (ok()) {
 			m_str << v;
 		}
 		return LogProxy(*this);
@@ -55,7 +55,6 @@ class Logger {
 		m_level = l;
 		return LogProxy(*this);
 	}
-
 
 	bool enabled() const {
 		return m_enabled;
@@ -69,24 +68,38 @@ class Logger {
 		m_outputFunc = outFunc;
 	}
 
+	void setOutputFilter(LogLevel l, bool on) {
+		uint32_t n = (uint32_t)l;
+		if (on) {
+			m_logfilter |= n;
+		} else {
+			m_logfilter &= ~n;
+		}
+	}
+
    private:
 	void flush() {
-		if (m_enabled) {
+		if (ok()) {
 			if (m_outputFunc) {
 				m_outputFunc(m_level, m_str.str().c_str());
 			} else {
 				std::cerr << m_str.str() << std::endl;
 			}
 			m_str.str("");
-			m_str.clear();	
-			m_level = LogLevel::info;
+			m_str.clear();
 		}
+		m_level = LogLevel::info;
+	}
+
+	bool ok() {
+		return m_enabled && ((uint32_t)m_level & (uint32_t)m_logfilter);
 	}
 
 	std::stringstream m_str;
 	int m_proxycount = 0;
 	bool m_enabled = true;
 	LogLevel m_level = LogLevel::info;
+	uint32_t m_logfilter = 0xff;
 	std::function<void(LogLevel, const char*)> m_outputFunc;
 };
 
@@ -104,10 +117,10 @@ class logr_trace_func__ {
 	}
 };
 
-#ifdef _MSC_VER 
-	#define TraceFunction() logr_trace_func__ trace_func_log__(__FUNCSIG__)
+#ifdef _MSC_VER
+#define TraceFunction() logr_trace_func__ trace_func_log__(__FUNCSIG__)
 #else
-	#define TraceFunction() logr_trace_func__ trace_func_log__(__PRETTY_FUNCTION__)
+#define TraceFunction() logr_trace_func__ trace_func_log__(__PRETTY_FUNCTION__)
 #endif
 
 #endif /* LOG_H */
