@@ -35,8 +35,21 @@ static void throw_error(std::string msg) {
 	throw(gfx_exception(msg));
 }
 
-void SYSLOG_LogMessage(const char* msg) {
-	SDL_Log("%s", msg);
+void SYSLOG_LogMessage(LogLevel l, const char* msg) {
+	switch (l){
+		case LogLevel::info:
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,"%s", msg);
+			break;
+		case LogLevel::perf:
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION," PERF: %s", msg);
+			break;
+		case LogLevel::err:
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"%s", msg);
+			break;
+		case LogLevel::trace:
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,"TRACE: %s", msg);
+			break;
+	} 
 }
 
 void GFX_Init(int x, int y) {

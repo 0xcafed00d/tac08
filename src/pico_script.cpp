@@ -29,7 +29,7 @@ static bool traceAPI = false;
 static void throw_error(int err) {
 	if (err) {
 		std::string msg = lua_tostring(lstate, -1);
-		logr << msg;
+		logr << LogLevel::err << msg;
 		auto errlnstart = msg.find(":");
 		auto errlnend = msg.find(":", errlnstart + 1);
 		int errline = std::stoi(msg.substr(errlnstart + 1, errlnend - errlnstart - 1)) - 1;
@@ -56,7 +56,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 		lua_remove(ls, -1);
 	}
 	str << ")";
-	logr << str.str();
+	logr << LogLevel::trace << str.str();
 }
 
 #define DEBUG_DUMP_FUNCTION                  \

@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdexcept>
 
+#include "log.h"
+
 struct gfx_exception : public std::runtime_error {
 	using std::runtime_error::runtime_error;
 };
@@ -47,7 +49,7 @@ uint64_t TIME_GetElapsedProfileTime_us(uint64_t start);
 uint64_t TIME_GetElapsedProfileTime_ms(uint64_t start);
 void TIME_Sleep(int ms);
 
-void SYSLOG_LogMessage(const char* msg);
+void SYSLOG_LogMessage(LogLevel l, const char* msg);
 
 struct MouseState {
 	int x;

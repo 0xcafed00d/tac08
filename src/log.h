@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-enum class level {
+enum class LogLevel {
 	perf = 1,
 	trace = 2,
 	info = 4,
@@ -36,7 +36,7 @@ class Logger {
 			m_logger << v;
 			m_logger << " ";
 			return LogProxy(m_logger);
-		};
+		}
 
 	   private:
 		Logger& m_logger;
@@ -51,6 +51,12 @@ class Logger {
 		return LogProxy(*this);
 	};
 
+	LogProxy operator<<(LogLevel l) {
+		m_level = l;
+		return LogProxy(*this);
+	}
+
+
 	bool enabled() const {
 		return m_enabled;
 	}
@@ -59,7 +65,7 @@ class Logger {
 		m_enabled = enable;
 	}
 
-	void setOutputFunction(std::function<void(const char*)> outFunc) {
+	void setOutputFunction(std::function<void(LogLevel, const char*)> outFunc) {
 		m_outputFunc = outFunc;
 	}
 
@@ -67,19 +73,21 @@ class Logger {
 	void flush() {
 		if (m_enabled) {
 			if (m_outputFunc) {
-				m_outputFunc(m_str.str().c_str());
+				m_outputFunc(m_level, m_str.str().c_str());
 			} else {
 				std::cerr << m_str.str() << std::endl;
 			}
 			m_str.str("");
-			m_str.clear();
+			m_str.clear();	
+			m_level = LogLevel::info;
 		}
 	}
 
 	std::stringstream m_str;
 	int m_proxycount = 0;
 	bool m_enabled = true;
-	std::function<void(const char*)> m_outputFunc;
+	LogLevel m_level = LogLevel::info;
+	std::function<void(LogLevel, const char*)> m_outputFunc;
 };
 
 extern Logger logr;
@@ -89,10 +97,10 @@ class logr_trace_func__ {
 
    public:
 	logr_trace_func__(const char* fname) : fname(fname) {
-		logr << "Trace enter >>: " << fname;
+		logr << LogLevel::trace << " enter >>: " << fname;
 	}
 	~logr_trace_func__() {
-		logr << "Trace leave <<: " << fname;
+		logr << LogLevel::trace << " leave <<: " << fname;
 	}
 };
 

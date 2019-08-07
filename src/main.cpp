@@ -14,7 +14,7 @@ int safe_main(int argc, char** argv) {
 	TraceFunction();
 
 	//	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
-	GFX_Init(384 * 3, 256 * 3);
+	GFX_Init(384 * 2, 256 * 2);
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 	AUDIO_Init();
 	pico_control::init();
@@ -26,7 +26,7 @@ int safe_main(int argc, char** argv) {
 		if (argc > 1) {
 			pico_api::load(argv[1]);
 		} else {
-			logr << "no cart specified";
+			logr << LogLevel::err << "no cart specified";
 			return 1;
 		}
 	}
@@ -95,7 +95,7 @@ int safe_main(int argc, char** argv) {
 					}
 				} catch (pico_script::error& e) {
 					pico_control::displayerror(e.what());
-					logr << e.what();
+					logr << LogLevel::err << e.what();
 					script_error = true;
 				}
 			}
@@ -122,7 +122,7 @@ int safe_main(int argc, char** argv) {
 			drawTime /= systemFrameCount;
 			copyBBTime /= systemFrameCount;
 
-			logr << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
+			logr << LogLevel::perf << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
 			     << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime / 1000.0f
 			     << "ms"
 			     << " bb copy: " << copyBBTime << "us";
@@ -147,13 +147,13 @@ int main(int argc, char** argv) {
 	try {
 		safe_main(argc, argv);
 	} catch (gfx_exception& err) {
-		logr << err.what();
+		logr << LogLevel::err << err.what();
 	} catch (pico_script::error& err) {
-		logr << err.what();
+		logr << LogLevel::err << err.what();
 	} catch (pico_cart::error& err) {
-		logr << err.what();
+		logr << LogLevel::err << err.what();
 	} catch (std::exception& err) {
-		logr << err.what();
+		logr << LogLevel::err << err.what();
 	}
 
 	pico_script::unload_scripting();
