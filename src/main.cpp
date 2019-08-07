@@ -122,9 +122,9 @@ int safe_main(int argc, char** argv) {
 			drawTime /= systemFrameCount;
 			copyBBTime /= systemFrameCount;
 
-			logr << LogLevel::perf << "game FPS: " << gameFrameCount << " sys FPS: " << systemFrameCount
-			     << " update: " << updateTime / 1000.0f << "ms  draw: " << drawTime / 1000.0f
-			     << "ms"
+			logr << LogLevel::perf << "game FPS: " << gameFrameCount
+			     << " sys FPS: " << systemFrameCount << " update: " << updateTime / 1000.0f
+			     << "ms  draw: " << drawTime / 1000.0f << "ms"
 			     << " bb copy: " << copyBBTime << "us";
 
 			gameFrameCount = 0;
@@ -142,6 +142,9 @@ int safe_main(int argc, char** argv) {
 int main(int argc, char** argv) {
 	logr.enable(true);
 	logr.setOutputFunction(SYSLOG_LogMessage);
+	logr.setOutputFilter(LogLevel::perf, false);
+	logr.setOutputFilter(LogLevel::info, false);
+	logr.setOutputFilter(LogLevel::trace, false);
 
 	TraceFunction();
 	try {

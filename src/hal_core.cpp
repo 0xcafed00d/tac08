@@ -36,20 +36,20 @@ static void throw_error(std::string msg) {
 }
 
 void SYSLOG_LogMessage(LogLevel l, const char* msg) {
-	switch (l){
+	switch (l) {
 		case LogLevel::info:
-			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,"%s", msg);
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "DEBUG: %s", msg);
 			break;
 		case LogLevel::perf:
-			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION," PERF: %s", msg);
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, " PERF: %s", msg);
 			break;
 		case LogLevel::err:
-			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"%s", msg);
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, " FAIL: %s", msg);
 			break;
 		case LogLevel::trace:
-			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,"TRACE: %s", msg);
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "TRACE: %s", msg);
 			break;
-	} 
+	}
 }
 
 void GFX_Init(int x, int y) {
