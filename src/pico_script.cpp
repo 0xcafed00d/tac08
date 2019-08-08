@@ -1071,6 +1071,7 @@ static int implx_dbg_bpline(lua_State* ls) {
 }
 
 static int implx_dbg_hooks(lua_State* ls) {
+	hook_funcs = true;
 	return 0;
 }
 
