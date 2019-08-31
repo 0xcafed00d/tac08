@@ -601,6 +601,8 @@ namespace pico_apix {
 
 	void sprites() {
 		currentSprData = &spriteSheet;
+		pico_control::set_spritebuffer(currentSprData->sprite_data);
+		pico_control::set_spriteflags(currentSprData->flags);
 	}
 
 	void sprites(int page) {
@@ -608,10 +610,13 @@ namespace pico_apix {
 			memset(&extendedSpriteSheets[page], 0, sizeof(SpriteSheet));
 		}
 		currentSprData = &extendedSpriteSheets[page];
+		pico_control::set_spritebuffer(currentSprData->sprite_data);
+		pico_control::set_spriteflags(currentSprData->flags);
 	}
 
 	void maps() {
 		currentMapData = &mapSheet;
+		pico_control::set_mapbuffer(currentMapData->map_data);
 	}
 
 	void maps(int page) {
@@ -619,10 +624,12 @@ namespace pico_apix {
 			memset(&extendedMapSheets[page], 0, sizeof(MapSheet));
 		}
 		currentMapData = &extendedMapSheets[page];
+		pico_control::set_mapbuffer(currentMapData->map_data);
 	}
 
 	void fonts() {
 		currentFontData = &fontSheet;
+		pico_control::set_fontbuffer(currentFontData->sprite_data);
 	}
 
 	void fonts(int page) {
@@ -630,6 +637,7 @@ namespace pico_apix {
 			memset(&extendedFontSheets[page], 0, sizeof(SpriteSheet));
 		}
 		currentFontData = &extendedFontSheets[page];
+		pico_control::set_fontbuffer(currentFontData->sprite_data);
 	}
 
 	void fullscreen(bool enable) {
