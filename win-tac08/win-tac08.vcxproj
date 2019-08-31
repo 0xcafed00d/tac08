@@ -121,6 +121,7 @@
     <ClInclude Include="..\src\pico_audio.h" />
     <ClInclude Include="..\src\pico_cart.h" />
     <ClInclude Include="..\src\pico_core.h" />
+    <ClInclude Include="..\src\pico_gfx.h" />
     <ClInclude Include="..\src\pico_data.h" />
     <ClInclude Include="..\src\pico_memory.h" />
     <ClInclude Include="..\src\pico_script.h" />
@@ -173,7 +174,8 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\pico_audio.cpp" />
     <ClCompile Include="..\src\pico_cart.cpp" />
-    <ClCompile Include="..\src\pico_core.cpp" />
+    <ClCompile Include="..\src\pico_core.cpp" />    
+    <ClCompile Include="..\src\pico_gfx.cpp" />    
     <ClCompile Include="..\src\pico_data.cpp" />
     <ClCompile Include="..\src\pico_memory.cpp" />
     <ClCompile Include="..\src\pico_script.cpp" />
