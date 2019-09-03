@@ -635,7 +635,7 @@ namespace pico_api {
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y) {
-		map(cell_x, cell_y, scr_x, scr_y, 16, 16);
+		map(cell_x, cell_y, scr_x, scr_y, 128, 64);
 	}
 
 	void map(int cell_x, int cell_y, int scr_x, int scr_y, int cell_w, int cell_h) {
@@ -655,13 +655,13 @@ namespace pico_api {
 
 	uint8_t mget(int x, int y) {
 		x &= 0x7f;
-		y &= 0x7f;
+		y &= 0x3f;
 		return mapbuffer[y * 128 + x];
 	}
 
 	void mset(int x, int y, uint8_t v) {
 		x &= 0x7f;
-		y &= 0x7f;
+		y &= 0x3f;
 		mapbuffer[y * 128 + x] = v;
 	}
 
