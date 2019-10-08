@@ -49,6 +49,9 @@ void SYSLOG_LogMessage(LogLevel l, const char* msg) {
 		case LogLevel::trace:
 			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "TRACE: %s", msg);
 			break;
+		case LogLevel::apitrace:
+			SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "  API: %s", msg);
+			break;
 	}
 }
 
@@ -598,7 +601,7 @@ bool DEBUG_Trace() {
 
 void DEBUG_Trace(bool enable) {
 	debug_trace_state = enable;
-	logr.setOutputFilter(LogLevel::trace, enable);
+	logr.setOutputFilter(LogLevel::apitrace, enable);
 }
 
 bool DEBUG_ReloadRequested() {

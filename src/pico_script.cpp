@@ -57,7 +57,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 		lua_remove(ls, -1);
 	}
 	str << ")";
-	logr << LogLevel::trace << str.str();
+	logr << LogLevel::apitrace << str.str();
 }
 
 #define DEBUG_DUMP_FUNCTION                  \
@@ -1173,7 +1173,21 @@ static void register_cfuncs() {
 
 namespace pico_script {
 
+	/* - not needed here
+	    const char* buffer;
+	    const char* buffer_reader(lua_State* L, void* ud, size_t* sz) {
+	        logr << LogLevel::trace << char(*buffer);
+	        if (*buffer) {
+	            *sz = 1;
+	        } else {
+	            *sz = 0;
+	        }
+	        return buffer++;
+	    }
+	*/
+
 	void load(const pico_cart::Cart& cart) {
+		TraceFunction();
 		unload_scripting();
 		init_scripting();
 
@@ -1182,6 +1196,9 @@ namespace pico_script {
 		for (size_t i = 0; i < cart.source.size(); i++) {
 			code += pico_cart::convert_emojis(cart.source[i].line) + "\n";
 		}
+		// buffer = code.c_str();
+
+		// throw_error(lua_load(lstate, buffer_reader, nullptr, "main", nullptr));
 		throw_error(luaL_loadbuffer(lstate, code.c_str(), code.size(), "main"));
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}

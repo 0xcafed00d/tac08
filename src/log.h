@@ -10,6 +10,7 @@ enum class LogLevel : uint32_t {
 	trace = 2,
 	info = 4,
 	err = 8,
+	apitrace = 16,
 };
 
 class Logger {

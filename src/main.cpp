@@ -14,7 +14,7 @@ int safe_main(int argc, char** argv) {
 	TraceFunction();
 
 	//	GFX_Init(config::INIT_SCREEN_WIDTH * 4, config::INIT_SCREEN_HEIGHT * 4);
-	GFX_Init(384 * 2, 256 * 2);
+	GFX_Init(512 * 3, 256 * 3);
 	GFX_CreateBackBuffer(config::INIT_SCREEN_WIDTH, config::INIT_SCREEN_HEIGHT);
 	AUDIO_Init();
 	pico_control::init();
@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
 	logr.setOutputFunction(SYSLOG_LogMessage);
 	logr.setOutputFilter(LogLevel::perf, false);
 	logr.setOutputFilter(LogLevel::info, false);
-	logr.setOutputFilter(LogLevel::trace, false);
+	logr.setOutputFilter(LogLevel::trace, true);
 
 	TraceFunction();
 	try {
