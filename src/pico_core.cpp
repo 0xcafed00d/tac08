@@ -659,6 +659,10 @@ namespace pico_apix {
 		return return_t("", false);
 	}
 
+	int dbg_getsrclines() {
+		return pico_cart::getCart().source.size();
+	}
+
 	std::string getkey() {
 		return INP_GetKeyPress();
 	}

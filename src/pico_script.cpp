@@ -965,6 +965,13 @@ static int implx_dbg_getsrc(lua_State* ls) {
 	return 0;
 }
 
+static int implx_dbg_getsrclines(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto l = pico_apix::dbg_getsrclines();
+	lua_pushnumber(ls, l);
+	return 1;
+}
+
 static std::set<int> debug_breakpoints;
 static bool debug_singlestep = false;
 static int break_line_number = -1;
@@ -1164,6 +1171,7 @@ static void register_cfuncs() {
 	register_ext_cfunc("assetload", implx_assetload);
 	register_ext_cfunc("gfxstate", implx_gfxstate);
 	register_ext_cfunc("dbg_getsrc", implx_dbg_getsrc);
+	register_ext_cfunc("dbg_getsrclines", implx_dbg_getsrclines);
 	register_ext_cfunc("dbg_cocreate", implx_dbg_cocreate);
 	register_ext_cfunc("dbg_coresume", implx_dbg_coresume);
 	register_ext_cfunc("dbg_bpline", implx_dbg_bpline);

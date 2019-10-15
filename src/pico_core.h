@@ -68,6 +68,7 @@ namespace pico_apix {
 	void assetload(std::string filename);
 
 	std::pair<std::string, bool> dbg_getsrc(std::string src, int line);
+	int dbg_getsrclines();
 
 	std::string getkey();
 
