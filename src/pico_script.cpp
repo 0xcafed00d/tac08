@@ -697,6 +697,28 @@ static int impl_memset(lua_State* ls) {
 	return 0;
 }
 
+static int impl_ord(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	const char* msg = luaL_checkstring(lstate, 1);
+	if (msg && strlen(msg)) {
+		lua_pushnumber(ls, (uint)msg[0]);
+		return 1;
+	}
+	return 0;
+}
+
+static int impl_chr(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto n = luaL_checknumber(ls, 1).toInt();
+	char buffer[] = "\0\0";
+	if (n >= 0 && n <= 255) {
+		buffer[0] = n & 0xff;
+		lua_pushstring(ls, buffer);
+		return 1;
+	}
+	return 0;
+}
+
 static int implx_wrclip(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto s = luaL_checkstring(ls, 1);
@@ -1140,6 +1162,8 @@ static void register_cfuncs() {
 	register_cfunc("sfx", impl_sfx);
 	register_cfunc("memcpy", impl_memcpy);
 	register_cfunc("memset", impl_memset);
+	register_cfunc("ord", impl_ord);
+	register_cfunc("chr", impl_chr);
 	register_ext_cfunc("wrclip", implx_wrclip);
 	register_ext_cfunc("rdclip", implx_rdclip);
 	register_ext_cfunc("wrstr", implx_wrstr);
