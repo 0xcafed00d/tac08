@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
 	logr.setOutputFunction(SYSLOG_LogMessage);
 	logr.setOutputFilter(LogLevel::perf, false);
 	logr.setOutputFilter(LogLevel::info, false);
-	logr.setOutputFilter(LogLevel::trace, true);
+	logr.setOutputFilter(LogLevel::trace, false);
 
 	TraceFunction();
 	try {

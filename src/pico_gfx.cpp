@@ -715,13 +715,13 @@ namespace pico_api {
 
 		for (size_t n = 0; n < str.length(); n++) {
 			uint8_t ch = str[n];
-			if (ch >= 0x20 && ch < 0x80) {
-				int index = ch - 32;
-				pico_private::blitter(fontbuffer, x, y, (index % 32) * 4, (index / 32) * 6, 4, 5);
+			if (ch >= 0x10 && ch < 0x80) {
+				int index = ch - 0x10;
+				pico_private::blitter(fontbuffer, x, y, (index % 16) * 8, (index / 16) * 8, 4, 5);
 				x += 4;
-			} else if (ch >= 0x80 && ch <= 0x99) {
+			} else if (ch >= 0x80) {
 				int index = ch - 0x80;
-				pico_private::blitter(fontbuffer, x, y, (index % 16) * 8, (index / 16) * 6 + 18, 8,
+				pico_private::blitter(fontbuffer, x, y, (index % 16) * 8, (index / 16) * 8 + 56, 8,
 				                      5);
 				x += 8;
 			} else if (ch == '\n') {
