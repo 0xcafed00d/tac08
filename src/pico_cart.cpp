@@ -176,7 +176,7 @@ namespace pico_cart {
 	std::string convert_emojis(const std::string& lua) {
 		std::string res;
 		for (char32_t codepoint : utf8::CodepointIterator(lua)) {
-			if (codepoint < 0x10) {
+			if (codepoint < 0x80) {
 				res.push_back(uint8_t(codepoint));
 			} else {
 				auto i = emoji.find(codepoint);
