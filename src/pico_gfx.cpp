@@ -5,6 +5,8 @@
 #include <array>
 #include <map>
 
+#include "hal_core.h"
+
 static pico_api::colour_t* backbuffer = nullptr;
 static int buffer_size_x = 0;
 static int buffer_size_y = 0;
@@ -48,6 +50,7 @@ namespace pico_private {
 		for (size_t n = 0; n < currentGraphicsState->palette_map.size(); n++) {
 			currentGraphicsState->palette_map[n] = (colour_t)n;
 		}
+		GFX_RestorePalette();
 	}
 
 	static void restore_transparency() {
@@ -665,8 +668,19 @@ namespace pico_api {
 		mapbuffer[y * 128 + x] = v;
 	}
 
+	void pal(colour_t c0, colour_t c1, int p) {
+		if (p) {
+			if (!currentGraphicsState->extendedPalette) {
+				c1 = (c1 & 0xf) | ((c1 & 0xf0) >> 3);
+			}
+			GFX_MapPaletteIndex(c0, c1);
+		} else {
+			currentGraphicsState->palette_map[c0 & 0xf] = c1 & 0xf;
+		}
+	}
+
 	void pal(colour_t c0, colour_t c1) {
-		currentGraphicsState->palette_map[c0 & 0xf] = c1 & 0xf;
+		pal(c0, c1, 0);
 	}
 
 	void pal() {

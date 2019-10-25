@@ -41,7 +41,7 @@ bin/hal_audio.o: src/hal_audio.cpp src/hal_audio.h src/config.h src/log.h
 bin/pico_core.o: src/pico_core.cpp src/pico_core.h src/pico_audio.h src/pico_memory.h src/pico_script.h src/pico_cart.h src/config.h src/utils.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_gfx.o: src/pico_gfx.cpp src/pico_gfx.h src/config.h src/utils.h src/log.h
+bin/pico_gfx.o: src/pico_gfx.cpp src/pico_gfx.h src/hal_core.h src/config.h src/utils.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/pico_audio.o: src/pico_audio.cpp src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_core.h src/hal_audio.h src/log.h

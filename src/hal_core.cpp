@@ -193,6 +193,10 @@ void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
 	palette[i] = GFX_GetPixel(r, g, b);
 }
 
+void GFX_MapPaletteIndex(uint8_t to, uint8_t from) {
+	palette[to] = original_palette[from];
+}
+
 void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 	pixel_t* pixels;
 	int pitch;

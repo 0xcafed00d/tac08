@@ -10,6 +10,7 @@ namespace pico_api {
 	void cls(colour_t c);
 	void cls();
 
+	void pal(colour_t c0, colour_t c1, int p);
 	void pal(colour_t c0, colour_t c1);
 	void pal();
 

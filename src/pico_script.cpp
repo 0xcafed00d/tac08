@@ -325,12 +325,19 @@ static int impl_map(lua_State* ls) {
 
 static int impl_pal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	if (lua_gettop(ls) == 0) {
+	auto pcount = lua_gettop(ls);
+
+	if (pcount == 0) {
 		pico_api::pal();
-	} else {
+	} else if (pcount < 3) {
 		auto a = lua_tonumber(ls, 1).toInt();
 		auto b = lua_tonumber(ls, 2).toInt();
 		pico_api::pal(a, b);
+	} else {
+		auto a = lua_tonumber(ls, 1).toInt();
+		auto b = lua_tonumber(ls, 2).toInt();
+		auto c = lua_tonumber(ls, 3).toInt();
+		pico_api::pal(a, b, c);
 	}
 	return 0;
 }
