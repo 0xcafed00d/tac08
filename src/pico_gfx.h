@@ -76,6 +76,9 @@ namespace pico_api {
 	void fillp(int pattern, bool transparent);
 	void fillp();
 
+	uint8_t gfx_peek(uint16_t a);
+	void gfx_poke(uint16_t a, uint8_t v);
+
 }  // namespace pico_api
 
 namespace pico_apix {

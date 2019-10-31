@@ -9,6 +9,7 @@
 #include "log.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
+#include "pico_gfx.h"
 #include "pico_memory.h"
 #include "pico_script.h"
 #include "utils.h"
@@ -411,7 +412,11 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
-		return ram.peek(a);
+		if (a >= 0x5f00 && a <= 0x5f3f) {
+			return gfx_peek(a);
+		} else {
+			return ram.peek(a);
+		}
 	}
 
 	uint16_t peek2(uint16_t a) {
@@ -429,9 +434,8 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
-		if (a >= 0x5f00 && a <= 0x5f0f) {
-			pal(a - 0x5f00, v);
-			palt(a - 0x5f00, (v & 0x80) != 0);
+		if (a >= 0x5f00 && a <= 0x5f3f) {
+			gfx_poke(a, v);
 		} else {
 			ram.poke(a, v);
 		}

@@ -784,6 +784,157 @@ namespace pico_api {
 		currentGraphicsState->pattern_transparent = transparent;
 	}
 
+	uint8_t gfx_peek(uint16_t a) {
+		auto cg = currentGraphicsState;
+		if (a >= 0x5f00 && a <= 0x5f0f) {  // pal
+			return cg->palette_map[a - 0x5f00];
+		}
+		if (a >= 0x5f10 && a <= 0x5f1f) {
+			// TODO:
+			// screen pal
+		}
+		switch (a) {
+			case 0x5f20:  // clip x1
+				return uint8_t(cg->clip_x1);
+			case 0x5f21:  // clip y1
+				return uint8_t(cg->clip_y1);
+			case 0x5f22:  // clip x2
+				return uint8_t(cg->clip_x2);
+			case 0x5f23:  // clip y2
+				return uint8_t(cg->clip_y2);
+			case 0x5f25:  // pen colour
+				return (cg->fg & 0x0f) | ((cg->bg & 0x0f) << 4);
+			case 0x5f26:  // cursor x
+				return uint8_t(cg->text_x);
+			case 0x5f27:  // cursor y
+				return uint8_t(cg->text_x);
+			case 0x5f28:  // camera x offset lo byte
+				return uint8_t(cg->camera_x);
+			case 0x5f29:  // camera x offset hi byte
+				return uint8_t(cg->camera_x >> 8);
+			case 0x5f2a:  // camera y offset lo byte
+				return uint8_t(cg->camera_y);
+			case 0x5f2b:  // camera y offset hi byte
+				return uint8_t(cg->camera_y >> 8);
+			case 0x5f2c:  // pixel double/mirror
+				// TODO:
+				return 0;
+			case 0x5f2d:  // devkit mode
+				return 0;
+			case 0x5f2e:  // persist palette
+				return 0;
+			case 0x5f2f:  // pause music
+				// TODO:
+				return 0;
+			case 0x5f30:  // supress pause menu
+				// TODO:
+				return 0;
+			case 0x5f31:  // fill pattern lo byte
+				return uint8_t(cg->pattern);
+			case 0x5f32:  // fill pattern hi byte
+				return uint8_t(cg->pattern >> 8);
+			case 0x5f33:  // fill pattern transparency
+				return uint8_t(cg->pattern_transparent);
+			case 0x5f34:  // accept pattern in colour param
+				// TODO:
+				return 0;
+			case 0x5f3c:  // line end x lo byte
+				return uint8_t(cg->line_x);
+			case 0x5f3d:  // line end x hi byte
+				return uint8_t(cg->line_x >> 8);
+			case 0x5f3e:  // line end y lo byte
+				return uint8_t(cg->line_y);
+			case 0x5f3f:  // line end y hi byte
+				return uint8_t(cg->line_y >> 8);
+		}
+		return 0;
+	}
+
+	void gfx_poke(uint16_t a, uint8_t v) {
+		auto cg = currentGraphicsState;
+
+		if (a >= 0x5f00 && a <= 0x5f0f) {
+			pico_api::pal(a - 0x5f00, v);
+		}
+		if (a >= 0x5f10 && a <= 0x5f1f) {
+			pico_api::pal(a - 0x5f10, v, 1);
+		}
+		switch (a) {
+			case 0x5f20:  // clip x1
+				cg->clip_x1 = v;
+				break;
+			case 0x5f21:  // clip y1
+				cg->clip_y1 = v;
+				break;
+			case 0x5f22:  // clip x2
+				cg->clip_x2 = v;
+				break;
+			case 0x5f23:  // clip y2
+				cg->clip_y2 = v;
+				break;
+			case 0x5f25:  // pen colour
+				cg->fg = v & 0x0f;
+				cg->bg = (v & 0x0f) >> 4;
+				break;
+			case 0x5f26:  // cursor x
+				cg->text_x = v;
+				break;
+			case 0x5f27:  // cursor y
+				cg->text_y = v;
+				break;
+			case 0x5f28:  // camera x offset lo byte
+				cg->camera_x = (cg->camera_x & 0xff00) | v;
+				break;
+			case 0x5f29:  // camera x offset hi byte
+				cg->camera_x = (cg->camera_x & 0x00ff) | (uint16_t(v) << 8);
+				break;
+			case 0x5f2a:  // camera y offset lo byte
+				cg->camera_y = (cg->camera_y & 0xff00) | v;
+				break;
+			case 0x5f2b:  // camera y offset hi byte
+				cg->camera_y = (cg->camera_y & 0x00ff) | (uint16_t(v) << 8);
+				break;
+			case 0x5f2c:  // pixel double/mirror
+				// TODO:
+				break;
+			case 0x5f2d:  // devkit mode
+				// TODO:
+				break;
+			case 0x5f2e:  // persist palette
+				// TODO:
+				break;
+			case 0x5f2f:  // pause music
+				// TODO:
+				break;
+			case 0x5f30:  // supress pause menu
+				// TODO:
+				break;
+			case 0x5f31:  // fill pattern lo byte
+				cg->pattern = (cg->pattern & 0xff00) | v;
+				break;
+			case 0x5f32:  // fill pattern hi byte
+				cg->pattern = (cg->pattern & 0x00ff) | (uint16_t(v) << 8);
+				break;
+			case 0x5f33:  // fill pattern transparency
+				cg->pattern_transparent = v;
+				break;
+			case 0x5f34:  // accept pattern transparency
+				// TODO:
+				break;
+			case 0x5f3c:  // line end x lo byte
+				cg->line_x = (cg->line_x & 0xff00) | v;
+				break;
+			case 0x5f3d:  // line end x hi byte
+				cg->line_x = (cg->line_x & 0x00ff) | (uint16_t(v) << 8);
+				break;
+			case 0x5f3e:  // line end y lo byte
+				cg->line_y = (cg->line_y & 0xff00) | v;
+				break;
+			case 0x5f3f:  // line end y hi byte
+				cg->line_y = (cg->line_y & 0x00ff) | (uint16_t(v) << 8);
+				break;
+		}
+	}
 }  // namespace pico_api
 
 namespace pico_apix {
