@@ -393,7 +393,7 @@ namespace pico_private {
 namespace pico_api {
 	void color(uint16_t c) {
 		currentGraphicsState->fg = pico_private::fgcolor(c);
-		currentGraphicsState->bg = pico_private::bgcolor(c >> 8);
+		currentGraphicsState->bg = pico_private::bgcolor(c);
 	}
 
 	void cls(colour_t c) {
