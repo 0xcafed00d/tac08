@@ -88,7 +88,7 @@ end
 function __tac08__.make_api_list ()
 	__tac08__.api = {}
 	__tac08__.foreachpair(_G, function(k,v)
-		__tac08__.api[k] = true
+		__tac08__.api[k] = v
 	end)
 end
 
