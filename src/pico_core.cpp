@@ -457,20 +457,20 @@ namespace pico_api {
 
 	void memory_set(uint16_t a, uint8_t val, uint16_t len) {
 		for (uint32_t i = 0; i < len; i++) {
-			ram.poke(a + i, val);
+			poke(a + i, val);
 		}
 	}
 
 	void memory_cpy(uint16_t dest_a, uint16_t src_a, uint16_t len) {
 		if (uint32_t(dest_a) - uint32_t(src_a) >= len) {
 			for (uint32_t i = 0; i < len; i++) {
-				ram.poke(dest_a + i, ram.peek(src_a + i));
+				poke(dest_a + i, peek(src_a + i));
 			}
 		} else {
 			src_a += len;
 			dest_a += len;
-			for (int32_t i = len - 1; i >= 0; i++) {
-				ram.poke(dest_a - i, ram.peek(src_a - i));
+			for (int32_t i = len - 1; i >= 0; i--) {
+				poke(dest_a - i, peek(src_a - i));
 			}
 		}
 	}

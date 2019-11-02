@@ -10,7 +10,8 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/tac08",
 			"args": [
-				"../pico-8-games/jetdude/jetdude.p8"
+				//"../pico-8-games/jetdude/jetdude.p8"
+				"mr_beam.p8"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
