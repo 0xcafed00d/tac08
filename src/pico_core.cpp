@@ -412,6 +412,7 @@ namespace pico_api {
 	}
 
 	uint8_t peek(uint16_t a) {
+		a = a & 0x7fff;
 		if (a >= 0x5f00 && a <= 0x5f3f) {
 			return gfx_peek(a);
 		} else {
@@ -434,6 +435,7 @@ namespace pico_api {
 	}
 
 	void poke(uint16_t a, uint8_t v) {
+		a = a & 0x7fff;
 		if (a >= 0x5f00 && a <= 0x5f3f) {
 			gfx_poke(a, v);
 		} else {

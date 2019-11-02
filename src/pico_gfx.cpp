@@ -787,7 +787,11 @@ namespace pico_api {
 	uint8_t gfx_peek(uint16_t a) {
 		auto cg = currentGraphicsState;
 		if (a >= 0x5f00 && a <= 0x5f0f) {  // pal
-			return cg->palette_map[a - 0x5f00];
+			if (cg->extendedPalette) {
+				return cg->palette_map[a - 0x5f00];
+			} else {
+				return cg->palette_map[a - 0x5f00] + (cg->transparent[a - 0x5f00] ? 16 : 0);
+			}
 		}
 		if (a >= 0x5f10 && a <= 0x5f1f) {
 			// TODO:
@@ -855,6 +859,9 @@ namespace pico_api {
 
 		if (a >= 0x5f00 && a <= 0x5f0f) {
 			pico_api::pal(a - 0x5f00, v);
+			if (!cg->extendedPalette) {
+				palt(a - 0x5f00, (v & 0xf0) != 0);
+			}
 		}
 		if (a >= 0x5f10 && a <= 0x5f1f) {
 			pico_api::pal(a - 0x5f10, v, 1);
