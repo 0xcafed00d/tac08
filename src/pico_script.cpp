@@ -1144,6 +1144,7 @@ static void register_cfuncs() {
 	register_cfunc("fset", impl_fset);
 	register_cfunc("palt", impl_palt);
 	register_cfunc("map", impl_map);
+	register_cfunc("mapdraw", impl_map);
 	register_cfunc("pal", impl_pal);
 	register_cfunc("sget", impl_sget);
 	register_cfunc("sset", impl_sset);
