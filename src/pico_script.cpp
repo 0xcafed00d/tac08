@@ -476,8 +476,8 @@ static int impl_pset(lua_State* ls) {
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 3).toInt();
-	pico_api::pset(x, y, c);
+	auto c = lua_tonumber(ls, 3).bits();
+	pico_api::pset(x, y, (c >> 16) & 0xffff, c & 0xffff);
 	return 0;
 }
 
@@ -509,8 +509,8 @@ static int impl_rectfill(lua_State* ls) {
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 5).toInt();
-	pico_api::rectfill(x0, y0, x1, y1, c);
+	auto c = lua_tonumber(ls, 5).bits();
+	pico_api::rectfill(x0, y0, x1, y1, (c >> 16) & 0xffff, c & 0xffff);
 
 	return 0;
 }
@@ -526,8 +526,8 @@ static int impl_rect(lua_State* ls) {
 		pico_api::rect(x0, y0, x1, y1);
 		return 0;
 	}
-	auto c = lua_tonumber(ls, 5).toInt();
-	pico_api::rect(x0, y0, x1, y1, c);
+	auto c = lua_tonumber(ls, 5).bits();
+	pico_api::rect(x0, y0, x1, y1, (c >> 16) & 0xffff, c & 0xffff);
 
 	return 0;
 }
@@ -543,8 +543,8 @@ static int impl_circfill(lua_State* ls) {
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 4).toInt();
-	pico_api::circfill(x, y, r, c);
+	auto c = lua_tonumber(ls, 4).bits();
+	pico_api::circfill(x, y, r, (c >> 16) & 0xffff, c & 0xffff);
 
 	return 0;
 }
@@ -559,8 +559,8 @@ static int impl_circ(lua_State* ls) {
 		pico_api::circ(x, y, r);
 		return 0;
 	}
-	auto c = lua_tonumber(ls, 4).toInt();
-	pico_api::circ(x, y, r, c);
+	auto c = lua_tonumber(ls, 4).bits();
+	pico_api::circ(x, y, r, (c >> 16) & 0xffff, c & 0xffff);
 
 	return 0;
 }
@@ -583,8 +583,8 @@ static int impl_line(lua_State* ls) {
 		return 0;
 	}
 
-	auto c = lua_tonumber(ls, 5).toInt();
-	pico_api::line(x0, y0, x1, y1, c);
+	auto c = lua_tonumber(ls, 5).bits();
+	pico_api::line(x0, y0, x1, y1, (c >> 16) & 0xffff, c & 0xffff);
 	return 0;
 }
 

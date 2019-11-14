@@ -37,22 +37,22 @@ namespace pico_api {
 	void sset(int x, int y, colour_t c);
 
 	void pset(int x, int y);
-	void pset(int x, int y, uint16_t colour);
+	void pset(int x, int y, uint16_t colour, uint16_t pat = 0);
 	colour_t pget(int x, int y);
 
 	void rect(int x0, int y0, int x1, int y1);
-	void rect(int x0, int y0, int x1, int y1, uint16_t c);
+	void rect(int x0, int y0, int x1, int y1, uint16_t c, uint16_t pat = 0);
 	void rectfill(int x0, int y0, int x1, int y1);
-	void rectfill(int x0, int y0, int x1, int y1, uint16_t c);
+	void rectfill(int x0, int y0, int x1, int y1, uint16_t c, uint16_t pat = 0);
 
 	void circ(int x, int y, int r);
-	void circ(int x, int y, int r, uint16_t c);
+	void circ(int x, int y, int r, uint16_t c, uint16_t pat = 0);
 	void circfill(int x, int y, int r);
-	void circfill(int x, int y, int r, uint16_t c);
+	void circfill(int x, int y, int r, uint16_t c, uint16_t pat = 0);
 
 	void line(int x, int y);
 	void line(int x0, int y0, int x1, int y1);
-	void line(int x0, int y0, int x1, int y1, uint16_t c);
+	void line(int x0, int y0, int x1, int y1, uint16_t c, uint16_t pat = 0);
 
 	void map(int cell_x, int cell_y);
 	void map(int cell_x, int cell_y, int scr_x, int scr_y);

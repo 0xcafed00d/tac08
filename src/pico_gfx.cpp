@@ -23,6 +23,7 @@ struct GraphicsState {
 	pico_api::colour_t bg = 0;
 	uint16_t pattern = 0;
 	bool pattern_transparent = false;
+	bool pattern_with_colour = false;
 	int text_x = 0;
 	int text_y = 0;
 	int clip_x1 = 0;
@@ -479,7 +480,10 @@ namespace pico_api {
 		pset(x, y, currentGraphicsState->fg);
 	}
 
-	void pset(int x, int y, uint16_t c) {
+	void pset(int x, int y, uint16_t c, uint16_t pat) {
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(pat, false);
+		}
 		color(c);
 		pico_private::apply_camera(x, y);
 		pico_private::pset(x, y);
@@ -496,7 +500,10 @@ namespace pico_api {
 		rect(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void rect(int x0, int y0, int x1, int y1, uint16_t c) {
+	void rect(int x0, int y0, int x1, int y1, uint16_t c, uint16_t pat) {
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(pat, false);
+		}
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
 		color(c);
@@ -512,8 +519,11 @@ namespace pico_api {
 		rectfill(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void rectfill(int x0, int y0, int x1, int y1, uint16_t c) {
+	void rectfill(int x0, int y0, int x1, int y1, uint16_t c, uint16_t p) {
 		using namespace pico_private;
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(p, false);
+		}
 
 		pico_private::apply_camera(x0, y0);
 		pico_private::apply_camera(x1, y1);
@@ -552,7 +562,10 @@ namespace pico_api {
 		circ(x, y, r, currentGraphicsState->fg);
 	}
 
-	void circ(int xm, int ym, int r, uint16_t c) {
+	void circ(int xm, int ym, int r, uint16_t c, uint16_t pat) {
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(pat, false);
+		}
 		pico_private::apply_camera(xm, ym);
 		color(c);
 		if (r >= 0) {
@@ -575,7 +588,10 @@ namespace pico_api {
 		circfill(x, y, r, currentGraphicsState->fg);
 	}
 
-	void circfill(int xm, int ym, int r, uint16_t c) {
+	void circfill(int xm, int ym, int r, uint16_t c, uint16_t pat) {
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(pat, false);
+		}
 		pico_private::apply_camera(xm, ym);
 		color(c);
 		if (r == 0) {
@@ -607,7 +623,10 @@ namespace pico_api {
 		line(x0, y0, x1, y1, currentGraphicsState->fg);
 	}
 
-	void line(int x0, int y0, int x1, int y1, uint16_t c) {
+	void line(int x0, int y0, int x1, int y1, uint16_t c, uint16_t pat) {
+		if (currentGraphicsState->pattern_with_colour) {
+			fillp(pat, false);
+		}
 		currentGraphicsState->line_x = x1;
 		currentGraphicsState->line_y = y1;
 		pico_private::apply_camera(x0, y0);
@@ -840,8 +859,7 @@ namespace pico_api {
 			case 0x5f33:  // fill pattern transparency
 				return uint8_t(cg->pattern_transparent);
 			case 0x5f34:  // accept pattern in colour param
-				// TODO:
-				return 0;
+				return uint8_t(cg->pattern_with_colour);
 			case 0x5f3c:  // line end x lo byte
 				return uint8_t(cg->line_x);
 			case 0x5f3d:  // line end x hi byte
@@ -923,10 +941,10 @@ namespace pico_api {
 				cg->pattern = (cg->pattern & 0x00ff) | (uint16_t(v) << 8);
 				break;
 			case 0x5f33:  // fill pattern transparency
-				cg->pattern_transparent = v;
+				cg->pattern_transparent = (v != 0);
 				break;
-			case 0x5f34:  // accept pattern transparency
-				// TODO:
+			case 0x5f34:  // accept pattern with colour
+				cg->pattern_with_colour = (v != 0);
 				break;
 			case 0x5f3c:  // line end x lo byte
 				cg->line_x = (cg->line_x & 0xff00) | v;
