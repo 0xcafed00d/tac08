@@ -668,7 +668,7 @@ namespace pico_api {
 		for (int y = 0; y < cell_h; y++) {
 			for (int x = 0; x < cell_w; x++) {
 				uint8_t cell = mget(cell_x + x, cell_y + y);
-				if (cell && ((layer == 0) || ((fget(cell) & layer) == layer))) {
+				if (cell && ((layer == 0) || (fget(cell) & layer))) {
 					spr(cell, scr_x + x * 8, scr_y + y * 8);
 				}
 			}
