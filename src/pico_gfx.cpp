@@ -359,7 +359,7 @@ namespace pico_private {
 		} else {
 			if (pattr) {
 				if (((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) == 0) {
-					pix[x] = fg;
+					*pix = fg;
 				}
 			} else {
 				*pix = ((pat >> ((3 - (x & 0x3)) + (3 - (y & 0x3)) * 4)) & 1) ? bg : fg;
