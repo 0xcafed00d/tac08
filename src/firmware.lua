@@ -35,13 +35,12 @@ end
 
 function del(a, val)
 	if a != nil then
-		for k, v in ipairs(a) do
+		for k, v in pairs(a) do
 			if val == v then
 				return table.remove(a, k)
 			end
 		end
 	end
-	return
 end
 
 function count(a)
