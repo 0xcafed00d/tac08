@@ -8,12 +8,18 @@ printh = print
 function all(a)
 	if (a == nil) return function() end
 
+	local t = {}
 	local i = 0
 	local n = #a
+
+	for x = 1, n do 
+		t[x] = a[x]
+	end
+
 	return function()
 		if(i <= n) then
 			i = i+1
-			return a[i]
+			return t[i]
 		end 
 	end	
 end
