@@ -114,7 +114,20 @@ static int impl_load(lua_State* ls) {
 
 static int impl_run(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
-	deferredAPICalls.push_back([]() { pico_api::reload(); });
+	deferredAPICalls.push_back([]() { pico_api::reloadcart(); });
+	return 0;
+}
+
+static int impl_reload(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	if (lua_gettop(ls) == 0) {
+		pico_api::reload(0, 0, 0x4300);
+	} else {
+		auto dest = luaL_checknumber(ls, 1).toInt();
+		auto src = luaL_checknumber(ls, 2).toInt();
+		auto len = luaL_checknumber(ls, 3).toInt();
+		pico_api::reload(dest, src, len);
+	}
 	return 0;
 }
 
@@ -1126,6 +1139,7 @@ static int implx_getkey(lua_State* ls) {
 static void register_cfuncs() {
 	register_cfunc("load", impl_load);
 	register_cfunc("run", impl_run);
+	register_cfunc("reload", impl_reload);
 	register_cfunc("cartdata", impl_cartdata);
 	register_cfunc("cls", impl_cls);
 	register_cfunc("poke", impl_poke);

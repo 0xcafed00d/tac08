@@ -53,7 +53,7 @@ int safe_main(int argc, char** argv) {
 
 		if (DEBUG_ReloadRequested()) {
 			restarted = true;
-			pico_api::reload();
+			pico_api::reloadcart();
 		}
 
 		if (restarted == true) {

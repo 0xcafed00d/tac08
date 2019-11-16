@@ -9,7 +9,7 @@
 namespace pico_api {
 
 	void load(std::string cartname);
-	void reload();
+	void reloadcart();
 	void run();
 
 	uint8_t peek(uint16_t a);
@@ -34,6 +34,8 @@ namespace pico_api {
 	int btnp(int n, int player = 0);
 
 	int stat(int key, std::string& sval, int& ival);
+
+	void reload(uint16_t dest_addr, uint16_t source_addr, uint16_t len);
 
 }  // namespace pico_api
 
@@ -94,6 +96,7 @@ namespace pico_control {
 	uint8_t* get_music_data();
 	uint8_t* get_sfx_data();
 	void restartCart();
+	void init_rom();
 
 	void displayerror(const std::string& msg);
 

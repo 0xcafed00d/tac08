@@ -93,8 +93,10 @@ end
 function __tac08__.make_api_list ()
 	__tac08__.api = {}
 	__tac08__.foreachpair(_G, function(k,v)
-		__tac08__.api[k] = v
-	end)
+			if type(v) == "function" then
+				__tac08__.api[k] = v
+			end
+		end)
 end
 
 __tac08__.resetgame = function ()
@@ -232,7 +234,8 @@ __tac08__.do_menu = function()
 	end
 end
 
-function reload()
-end
+__tac08__.debug = debug
+__tac08__.table = table
+__tac08__.coroutine = coroutine
 
 --" )";

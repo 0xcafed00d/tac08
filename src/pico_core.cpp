@@ -138,6 +138,8 @@ static pico_ram::LinearMemoryArea mem_sfx_data(sfx_data,
                                                pico_ram::MEM_SFX_ADDR,
                                                pico_ram::MEM_SFX_SIZE);
 
+static uint8_t cartrom[0x4300];
+
 namespace pico_private {
 	using namespace pico_api;
 
@@ -390,6 +392,12 @@ namespace pico_control {
 		}
 	}
 
+	void init_rom() {
+		for (uint16_t a = 0; a < 0x4300; a++) {
+			cartrom[a] = pico_api::peek(a);
+		}
+	}
+
 }  // namespace pico_control
 
 namespace pico_api {
@@ -401,7 +409,7 @@ namespace pico_api {
 		pico_control::restartCart();
 	}
 
-	void reload() {
+	void reloadcart() {
 		TraceFunction();
 		load(pico_cart::getCart().sections["basepath"] + pico_cart::getCart().sections["filename"]);
 	}
@@ -559,6 +567,13 @@ namespace pico_api {
 
 		ival = 0;
 		return 2;
+	}
+
+	void reload(uint16_t dest_addr, uint16_t source_addr, uint16_t len) {
+		len = std::min<uint16_t>(len, 0x4300);
+		for (uint16_t n = 0; n < len; n++) {
+			poke(dest_addr + n, cartrom[source_addr + n]);
+		}
 	}
 
 }  // namespace pico_api

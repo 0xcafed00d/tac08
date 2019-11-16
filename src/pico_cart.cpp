@@ -254,6 +254,7 @@ namespace pico_cart {
 		pico_control::set_map_data(cart.sections["__map__"]);
 		pico_control::set_music_from_cart(cart.sections["__music__"]);
 		pico_control::set_sfx_from_cart(cart.sections["__sfx__"]);
+		pico_control::init_rom();
 	}
 
 	void extractCart(Cart& cart) {
