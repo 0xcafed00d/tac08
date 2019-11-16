@@ -14,6 +14,7 @@ namespace pico_script {
 	};
 
 	void load(const pico_cart::Cart& cart);
+	bool symbolExist(const char* s);
 	bool run(std::string function, bool optional, bool& restarted);
 	bool do_menu();
 	void unload_scripting();

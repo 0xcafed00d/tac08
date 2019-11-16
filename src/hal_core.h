@@ -75,6 +75,8 @@ std::string INP_GetKeyPress();
 
 void HAL_StartFrame();
 void HAL_EndFrame();
+void HAL_SetFrameRates(uint32_t target_fps, uint32_t actual_fps);
+uint32_t HAL_GetFrameRate(bool actual);
 
 void PLATFORM_OpenURL(std::string url);
 

@@ -1251,6 +1251,13 @@ namespace pico_script {
 		deferredAPICalls.clear();
 	}
 
+	bool symbolExist(const char* s) {
+		lua_getglobal(lstate, s);
+		bool exist = !lua_isnil(lstate, -1);
+		lua_pop(lstate, 1);
+		return exist;
+	}
+
 	bool simpleCall(std::string function, bool optional) {
 		lua_getglobal(lstate, function.c_str());
 

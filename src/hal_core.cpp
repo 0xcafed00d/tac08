@@ -580,6 +580,18 @@ void HAL_EndFrame() {
 	flushTouchEvents();
 }
 
+static uint32_t target_fps = 30;
+static uint32_t actual_fps = 30;
+
+void HAL_SetFrameRates(uint32_t target, uint32_t actual) {
+	target_fps = target;
+	actual_fps = actual;
+}
+
+uint32_t HAL_GetFrameRate(bool actual) {
+	return actual ? actual_fps : target_fps;
+}
+
 void PLATFORM_OpenURL(std::string url) {
 #ifdef __ANDROID__
 	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();

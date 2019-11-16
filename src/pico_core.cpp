@@ -507,6 +507,15 @@ namespace pico_api {
 
 	int stat(int key, std::string& sval, int& ival) {
 		switch (key) {
+			case 7:
+				ival = HAL_GetFrameRate(true);
+				return 2;
+			case 8:
+				ival = HAL_GetFrameRate(false);
+				return 2;
+			case 9:
+				ival = HAL_GetFrameRate(true);
+				return 2;
 			case 32:
 				ival = mouseState.x;
 				return 2;
