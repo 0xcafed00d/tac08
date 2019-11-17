@@ -51,7 +51,7 @@ namespace pico_private {
 		for (size_t n = 0; n < currentGraphicsState->palette_map.size(); n++) {
 			currentGraphicsState->palette_map[n] = (colour_t)n;
 		}
-		GFX_RestorePalette();
+		GFX_RestorePaletteMapping();
 	}
 
 	static void restore_transparency() {

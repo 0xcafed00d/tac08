@@ -22,10 +22,15 @@ void GFX_SetBackBufferSize(int x, int y);
 void GFX_Flip();
 
 void GFX_SelectPalette(const std::string& name);
-void GFX_RestorePalette();
-void GFX_RestorePaletteIndex(uint8_t i);
-void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
+
 void GFX_MapPaletteIndex(uint8_t to, uint8_t from);
+void GFX_RestorePaletteMapping();
+void GFX_RestorePaletteMappingIndex(uint8_t i);
+
+void GFX_RestorePaletteRGB();
+void GFX_RestorePaletteRGBIndex(uint8_t i);
+void GFX_SetPaletteRGBIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
+
 void GFX_ShowHWMouse(bool show);
 void GFX_GetDisplayArea(int* w, int* h);
 void GFX_ToggleFullScreen();

@@ -596,7 +596,7 @@ namespace pico_apix {
 	}
 
 	void setpal(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
-		GFX_SetPaletteIndex(i, r, g, b);
+		GFX_SetPaletteRGBIndex(i, r, g, b);
 	}
 
 	void selpal(const std::string& name) {
@@ -604,11 +604,11 @@ namespace pico_apix {
 	}
 
 	void resetpal() {
-		GFX_RestorePalette();
+		GFX_RestorePaletteRGB();
 	}
 
 	void resetpal(uint8_t i) {
-		GFX_RestorePaletteIndex(i);
+		GFX_RestorePaletteRGBIndex(i);
 	}
 
 	void screen(uint16_t w, uint16_t h) {

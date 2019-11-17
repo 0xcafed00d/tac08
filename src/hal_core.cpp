@@ -29,6 +29,7 @@ static std::array<pixel_t, 256> palette;
 
 static bool debug_trace_state = false;
 static bool reload_requested = false;
+static std::string selectedPalette;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -162,7 +163,6 @@ void GFX_CreateBackBuffer(int x, int y) {
 	sdlPixFmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB565);
 
 	GFX_SelectPalette("pico8");
-	GFX_RestorePalette();
 }
 
 void GFX_SetBackBufferSize(int x, int y) {
@@ -171,7 +171,8 @@ void GFX_SetBackBufferSize(int x, int y) {
 }
 
 void GFX_SelectPalette(const std::string& name) {
-	auto pal = GFX_GetPaletteInfo(name);
+	auto& pal = GFX_GetPaletteInfo(name);
+	selectedPalette = name;
 
 	for (size_t i = 0; i < pal.size; i++) {
 		auto p = pal.pal[i];
@@ -181,20 +182,35 @@ void GFX_SelectPalette(const std::string& name) {
 	}
 }
 
-void GFX_RestorePalette() {
+void GFX_MapPaletteIndex(uint8_t to, uint8_t from) {
+	palette[to] = original_palette[from];
+}
+
+void GFX_RestorePaletteMapping() {
 	palette = original_palette;
 }
 
-void GFX_RestorePaletteIndex(uint8_t i) {
+void GFX_RestorePaletteMappingIndex(uint8_t i) {
 	palette[i] = original_palette[i];
 }
 
-void GFX_SetPaletteIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
-	palette[i] = GFX_GetPixel(r, g, b);
+void GFX_RestorePaletteRGB() {
+	GFX_SelectPalette(selectedPalette);
 }
 
-void GFX_MapPaletteIndex(uint8_t to, uint8_t from) {
-	palette[to] = original_palette[from];
+void GFX_RestorePaletteRGBIndex(uint8_t i) {
+	auto& pal = GFX_GetPaletteInfo(selectedPalette);
+	if (i < pal.size) {
+		auto p = pal.pal[i];
+		pixel_t pix = GFX_GetPixel((p >> 16) & 0xff, (p >> 8) & 0xff, p & 0xff);
+		original_palette[i] = pix;
+		palette[i] = pix;
+	}
+}
+
+void GFX_SetPaletteRGBIndex(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
+	palette[i] = GFX_GetPixel(r, g, b);
+	original_palette[i] = palette[i];
 }
 
 void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
