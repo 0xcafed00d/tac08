@@ -162,7 +162,8 @@ static int impl_poke(lua_State* ls) {
 static int impl_peek(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto a = luaL_checknumber(ls, 1).toInt();
-	lua_pushnumber(ls, pico_api::peek(a));
+	uint32_t v = pico_api::peek(a);
+	lua_pushnumber(ls, z8::fix32::frombits(v << 16));
 	return 1;
 }
 
@@ -177,8 +178,8 @@ static int impl_poke2(lua_State* ls) {
 static int impl_peek2(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto a = luaL_checknumber(ls, 1).toInt();
-	uint16_t v = pico_api::peek2(a);
-	lua_pushnumber(ls, v);
+	uint32_t v = pico_api::peek2(a);
+	lua_pushnumber(ls, z8::fix32::frombits(v << 16));
 	return 1;
 }
 

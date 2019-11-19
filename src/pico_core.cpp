@@ -430,7 +430,7 @@ namespace pico_api {
 
 	uint16_t peek2(uint16_t a) {
 		uint16_t v = peek(a);
-		v |= uint32_t(peek(a + 1)) << 8;
+		v |= (uint16_t(peek(a + 1)) << 8);
 		return v;
 	}
 
