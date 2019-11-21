@@ -66,7 +66,7 @@ static void dump_func(lua_State* ls, const char* funcname) {
 		dump_func(ls, __FUNCTION__);         \
 	}
 
-static void register_cfuncs();
+static void register_cfuncs(lua_State* ls);
 
 static void init_scripting() {
 	lstate = luaL_newstate();
@@ -83,20 +83,8 @@ static void init_scripting() {
 	throw_error(luaL_loadbuffer(lstate, fw.c_str(), fw.size(), "firmware"));
 	throw_error(lua_pcall(lstate, 0, 0, 0));
 
-	register_cfuncs();
+	register_cfuncs(lstate);
 	luaL_dostring(lstate, "__tac08__.make_api_list()");
-}
-
-static void register_cfunc(const char* name, lua_CFunction cf) {
-	lua_pushcfunction(lstate, cf);
-	lua_setglobal(lstate, name);
-}
-
-static void register_ext_cfunc(const char* name, lua_CFunction cf) {
-	lua_getglobal(lstate, "__tac08__");
-	lua_pushcfunction(lstate, cf);
-	lua_setfield(lstate, -2, name);
-	lua_pop(lstate, 1);
 }
 
 // ------------------------------------------------------------------
@@ -1137,93 +1125,77 @@ static int implx_getkey(lua_State* ls) {
 
 // ------------------------------------------------------------------
 
-static void register_cfuncs() {
-	register_cfunc("load", impl_load);
-	register_cfunc("run", impl_run);
-	register_cfunc("reload", impl_reload);
-	register_cfunc("cartdata", impl_cartdata);
-	register_cfunc("cls", impl_cls);
-	register_cfunc("poke", impl_poke);
-	register_cfunc("peek", impl_peek);
-	register_cfunc("poke2", impl_poke2);
-	register_cfunc("peek2", impl_peek2);
-	register_cfunc("poke4", impl_poke4);
-	register_cfunc("peek4", impl_peek4);
-	register_cfunc("dget", impl_dget);
-	register_cfunc("dset", impl_dset);
-	register_cfunc("btn", impl_btn);
-	register_cfunc("btnp", impl_btnp);
-	register_cfunc("mget", impl_mget);
-	register_cfunc("mset", impl_mset);
-	register_cfunc("fget", impl_fget);
-	register_cfunc("fset", impl_fset);
-	register_cfunc("palt", impl_palt);
-	register_cfunc("map", impl_map);
-	register_cfunc("mapdraw", impl_map);
-	register_cfunc("pal", impl_pal);
-	register_cfunc("sget", impl_sget);
-	register_cfunc("sset", impl_sset);
-	register_cfunc("spr", impl_spr);
-	register_cfunc("sspr", impl_sspr);
-	register_cfunc("print", impl_print);
-	register_cfunc("cursor", impl_cursor);
-	register_cfunc("pget", impl_pget);
-	register_cfunc("pset", impl_pset);
-	register_cfunc("clip", impl_clip);
-	register_cfunc("rectfill", impl_rectfill);
-	register_cfunc("rect", impl_rect);
-	register_cfunc("circfill", impl_circfill);
-	register_cfunc("circ", impl_circ);
-	register_cfunc("line", impl_line);
-	register_cfunc("fillp", impl_fillp);
-	register_cfunc("time", impl_time);
-	register_cfunc("t", impl_time);
-	register_cfunc("color", impl_color);
-	register_cfunc("camera", impl_camera);
-	register_cfunc("stat", impl_stat);
-	register_cfunc("music", impl_music);
-	register_cfunc("sfx", impl_sfx);
-	register_cfunc("memcpy", impl_memcpy);
-	register_cfunc("memset", impl_memset);
-	register_cfunc("ord", impl_ord);
-	register_cfunc("chr", impl_chr);
-	register_ext_cfunc("wrclip", implx_wrclip);
-	register_ext_cfunc("rdclip", implx_rdclip);
-	register_ext_cfunc("wrstr", implx_wrstr);
-	register_ext_cfunc("rdstr", implx_rdstr);
-	register_ext_cfunc("wavload", implx_wavload);
-	register_ext_cfunc("wavplay", implx_wavplay);
-	register_ext_cfunc("wavstop", implx_wavstop);
-	register_ext_cfunc("wavstoploop", implx_wavstoploop);
-	register_ext_cfunc("wavplaying", implx_wavplaying);
-	register_ext_cfunc("setpal", implx_setpal);
-	register_ext_cfunc("selpal", implx_selpal);
-	register_ext_cfunc("resetpal", implx_resetpal);
-	register_ext_cfunc("screen", implx_screen);
-	register_ext_cfunc("xpal", implx_xpal);
-	register_ext_cfunc("cursor", implx_cursor);
-	register_ext_cfunc("showmenu", implx_showmenu);
-	register_ext_cfunc("touchmask", implx_touchmask);
-	register_ext_cfunc("touchstate", implx_touchstate);
-	register_ext_cfunc("touchavail", implx_touchavail);
-	register_ext_cfunc("siminput", implx_siminput);
-	register_ext_cfunc("sprites", implx_sprites);
-	register_ext_cfunc("maps", implx_maps);
-	register_ext_cfunc("fonts", implx_fonts);
-	register_ext_cfunc("open_url", implx_open_url);
-	register_ext_cfunc("tron", implx_tron);
-	register_ext_cfunc("troff", implx_troff);
-	register_ext_cfunc("fullscreen", implx_fullscreen);
-	register_ext_cfunc("window", implx_window);
-	register_ext_cfunc("assetload", implx_assetload);
-	register_ext_cfunc("gfxstate", implx_gfxstate);
-	register_ext_cfunc("dbg_getsrc", implx_dbg_getsrc);
-	register_ext_cfunc("dbg_getsrclines", implx_dbg_getsrclines);
-	register_ext_cfunc("dbg_cocreate", implx_dbg_cocreate);
-	register_ext_cfunc("dbg_coresume", implx_dbg_coresume);
-	register_ext_cfunc("dbg_bpline", implx_dbg_bpline);
-	register_ext_cfunc("dbg_hooks", implx_dbg_hooks);
-	register_ext_cfunc("getkey", implx_getkey);
+static const luaL_Reg pico8_api[] = {{"load", impl_load},         {"run", impl_run},
+                                     {"reload", impl_reload},     {"cartdata", impl_cartdata},
+                                     {"cls", impl_cls},           {"poke", impl_poke},
+                                     {"peek", impl_peek},         {"poke2", impl_poke2},
+                                     {"peek2", impl_peek2},       {"poke4", impl_poke4},
+                                     {"peek4", impl_peek4},       {"dget", impl_dget},
+                                     {"dset", impl_dset},         {"btn", impl_btn},
+                                     {"btnp", impl_btnp},         {"mget", impl_mget},
+                                     {"mset", impl_mset},         {"fget", impl_fget},
+                                     {"fset", impl_fset},         {"palt", impl_palt},
+                                     {"map", impl_map},           {"mapdraw", impl_map},
+                                     {"pal", impl_pal},           {"sget", impl_sget},
+                                     {"sset", impl_sset},         {"spr", impl_spr},
+                                     {"sspr", impl_sspr},         {"print", impl_print},
+                                     {"cursor", impl_cursor},     {"pget", impl_pget},
+                                     {"pset", impl_pset},         {"clip", impl_clip},
+                                     {"rectfill", impl_rectfill}, {"rect", impl_rect},
+                                     {"circfill", impl_circfill}, {"circ", impl_circ},
+                                     {"line", impl_line},         {"fillp", impl_fillp},
+                                     {"time", impl_time},         {"t", impl_time},
+                                     {"color", impl_color},       {"camera", impl_camera},
+                                     {"stat", impl_stat},         {"music", impl_music},
+                                     {"sfx", impl_sfx},           {"memcpy", impl_memcpy},
+                                     {"memset", impl_memset},     {"ord", impl_ord},
+                                     {"chr", impl_chr},           {NULL, NULL}};
+
+static const luaL_Reg tac08_api[] = {{"wrclip", implx_wrclip},
+                                     {"rdclip", implx_rdclip},
+                                     {"wrstr", implx_wrstr},
+                                     {"rdstr", implx_rdstr},
+                                     {"wavload", implx_wavload},
+                                     {"wavplay", implx_wavplay},
+                                     {"wavstop", implx_wavstop},
+                                     {"wavstoploop", implx_wavstoploop},
+                                     {"wavplaying", implx_wavplaying},
+                                     {"setpal", implx_setpal},
+                                     {"selpal", implx_selpal},
+                                     {"resetpal", implx_resetpal},
+                                     {"screen", implx_screen},
+                                     {"xpal", implx_xpal},
+                                     {"cursor", implx_cursor},
+                                     {"showmenu", implx_showmenu},
+                                     {"touchmask", implx_touchmask},
+                                     {"touchstate", implx_touchstate},
+                                     {"touchavail", implx_touchavail},
+                                     {"siminput", implx_siminput},
+                                     {"sprites", implx_sprites},
+                                     {"maps", implx_maps},
+                                     {"fonts", implx_fonts},
+                                     {"open_url", implx_open_url},
+                                     {"tron", implx_tron},
+                                     {"troff", implx_troff},
+                                     {"fullscreen", implx_fullscreen},
+                                     {"window", implx_window},
+                                     {"assetload", implx_assetload},
+                                     {"gfxstate", implx_gfxstate},
+                                     {"dbg_getsrc", implx_dbg_getsrc},
+                                     {"dbg_getsrclines", implx_dbg_getsrclines},
+                                     {"dbg_cocreate", implx_dbg_cocreate},
+                                     {"dbg_coresume", implx_dbg_coresume},
+                                     {"dbg_bpline", implx_dbg_bpline},
+                                     {"dbg_hooks", implx_dbg_hooks},
+                                     {"getkey", implx_getkey},
+                                     {NULL, NULL}};
+
+static void register_cfuncs(lua_State* ls) {
+	lua_pushglobaltable(ls);
+	luaL_setfuncs(ls, pico8_api, 0);
+
+	lua_getglobal(ls, "__tac08__");
+	luaL_setfuncs(ls, tac08_api, 0);
 }
 
 namespace pico_script {
