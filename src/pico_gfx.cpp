@@ -908,16 +908,16 @@ namespace pico_api {
 				cg->text_y = v;
 				break;
 			case 0x5f28:  // camera x offset lo byte
-				cg->camera_x = (cg->camera_x & 0xff00) | v;
+				cg->camera_x = int16_t((cg->camera_x & 0xff00) | v);
 				break;
 			case 0x5f29:  // camera x offset hi byte
-				cg->camera_x = (cg->camera_x & 0x00ff) | (uint16_t(v) << 8);
+				cg->camera_x = int16_t((cg->camera_x & 0x00ff) | (uint16_t(v) << 8));
 				break;
 			case 0x5f2a:  // camera y offset lo byte
-				cg->camera_y = (cg->camera_y & 0xff00) | v;
+				cg->camera_y = int16_t((cg->camera_y & 0xff00) | v);
 				break;
 			case 0x5f2b:  // camera y offset hi byte
-				cg->camera_y = (cg->camera_y & 0x00ff) | (uint16_t(v) << 8);
+				cg->camera_y = int16_t((cg->camera_y & 0x00ff) | (uint16_t(v) << 8));
 				break;
 			case 0x5f2c:  // pixel double/mirror
 				// TODO:
@@ -947,16 +947,16 @@ namespace pico_api {
 				cg->pattern_with_colour = (v != 0);
 				break;
 			case 0x5f3c:  // line end x lo byte
-				cg->line_x = (cg->line_x & 0xff00) | v;
+				cg->line_x = int16_t((cg->line_x & 0xff00) | v);
 				break;
 			case 0x5f3d:  // line end x hi byte
-				cg->line_x = (cg->line_x & 0x00ff) | (uint16_t(v) << 8);
+				cg->line_x = int16_t((cg->line_x & 0x00ff) | (uint16_t(v) << 8));
 				break;
 			case 0x5f3e:  // line end y lo byte
-				cg->line_y = (cg->line_y & 0xff00) | v;
+				cg->line_y = int16_t((cg->line_y & 0xff00) | v);
 				break;
 			case 0x5f3f:  // line end y hi byte
-				cg->line_y = (cg->line_y & 0x00ff) | (uint16_t(v) << 8);
+				cg->line_y = int16_t((cg->line_y & 0x00ff) | (uint16_t(v) << 8));
 				break;
 		}
 	}
