@@ -105,6 +105,10 @@ int safe_main(int argc, char** argv) {
 				}
 			}
 
+			// call flip() even though this does not do anything, some carts implement their
+			// own version to make end of frame.
+			pico_script::run("flip", true, restarted);
+
 			int buffer_w;
 			int buffer_h;
 			pico_api::colour_t* buffer = pico_control::get_buffer(buffer_w, buffer_h);
