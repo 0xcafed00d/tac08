@@ -502,6 +502,8 @@ namespace pico_api {
 	}
 
 	int btn(int n, int player) {
+		if (player < 0 || player > 3)
+			return 0;
 		return inputState[player].isPressed(n);
 	}
 
@@ -510,6 +512,8 @@ namespace pico_api {
 	}
 
 	int btnp(int n, int player) {
+		if (player < 0 || player > 3)
+			return 0;
 		return inputState[player].justPressedRpt(n);
 	}
 
