@@ -6,6 +6,7 @@
 #include <map>
 
 #include "hal_core.h"
+#include "utf8-util.h"
 
 static pico_api::colour_t* backbuffer = nullptr;
 static int buffer_size_x = 0;
@@ -734,7 +735,7 @@ namespace pico_api {
 		print(str, x, y, currentGraphicsState->fg);
 	}
 
-	void print(std::string str, int x, int y, uint16_t c) {
+	int print(std::string str, int x, int y, uint16_t c) {
 		pico_private::apply_camera(x, y);
 		color(c);
 
@@ -770,6 +771,7 @@ namespace pico_api {
 		currentGraphicsState->transparent[0] = oldt;
 
 		currentGraphicsState->fg = c & 0xf;
+		return x;
 	}
 
 	void clip(int x, int y, int w, int h) {
@@ -987,6 +989,15 @@ namespace pico_apix {
 			gs->max_clip_x = utils::limit(gs->max_clip_x, 0, buffer_size_x);
 			gs->max_clip_y = utils::limit(gs->max_clip_y, 0, buffer_size_y);
 		}
+	}
+
+	std::pair<int, int> printx(std::string str, int x, int y, uint16_t c) {
+		for (size_t n = 0; n < str.length(); n++) {
+			if (str[n] == '\n') {
+				str[n] = 25;
+			}
+		}
+		return std::make_pair(pico_api::print(str, x, y, c), currentGraphicsState->text_y);
 	}
 }  // namespace pico_apix
 

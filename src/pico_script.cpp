@@ -1123,6 +1123,21 @@ static int implx_getkey(lua_State* ls) {
 	return 0;
 }
 
+// printx(str, x, y, c) -> returns next x, y
+static int implx_printx(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+
+	auto s = luaL_checklstring(ls, 1, nullptr);
+	auto x = luaL_checknumber(ls, 2).toInt();
+	auto y = luaL_checknumber(ls, 3).toInt();
+	auto c = luaL_checknumber(ls, 4).toInt();
+	auto xy = pico_apix::printx(s, x, y, c);
+	lua_remove(ls, -1);
+	lua_pushnumber(ls, xy.first);
+	lua_pushnumber(ls, xy.second);
+	return 2;
+}
+
 // ------------------------------------------------------------------
 
 static const luaL_Reg pico8_api[] = {{"load", impl_load},         {"run", impl_run},
@@ -1188,6 +1203,7 @@ static const luaL_Reg tac08_api[] = {{"wrclip", implx_wrclip},
                                      {"dbg_bpline", implx_dbg_bpline},
                                      {"dbg_hooks", implx_dbg_hooks},
                                      {"getkey", implx_getkey},
+                                     {"printx", implx_printx},
                                      {NULL, NULL}};
 
 static void register_cfuncs(lua_State* ls) {
@@ -1221,11 +1237,8 @@ namespace pico_script {
 		std::string code;
 
 		for (size_t i = 0; i < cart.source.size(); i++) {
-			code += pico_cart::convert_emojis(cart.source[i].line) + "\n";
+			code += cart.source[i].line + "\n";
 		}
-		// buffer = code.c_str();
-
-		// throw_error(lua_load(lstate, buffer_reader, nullptr, "main", nullptr));
 		throw_error(luaL_loadbuffer(lstate, code.c_str(), code.size(), "main"));
 		throw_error(lua_pcall(lstate, 0, 0, 0));
 	}

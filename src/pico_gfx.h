@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <utility>
 
 namespace pico_api {
 	typedef uint8_t colour_t;
@@ -65,7 +66,7 @@ namespace pico_api {
 	void cursor(int x, int y, uint16_t c);
 	void print(std::string str);
 	void print(std::string str, int x, int y);
-	void print(std::string str, int x, int y, uint16_t c);
+	int print(std::string str, int x, int y, uint16_t c);
 
 	void camera();
 	void camera(int x, int y);
@@ -84,6 +85,7 @@ namespace pico_api {
 namespace pico_apix {
 	void xpal(bool enable);
 	void gfxstate(int index);
+	std::pair<int, int> printx(std::string str, int x, int y, uint16_t c);
 }  // namespace pico_apix
 
 namespace pico_control {

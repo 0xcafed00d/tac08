@@ -129,6 +129,8 @@ namespace pico_cart {
 		std::string line;
 		while (std::getline(s, line)) {
 			line = utils::trimright(line, " \n\r");
+			line = convert_emojis(line);
+
 			if (!check_include_file(line, cart, filenum)) {
 				if (valid_sections.find(line) != valid_sections.end()) {
 					cart.sections["cur_sect"] = line;
