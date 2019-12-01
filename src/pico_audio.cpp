@@ -159,6 +159,10 @@ namespace pico_api {
 		if (channel == -1) {
 			channel = AUDIO_AvailableChan(true);
 		}
+		if (channel == -2) {
+			// TODO:
+			return;
+		}
 		if (n >= 0 && n <= 63) {
 			int wavid = pico_private::get_wavid(n);
 			if (wavid >= 0) {
@@ -196,7 +200,10 @@ namespace pico_api {
 			if (channel == -1) {
 				channel = AUDIO_AvailableChan(true);
 			}
-
+			if (channel == -2) {
+				// TODO:
+				return;
+			}
 			int wavid = pico_private::get_wavid(n);
 			if (wavid >= 0) {
 				pico_private::SFX* sfx_ptr = (pico_private::SFX*)pico_control::get_sfx_data();

@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
+#include <assert.h>
 #include <algorithm>
 #include <array>
 #include <string>
@@ -130,6 +131,9 @@ void GFX_End() {
 		SDL_DestroyTexture(sdlTex);
 	}
 	SDL_Quit();
+}
+
+void checkmem() {
 }
 
 void GFX_ToggleFullScreen() {
@@ -424,10 +428,10 @@ bool INP_ProcessInputEvents(const SDL_Event& ev) {
 		mouseWheel += ev.wheel.y;
 	} else if (ev.type == SDL_JOYAXISMOTION) {
 		// logr << "axis: " << (int)ev.jaxis.axis << "=" << ev.jaxis.value;
-		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -1500);
-		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 1500);
-		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -1500);
-		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 1500);
+		set_state_bit(joyState, 0, ev.jaxis.axis == 0, ev.jaxis.value < -10000);
+		set_state_bit(joyState, 1, ev.jaxis.axis == 0, ev.jaxis.value > 10000);
+		set_state_bit(joyState, 2, ev.jaxis.axis == 1, ev.jaxis.value < -10000);
+		set_state_bit(joyState, 3, ev.jaxis.axis == 1, ev.jaxis.value > 10000);
 	} else if (ev.type == SDL_JOYHATMOTION) {
 		// logr << "hat: " << (int)ev.jhat.hat << "=" << (int)SDL_JoystickGetHat(joystick, 0);
 		auto hatval = SDL_JoystickGetHat(joystick, 0);

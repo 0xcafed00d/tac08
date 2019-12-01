@@ -13,17 +13,18 @@ UTF8_UTIL_BASE = src/utf8-util/utf8-util
 DEFINES = -DTAC08_PLATFORM=PLATFORM_DESKTOP_LINUX
 
 CXXFLAGS_DEBUG = -DDEBUG -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE) $(DEFINES)
-CXXFLAGS_RELEASE = -O3 -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE) $(DEFINES)
+CXXFLAGS_RELEASE = -O3 -ggdb -Wall -c -std=c++11 $(SDL_INCLUDE) -I$(UTF8_UTIL_BASE) $(DEFINES)
 
-CXXFLAGS = $(CXXFLAGS_DEBUG)
+CXXFLAGS = $(CXXFLAGS_RELEASE)
 
-LDFLAGS = $(SDL_LIB) $(LUA_LIB) 
+LDFLAGS = $(SDL_LIB) $(LUA_LIB)  
 EXE = tac08
 
 all: $(EXE)
 
 $(EXE): bin/main.o bin/hal_core.o bin/hal_palette.o bin/hal_audio.o bin/pico_core.o bin/pico_gfx.o bin/pico_audio.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o bin/utils.o bin/log.o bin/crypt.o
 	$(CXX) $^ $(LDFLAGS) -o $@
+	objdump -t -C $@ | sort >bin/app.symbols	
 	@echo "Built All The Things!!!"
 	
 bin/main.o: src/main.cpp src/hal_core.h src/hal_audio.h src/pico_core.h src/pico_audio.h src/pico_data.h src/pico_data.h src/pico_script.h src/pico_cart.h src/config.h src/log.h 

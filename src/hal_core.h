@@ -12,6 +12,8 @@ struct gfx_exception : public std::runtime_error {
 
 typedef uint16_t pixel_t;
 
+void checkmem();
+
 void GFX_Init(int x, int y);
 void GFX_End();
 
