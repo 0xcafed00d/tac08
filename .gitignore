@@ -6,4 +6,4 @@ win-tac08/Release/
 win-tac08/Debug/
 win-tac08.vcxproj.user
 .vscode/ipch
-
+bin/
