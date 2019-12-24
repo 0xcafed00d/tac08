@@ -6,13 +6,11 @@
 namespace hal_fs {
 	struct finfo {
 		std::string name;
-		size_t size;
-		bool dir;
+		bool dir = false;
 	};
 
 	std::string cwd();
-	size_t numFiles();
-	finfo files(size_t index);
+	finfo files();
 	void cd(const char* dir);
 
 	// read / write from anywhere
