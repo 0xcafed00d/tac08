@@ -1,6 +1,8 @@
 #include "hal_fs.h"
 
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 namespace hal_fs {
@@ -15,14 +17,13 @@ namespace hal_fs {
 		static DIR* dir_ptr = nullptr;
 
 		if (!dir_ptr) {
-			closedir(dir_ptr);
 			dir_ptr = opendir(cwd().c_str());
 		}
 
+		finfo fi = {};
 		if (dir_ptr) {
 			auto entry = readdir(dir_ptr);
 			if (entry) {
-				finfo fi;
 				fi.name = entry->d_name;
 				fi.dir = entry->d_type == DT_DIR;
 				return fi;
@@ -31,7 +32,7 @@ namespace hal_fs {
 				dir_ptr = nullptr;
 			}
 		}
-		return finfo{"", false};
+		return fi;
 	}
 
 	void cd(const char* dir);

@@ -9,6 +9,7 @@
 
 #include "hal_audio.h"
 #include "hal_core.h"
+#include "hal_fs.h"
 #include "log.h"
 #include "pico_audio.h"
 #include "pico_cart.h"
@@ -1139,6 +1140,25 @@ static int implx_printx(lua_State* ls) {
 	return 2;
 }
 
+static int implx_cwd(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto path = hal_fs::cwd();
+	lua_pushstring(ls, path.c_str());
+	return 1;
+}
+
+static int implx_files(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto fi = hal_fs::files();
+
+	if (fi.name != "") {
+		lua_pushstring(ls, fi.name.c_str());
+		lua_pushboolean(ls, fi.dir);
+		return 2;
+	}
+	return 0;
+}
+
 // ------------------------------------------------------------------
 
 static const luaL_Reg pico8_api[] = {{"load", impl_load},         {"run", impl_run},
@@ -1205,6 +1225,8 @@ static const luaL_Reg tac08_api[] = {{"wrclip", implx_wrclip},
                                      {"dbg_hooks", implx_dbg_hooks},
                                      {"getkey", implx_getkey},
                                      {"printx", implx_printx},
+                                     {"cwd", implx_cwd},
+                                     {"files", implx_files},
                                      {NULL, NULL}};
 
 static void register_cfuncs(lua_State* ls) {

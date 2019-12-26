@@ -22,7 +22,7 @@ EXE = tac08
 
 all: $(EXE)
 
-$(EXE): bin/main.o bin/hal_core.o bin/hal_palette.o bin/hal_audio.o bin/pico_core.o bin/pico_gfx.o bin/pico_audio.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o bin/utils.o bin/log.o bin/crypt.o
+$(EXE): bin/main.o bin/hal_core.o bin/hal_fs.o bin/hal_palette.o bin/hal_audio.o bin/pico_core.o bin/pico_gfx.o bin/pico_audio.o bin/pico_memory.o bin/pico_data.o bin/pico_script.o bin/pico_cart.o bin/utf8-util.o bin/utils.o bin/log.o bin/crypt.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 	objdump -t -C $@ | sort >bin/app.symbols	
 	@echo "Built All The Things!!!"
@@ -31,6 +31,9 @@ bin/main.o: src/main.cpp src/hal_core.h src/hal_audio.h src/pico_core.h src/pico
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/hal_core.o: src/hal_core.cpp src/hal_core.h src/hal_palette.h src/config.h src/log.h src/crypt.h
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+bin/hal_fs.o: src/hal_fs.cpp src/hal_fs.h src/hal_core.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/hal_palette.o: src/hal_palette.cpp src/hal_palette.h
@@ -57,7 +60,7 @@ bin/pico_memory.o: src/pico_memory.cpp src/pico_memory.h src/log.h
 bin/pico_cart.o: src/pico_cart.cpp src/pico_cart.h src/pico_audio.h src/pico_core.h src/pico_script.h src/utils.h src/log.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_audio.h src/hal_core.h src/log.h src/firmware.lua
+bin/pico_script.o: src/pico_script.cpp src/pico_script.h src/pico_core.h src/pico_audio.h src/pico_cart.h src/hal_audio.h src/hal_core.h src/hal_fs.h src/log.h src/firmware.lua
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 bin/utils.o: src/utils.cpp src/utils.h
