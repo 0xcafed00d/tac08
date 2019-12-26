@@ -24,6 +24,10 @@ function all(a)
 	end	
 end
 
+function __tac08__.allfiles()
+	return __tac08__.files
+end
+
 sub = string.sub
 
 function add(a, val)

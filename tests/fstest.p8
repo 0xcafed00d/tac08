@@ -6,16 +6,12 @@ function _init()
 	apix = __tac08__
 	printh(apix.cwd())
 	printh(apix.cd(".."))
-	printh(apix.cd(".."))
 	
-	f,d,s = apix.files()
-	while f do
-		printh(f.." "..tostr(d).." "..tostr(s))
-		if f == nil then 
-			break
-		end
-		f,d,s = apix.files()
+
+	for f, d in apix.allfiles() do 
+		printh(f.." "..tostr(d))
 	end
+
 end 
 
 function _update()
