@@ -1159,6 +1159,15 @@ static int implx_files(lua_State* ls) {
 	return 0;
 }
 
+static int implx_cd(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	auto s = luaL_checkstring(ls, 1);
+	hal_fs::cd(s);
+	auto path = hal_fs::cwd();
+	lua_pushstring(ls, path.c_str());
+	return 1;
+}
+
 // ------------------------------------------------------------------
 
 static const luaL_Reg pico8_api[] = {{"load", impl_load},         {"run", impl_run},
@@ -1227,6 +1236,7 @@ static const luaL_Reg tac08_api[] = {{"wrclip", implx_wrclip},
                                      {"printx", implx_printx},
                                      {"cwd", implx_cwd},
                                      {"files", implx_files},
+                                     {"cd", implx_cd},
                                      {NULL, NULL}};
 
 static void register_cfuncs(lua_State* ls) {

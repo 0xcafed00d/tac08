@@ -5,6 +5,8 @@ __lua__
 function _init()
 	apix = __tac08__
 	printh(apix.cwd())
+	printh(apix.cd(".."))
+	printh(apix.cd(".."))
 	
 	f,d,s = apix.files()
 	while f do

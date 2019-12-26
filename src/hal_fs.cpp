@@ -35,7 +35,9 @@ namespace hal_fs {
 		return fi;
 	}
 
-	void cd(const char* dir);
+	void cd(const char* dir) {
+		chdir(dir);
+	}
 
 	/*
 	    // read / write from anywhere
