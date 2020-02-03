@@ -7,11 +7,9 @@ function _init()
 	printh(apix.cwd())
 	printh(apix.cd(".."))
 	
-
 	for f, d in apix.allfiles() do 
 		printh(f.." "..tostr(d))
 	end
-
 end 
 
 function _update()

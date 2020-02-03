@@ -136,13 +136,13 @@ int safe_main(int argc, char** argv) {
 			     << "ms  draw: " << drawTime / 1000.0f << "ms"
 			     << " bb copy: " << copyBBTime << "us";
 
+			actual_fps = gameFrameCount;
 			gameFrameCount = 0;
 			systemFrameCount = 0;
 			updateTime = 0;
 			drawTime = 0;
 			copyBBTime = 0;
 			frameTimer = TIME_GetTime_ms();
-			actual_fps = gameFrameCount;
 		}
 	}
 
@@ -152,7 +152,7 @@ int safe_main(int argc, char** argv) {
 int main(int argc, char** argv) {
 	logr.enable(true);
 	logr.setOutputFunction(SYSLOG_LogMessage);
-	logr.setOutputFilter(LogLevel::perf, false);
+	logr.setOutputFilter(LogLevel::perf, true);
 	logr.setOutputFilter(LogLevel::info, false);
 	logr.setOutputFilter(LogLevel::trace, false);
 
