@@ -2,6 +2,7 @@
 #include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_rwops.h>
 #include <assert.h>
+
 #include <algorithm>
 #include <array>
 #include <string>
@@ -9,12 +10,11 @@
 #include <jni.h>
 #endif
 
-#include "hal_core.h"
-#include "hal_palette.h"
-
 #include "config.h"
 #include "crypt.h"
 #include "deque"
+#include "hal_core.h"
+#include "hal_palette.h"
 #include "log.h"
 
 static SDL_Window* sdlWin = nullptr;
@@ -602,14 +602,25 @@ void HAL_EndFrame() {
 
 static uint32_t target_fps = 30;
 static uint32_t actual_fps = 30;
+static uint32_t sys_fps = 60;
 
-void HAL_SetFrameRates(uint32_t target, uint32_t actual) {
+void HAL_SetFrameRates(uint32_t target, uint32_t actual, uint32_t sys) {
 	target_fps = target;
 	actual_fps = actual;
+	sys_fps = sys;
 }
 
-uint32_t HAL_GetFrameRate(bool actual) {
-	return actual ? actual_fps : target_fps;
+// 't' = target, 'a' = actual, 's' = sys
+uint32_t HAL_GetFrameRate(char fps_type) {
+	switch (fps_type) {
+		case 't':
+			return target_fps;
+		case 'a':
+			return actual_fps;
+		case 's':
+			return sys_fps;
+	}
+	return 0;
 }
 
 void PLATFORM_OpenURL(std::string url) {

@@ -2,6 +2,7 @@
 #define GFX_CORE_H
 
 #include <stdint.h>
+
 #include <stdexcept>
 
 #include "log.h"
@@ -82,8 +83,8 @@ std::string INP_GetKeyPress();
 
 void HAL_StartFrame();
 void HAL_EndFrame();
-void HAL_SetFrameRates(uint32_t target_fps, uint32_t actual_fps);
-uint32_t HAL_GetFrameRate(bool actual);
+void HAL_SetFrameRates(uint32_t target, uint32_t actual, uint32_t sys);
+uint32_t HAL_GetFrameRate(char fps_type);  // 't' = target, 'a' = actual, 's' = sys
 
 void PLATFORM_OpenURL(std::string url);
 

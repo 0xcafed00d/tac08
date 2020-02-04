@@ -35,6 +35,7 @@ int safe_main(int argc, char** argv) {
 	uint32_t ticks = 0;
 	uint32_t target_fps = 30;
 	uint32_t actual_fps = 30;
+	uint32_t sys_fps = 60;
 
 	uint32_t systemFrameCount = 0;
 	uint32_t gameFrameCount = 0;
@@ -63,7 +64,7 @@ int safe_main(int argc, char** argv) {
 		}
 
 		target_fps = pico_script::symbolExist("_update60") ? 60 : 30;
-		HAL_SetFrameRates(target_fps, actual_fps);
+		HAL_SetFrameRates(target_fps, actual_fps, sys_fps);
 
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 			HAL_StartFrame();
@@ -137,6 +138,7 @@ int safe_main(int argc, char** argv) {
 			     << " bb copy: " << copyBBTime << "us";
 
 			actual_fps = gameFrameCount;
+			sys_fps = systemFrameCount;
 			gameFrameCount = 0;
 			systemFrameCount = 0;
 			updateTime = 0;

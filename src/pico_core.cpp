@@ -1,9 +1,10 @@
+#include "pico_core.h"
+
 #include <assert.h>
 #include <string.h>
+
 #include <algorithm>
 #include <array>
-
-#include "pico_core.h"
 
 #include "config.h"
 #include "log.h"
@@ -520,13 +521,13 @@ namespace pico_api {
 	int stat(int key, std::string& sval, int& ival) {
 		switch (key) {
 			case 7:
-				ival = HAL_GetFrameRate(true);
+				ival = HAL_GetFrameRate('a');
 				return 2;
 			case 8:
-				ival = HAL_GetFrameRate(false);
+				ival = HAL_GetFrameRate('t');
 				return 2;
 			case 9:
-				ival = HAL_GetFrameRate(true);
+				ival = HAL_GetFrameRate('s');
 				return 2;
 			case 32:
 				ival = mouseState.x;
