@@ -36,6 +36,7 @@ int safe_main(int argc, char** argv) {
 	uint32_t target_fps = 30;
 	uint32_t actual_fps = 30;
 	uint32_t sys_fps = 60;
+	uint32_t cpu_usage = 0;
 
 	uint32_t systemFrameCount = 0;
 	uint32_t gameFrameCount = 0;
@@ -64,7 +65,7 @@ int safe_main(int argc, char** argv) {
 		}
 
 		target_fps = pico_script::symbolExist("_update60") ? 60 : 30;
-		HAL_SetFrameRates(target_fps, actual_fps, sys_fps);
+		HAL_SetFrameRates(target_fps, actual_fps, sys_fps, cpu_usage);
 
 		if ((TIME_GetTime_ms() - ticks) > target_ticks) {
 			HAL_StartFrame();
@@ -128,17 +129,19 @@ int safe_main(int argc, char** argv) {
 		GFX_Flip();
 
 		if (TIME_GetElapsedTime_ms(frameTimer) >= 1000) {
-			updateTime /= systemFrameCount;
-			drawTime /= systemFrameCount;
-			copyBBTime /= systemFrameCount;
+			updateTime /= gameFrameCount;
+			drawTime /= gameFrameCount;
+			copyBBTime /= gameFrameCount;
 
 			logr << LogLevel::perf << "game FPS: " << gameFrameCount
 			     << " sys FPS: " << systemFrameCount << " update: " << updateTime / 1000.0f
 			     << "ms  draw: " << drawTime / 1000.0f << "ms"
-			     << " bb copy: " << copyBBTime << "us";
+			     << " bb copy: " << copyBBTime << "us"
+			     << " cpu: " << cpu_usage;
 
 			actual_fps = gameFrameCount;
 			sys_fps = systemFrameCount;
+			cpu_usage = ((updateTime + drawTime) * 100) / (target_fps == 60 ? 16666 : 33333);
 			gameFrameCount = 0;
 			systemFrameCount = 0;
 			updateTime = 0;
@@ -154,7 +157,7 @@ int safe_main(int argc, char** argv) {
 int main(int argc, char** argv) {
 	logr.enable(true);
 	logr.setOutputFunction(SYSLOG_LogMessage);
-	logr.setOutputFilter(LogLevel::perf, true);
+	logr.setOutputFilter(LogLevel::perf, false);
 	logr.setOutputFilter(LogLevel::info, false);
 	logr.setOutputFilter(LogLevel::trace, false);
 

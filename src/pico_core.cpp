@@ -518,8 +518,12 @@ namespace pico_api {
 		return inputState[player].justPressedRpt(n);
 	}
 
-	int stat(int key, std::string& sval, int& ival) {
+	int stat(int key, std::string& sval, int& ival, double& fval) {
 		switch (key) {
+			case 1:
+			case 2:
+				fval = double(HAL_GetFrameRate('c')) / 100.0;
+				return 3;
 			case 7:
 				ival = HAL_GetFrameRate('a');
 				return 2;

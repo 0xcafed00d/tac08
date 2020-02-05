@@ -603,11 +603,13 @@ void HAL_EndFrame() {
 static uint32_t target_fps = 30;
 static uint32_t actual_fps = 30;
 static uint32_t sys_fps = 60;
+static uint32_t cpu_usage = 0;
 
-void HAL_SetFrameRates(uint32_t target, uint32_t actual, uint32_t sys) {
+void HAL_SetFrameRates(uint32_t target, uint32_t actual, uint32_t sys, uint32_t cpu) {
 	target_fps = target;
 	actual_fps = actual;
 	sys_fps = sys;
+	cpu_usage = cpu;
 }
 
 // 't' = target, 'a' = actual, 's' = sys
@@ -619,6 +621,8 @@ uint32_t HAL_GetFrameRate(char fps_type) {
 			return actual_fps;
 		case 's':
 			return sys_fps;
+		case 'c':
+			return cpu_usage;
 	}
 	return 0;
 }

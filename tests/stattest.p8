@@ -8,8 +8,10 @@ function _init()
 end
 
 function _update60()
-	for n = 0, 9 do 
-		stats[n] = stat(n)
+	for x = 0, 100 do
+		for n = 0, 9 do 
+			stats[n] = stat(n)
+		end
 	end
 end
 

@@ -33,7 +33,7 @@ namespace pico_api {
 	int btnp();
 	int btnp(int n, int player = 0);
 
-	int stat(int key, std::string& sval, int& ival);
+	int stat(int key, std::string& sval, int& ival, double& fval);
 
 	void reload(uint16_t dest_addr, uint16_t source_addr, uint16_t len);
 

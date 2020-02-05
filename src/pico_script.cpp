@@ -1,12 +1,14 @@
+#include "pico_script.h"
+
 #include <assert.h>
+
 #include <cstring>
 #include <deque>
 #include <functional>
 #include <iostream>
 #include <set>
 
-#include "pico_script.h"
-
+#include "firmware.lua"
 #include "hal_audio.h"
 #include "hal_core.h"
 #include "hal_fs.h"
@@ -14,12 +16,9 @@
 #include "pico_audio.h"
 #include "pico_cart.h"
 #include "pico_core.h"
-
 #include "z8lua/lauxlib.h"
 #include "z8lua/lua.h"
 #include "z8lua/lualib.h"
-
-#include "firmware.lua"
 
 static lua_State* lstate = nullptr;
 
@@ -639,13 +638,16 @@ static int impl_stat(lua_State* ls) {
 
 	std::string s;
 	int i;
+	double f;
 
-	auto v = pico_api::stat(k, s, i);
+	auto v = pico_api::stat(k, s, i, f);
 
 	if (v == 1)
 		lua_pushstring(ls, s.c_str());
 	else if (v == 2)
 		lua_pushnumber(ls, i);
+	else if (v == 3)
+		lua_pushnumber(ls, f);
 	else
 		lua_pushnil(ls);
 
