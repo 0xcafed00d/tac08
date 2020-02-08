@@ -52,7 +52,7 @@ namespace pico_apix {
 	void resetpal();
 	void resetpal(uint8_t i);
 	void screen(uint16_t w, uint16_t h);
-	void zoom(uint16_t x, uint16_t y, double zoom);
+	void zoom(int32_t x, int32_t y, double zoom);
 	void zoom();
 	void cursor(bool enable);
 	void menu();

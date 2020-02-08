@@ -623,9 +623,10 @@ namespace pico_apix {
 	void screen(uint16_t w, uint16_t h) {
 		pico_control::init_backbuffer_mem(w, h);
 		pico_api::clip();
+		zoom(w / 2, h / 2, 1.0);
 	}
 
-	void zoom(uint16_t x, uint16_t y, double zoom) {
+	void zoom(int32_t x, int32_t y, double zoom) {
 		GFX_SetZoom(x, y, zoom);
 	}
 
