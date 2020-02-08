@@ -623,7 +623,7 @@ namespace pico_apix {
 	void screen(uint16_t w, uint16_t h) {
 		pico_control::init_backbuffer_mem(w, h);
 		pico_api::clip();
-		zoom(w / 2, h / 2, 1.0);
+		zoom();
 	}
 
 	void zoom(int32_t x, int32_t y, double zoom) {
@@ -631,7 +631,7 @@ namespace pico_apix {
 	}
 
 	void zoom() {
-		GFX_SetZoom(64, 64, 1.0);  // todo: check back buffer size
+		GFX_SetZoom(buffer_size_x / 2, buffer_size_y / 2, 1.0);
 	}
 
 	void cursor(bool enable) {
