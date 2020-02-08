@@ -9,10 +9,10 @@ function _init()
 end
 
 function _update()
-	if btnp(0) then x -= 1 end
-	if btnp(1) then x += 1 end
-	if btnp(2) then y -= 1 end
-	if btnp(3) then y += 1 end
+	if btn(0) then x -= 1 end
+	if btn(1) then x += 1 end
+	if btn(2) then y -= 1 end
+	if btn(3) then y += 1 end
 	if btn(4) then factor -= 0.01 end
 	if btn(5) then factor += 0.01 end
 end

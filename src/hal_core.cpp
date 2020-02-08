@@ -280,15 +280,19 @@ static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 }
 
 void GFX_Flip() {
-	SDL_RenderClear(sdlRen);
 	SDL_Rect dr = getDisplayArea(sdlWin);
-	SDL_RenderSetClipRect(sdlRen, &dr);
-	dr.x -= zoom_origin.x;
-	dr.y -= zoom_origin.y;
+	SDL_Rect sr = {0, 0, screenWidth, screenHeight};
+	double scalex = double(dr.w) / double(sr.w);
+	double scaley = double(dr.h) / double(sr.h);
+
+	SDL_RenderClear(sdlRen);
+	//	SDL_RenderSetClipRect(sdlRen, &dr);
+
+	dr.x = dr.x - zoom_origin.x * scalex * zoom_factor + dr.w / 2;
+	dr.y = dr.y - zoom_origin.y * scaley * zoom_factor + dr.h / 2;
 	dr.w *= zoom_factor;
 	dr.h *= zoom_factor;
 
-	SDL_Rect sr = {0, 0, screenWidth, screenHeight};
 	SDL_RenderCopy(sdlRen, sdlTex, &sr, &dr);
 	SDL_RenderPresent(sdlRen);
 }
