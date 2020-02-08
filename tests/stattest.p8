@@ -16,7 +16,7 @@ function _update60()
 end
 
 function _draw()
-	cls()
+	cls(1)
 	for n = 0, 9 do 
 		print("stat("..tostr(n)..") = "..tostr(stats[n]))
 	end

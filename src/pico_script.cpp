@@ -856,6 +856,19 @@ static int implx_screen(lua_State* ls) {
 	return 0;
 }
 
+static int implx_zoom(lua_State* ls) {
+	DEBUG_DUMP_FUNCTION
+	if (lua_gettop(ls) > 0) {
+		auto x = luaL_checknumber(ls, 1).toInt();
+		auto y = luaL_checknumber(ls, 2).toInt();
+		double factor = luaL_checknumber(ls, 3);
+		pico_apix::zoom(x, y, factor);
+	} else {
+		pico_apix::zoom();
+	}
+	return 0;
+}
+
 static int implx_xpal(lua_State* ls) {
 	DEBUG_DUMP_FUNCTION
 	auto enable = lua_toboolean(ls, 1);
@@ -1211,6 +1224,7 @@ static const luaL_Reg tac08_api[] = {{"wrclip", implx_wrclip},
                                      {"selpal", implx_selpal},
                                      {"resetpal", implx_resetpal},
                                      {"screen", implx_screen},
+                                     {"zoom", implx_zoom},
                                      {"xpal", implx_xpal},
                                      {"cursor", implx_cursor},
                                      {"showmenu", implx_showmenu},

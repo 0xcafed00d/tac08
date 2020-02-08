@@ -32,6 +32,9 @@ static bool debug_trace_state = false;
 static bool reload_requested = false;
 static std::string selectedPalette;
 
+static SDL_Point zoom_origin = SDL_Point{64, 64};
+static double zoom_factor = 1.0;
+
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
 	throw(gfx_exception(msg));
@@ -155,8 +158,7 @@ pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
 
 void GFX_CreateBackBuffer(int x, int y) {
 	TraceFunction();
-	screenWidth = x;
-	screenHeight = y;
+	GFX_SetBackBufferSize(x, y);
 
 	sdlTex = SDL_CreateTexture(sdlRen, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING,
 	                           config::MAX_SCREEN_WIDTH, config::MAX_SCREEN_HEIGHT);
@@ -249,6 +251,12 @@ void GFX_GetDisplayArea(int* w, int* h) {
 	SDL_GetRendererOutputSize(sdlRen, w, h);
 }
 
+void GFX_SetZoom(int x, int y, double factor) {
+	zoom_origin.x = x;
+	zoom_origin.y = y;
+	zoom_factor = factor;
+}
+
 static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 	int winx, winy;
 	SDL_GetWindowSize(win, &winx, &winy);
@@ -274,6 +282,12 @@ static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
 void GFX_Flip() {
 	SDL_RenderClear(sdlRen);
 	SDL_Rect dr = getDisplayArea(sdlWin);
+	SDL_RenderSetClipRect(sdlRen, &dr);
+	dr.x -= zoom_origin.x;
+	dr.y -= zoom_origin.y;
+	dr.w *= zoom_factor;
+	dr.h *= zoom_factor;
+
 	SDL_Rect sr = {0, 0, screenWidth, screenHeight};
 	SDL_RenderCopy(sdlRen, sdlTex, &sr, &dr);
 	SDL_RenderPresent(sdlRen);

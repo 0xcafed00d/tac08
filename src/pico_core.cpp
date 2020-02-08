@@ -625,6 +625,14 @@ namespace pico_apix {
 		pico_api::clip();
 	}
 
+	void zoom(uint16_t x, uint16_t y, double zoom) {
+		GFX_SetZoom(x, y, zoom);
+	}
+
+	void zoom() {
+		GFX_SetZoom(64, 64, 1.0);  // todo: check back buffer size
+	}
+
 	void cursor(bool enable) {
 		GFX_ShowHWMouse(enable);
 	}

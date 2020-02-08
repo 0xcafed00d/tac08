@@ -38,6 +38,7 @@ void GFX_ShowHWMouse(bool show);
 void GFX_GetDisplayArea(int* w, int* h);
 void GFX_ToggleFullScreen();
 void GFX_SetFullScreen(bool fullscreen);
+void GFX_SetZoom(int x, int y, double factor);
 
 std::string FILE_LoadFile(std::string name);
 std::string FILE_LoadGameState(std::string name);
