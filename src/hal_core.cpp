@@ -286,7 +286,7 @@ void GFX_Flip() {
 	double scaley = double(dr.h) / double(sr.h);
 
 	SDL_RenderClear(sdlRen);
-	//	SDL_RenderSetClipRect(sdlRen, &dr);
+	SDL_RenderSetClipRect(sdlRen, &dr);
 
 	dr.x = dr.x - zoom_origin.x * scalex * zoom_factor + dr.w / 2;
 	dr.y = dr.y - zoom_origin.y * scaley * zoom_factor + dr.h / 2;
