@@ -34,6 +34,7 @@ static std::string selectedPalette;
 
 static SDL_Point zoom_origin = SDL_Point{64, 64};
 static double zoom_factor = 1.0;
+static double zoom_rot = 0.0;
 
 static void throw_error(std::string msg) {
 	msg += SDL_GetError();
@@ -251,10 +252,11 @@ void GFX_GetDisplayArea(int* w, int* h) {
 	SDL_GetRendererOutputSize(sdlRen, w, h);
 }
 
-void GFX_SetZoom(int x, int y, double factor) {
+void GFX_SetZoom(int x, int y, double factor, double rot) {
 	zoom_origin.x = x;
 	zoom_origin.y = y;
 	zoom_factor = factor;
+	zoom_rot = rot;
 }
 
 static SDL_Rect getDisplayArea(SDL_Window* win, double* scale = nullptr) {
@@ -294,7 +296,10 @@ void GFX_Flip() {
 	dr.w *= zoom_factor;
 	dr.h *= zoom_factor;
 
-	SDL_RenderCopy(sdlRen, sdlTex, &sr, &dr);
+	SDL_Point c = {int(zoom_origin.x * scalex * zoom_factor),
+	               int(zoom_origin.y * scaley * zoom_factor)};
+
+	SDL_RenderCopyEx(sdlRen, sdlTex, &sr, &dr, zoom_rot, &c, SDL_FLIP_NONE);
 	SDL_RenderPresent(sdlRen);
 }
 

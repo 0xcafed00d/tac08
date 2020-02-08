@@ -862,7 +862,8 @@ static int implx_zoom(lua_State* ls) {
 		auto x = luaL_checknumber(ls, 1).toInt();
 		auto y = luaL_checknumber(ls, 2).toInt();
 		double factor = luaL_checknumber(ls, 3);
-		pico_apix::zoom(x, y, factor);
+		double rot = luaL_optnumber(ls, 4, 0);
+		pico_apix::zoom(x, y, factor, rot);
 	} else {
 		pico_apix::zoom();
 	}

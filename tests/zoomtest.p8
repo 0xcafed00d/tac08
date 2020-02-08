@@ -6,9 +6,12 @@ function _init()
 	x = 64
 	y = 64
 	factor = 1
+	rot = 0
 end
 
 function _update()
+	rot += 1
+
 	if btn(0) then x -= 1 end
 	if btn(1) then x += 1 end
 	if btn(2) then y -= 1 end
@@ -28,9 +31,9 @@ function _draw()
 
 	spr(1, x-3, y-3)
 
-	--if __tac08__ then 
-		__tac08__.zoom(x, y, factor)
-	--end
+	if __tac08__ then 
+		__tac08__.zoom(x, y, factor, rot)
+	end
 end
 __gfx__
 00000000033333000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

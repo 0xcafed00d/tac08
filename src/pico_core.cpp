@@ -626,12 +626,12 @@ namespace pico_apix {
 		zoom();
 	}
 
-	void zoom(int32_t x, int32_t y, double zoom) {
-		GFX_SetZoom(x, y, zoom);
+	void zoom(int32_t x, int32_t y, double zoom, double rot) {
+		GFX_SetZoom(x, y, zoom, rot);
 	}
 
 	void zoom() {
-		GFX_SetZoom(buffer_size_x / 2, buffer_size_y / 2, 1.0);
+		GFX_SetZoom(buffer_size_x / 2, buffer_size_y / 2, 1.0, 0);
 	}
 
 	void cursor(bool enable) {
