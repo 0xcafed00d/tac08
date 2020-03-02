@@ -7,9 +7,9 @@
 
 namespace hal_fs {
 	std::string cwd() {
-		auto buf = get_current_dir_name();
+	    char buf[PATH_MAX+1];
+		getcwd(buf, PATH_MAX);
 		std::string val(buf);
-		free(buf);
 		return val;
 	}
 
