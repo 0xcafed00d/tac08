@@ -271,6 +271,7 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_sfx_data);
 
 		audio_init();
+		pico_apix::screen(128, 128);
 	}
 
 	void frame_start() {
