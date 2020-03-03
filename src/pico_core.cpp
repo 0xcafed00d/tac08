@@ -271,7 +271,6 @@ namespace pico_control {
 		ram.addMemoryArea(&mem_sfx_data);
 
 		audio_init();
-		pico_apix::screen(128, 128);
 	}
 
 	void frame_start() {
@@ -375,6 +374,7 @@ namespace pico_control {
 		audio_init();
 		pico_cart::extractCart(pico_cart::getCart());
 		pico_apix::gfxstate(0);
+		pico_apix::screen(128, 128);
 	}
 
 	void displayerror(const std::string& msg) {
