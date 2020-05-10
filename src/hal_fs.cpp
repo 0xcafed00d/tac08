@@ -1,5 +1,6 @@
 #include "hal_fs.h"
 
+#include <limits.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
