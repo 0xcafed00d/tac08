@@ -1,3 +1,8 @@
+PROJECT_NAME := tac08-go
+
+include $(IDF_PATH)/make/project.mk
+
+
 CXX = g++
 
 # modify these paths to point to your local sdl install. 

@@ -8,3 +8,4 @@ win-tac08.vcxproj.user
 .vscode/ipch
 bin/
 .DS_Store
+build

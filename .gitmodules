@@ -4,3 +4,6 @@
 [submodule "src/utf8-util"]
 	path = src/utf8-util
 	url = https://github.com/0xcafed00d/utf8-util.git
+[submodule "components/odroid-go"]
+	path = components/odroid-go
+	url = https://github.com/hardkernel/ODROID-GO.git
