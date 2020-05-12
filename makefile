@@ -1,7 +1,6 @@
-PROJECT_NAME := tac08-go
+PROJECT_NAME := tac08
 
 include $(IDF_PATH)/make/project.mk
-
 
 CXX = g++
 
