@@ -1,11 +1,3 @@
-// ESP32 imports
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
-// TAC08 Original Code
-// #include <SDL2/SDL.h>
-
 #include "config.h"
 #include "hal_audio.h"
 #include "hal_core.h"
@@ -185,18 +177,4 @@ int main(int argc, char** argv) {
 	GFX_End();
 
 	return 0;
-}
-
-// ESP32 Entrypoint
-extern "C" void app_main()
-{
-	// TODO: Call main after reimplementing SDL functionality.
-	// main(0, NULL);
-
-    int i = 0;
-    while (1) {
-        printf("[%d] Hello world!\n", i);
-        i++;
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-    }
 }

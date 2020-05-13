@@ -1,6 +1,9 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_clipboard.h>
-#include <SDL2/SDL_rwops.h>
+// TODO: Replace SDL2 calls with SDL port.
+
+// #include <SDL2/SDL.h>
+// #include <SDL2/SDL_clipboard.h>
+// #include <SDL2/SDL_rwops.h>
+#include "SDL.h"
 #include <assert.h>
 
 #include <algorithm>
