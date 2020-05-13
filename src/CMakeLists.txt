@@ -5,4 +5,4 @@ idf_component_register(SRCS "main.cpp" "hal_core.cpp"
                        INCLUDE_DIRS "."
                        REQUIRES SDL)
 
-target_compile_options(${COMPONENT_LIB} PRIVATE -fexceptions)
+target_compile_options(${COMPONENT_LIB} PRIVATE -fexceptions -Wno-unused-variable -Wno-unused-function)
