@@ -137,7 +137,7 @@ void GFX_End() {
 	// if (sdlTex) {
 	// 	SDL_DestroyTexture(sdlTex);
 	// }
-	SDL_Quit();
+	// SDL_Quit();
 }
 
 void checkmem() {
@@ -157,7 +157,8 @@ void GFX_SetFullScreen(bool fullscreen) {
 }
 
 pixel_t GFX_GetPixel(uint8_t r, uint8_t g, uint8_t b) {
-	return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
+	return 0;
+	// return (pixel_t)SDL_MapRGB(sdlPixFmt, r, g, b);
 }
 
 void GFX_CreateBackBuffer(int x, int y) {
@@ -248,7 +249,7 @@ void GFX_CopyBackBuffer(uint8_t* buffer, int buffer_w, int buffer_h) {
 }
 
 void GFX_ShowHWMouse(bool show) {
-	SDL_ShowCursor(show);
+	// SDL_ShowCursor(show);
 }
 
 void GFX_GetDisplayArea(int* w, int* h) {
@@ -507,11 +508,13 @@ void INP_SetSimState(uint8_t state) {
 }
 
 uint32_t TIME_GetTime_ms() {
-	return SDL_GetTicks();
+	return 0;
+	// return SDL_GetTicks();
 }
 
 uint32_t TIME_GetElapsedTime_ms(uint32_t start) {
-	return SDL_GetTicks() - start;
+	return 0;
+	// return SDL_GetTicks() - start;
 }
 
 uint64_t TIME_GetProfileTime() {

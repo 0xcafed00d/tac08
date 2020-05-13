@@ -1,5 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
+// #include <SDL2/SDL.h>
+// #include <SDL2/SDL_audio.h>
+
+#include "SDL.h"
 
 #include <stdint.h>
 #include <algorithm>
@@ -31,7 +33,7 @@ struct Channel {
 };
 
 std::vector<Wav> loadedWavs;
-SDL_AudioDeviceID audioDevice = 0;
+// SDL_AudioDeviceID audioDevice = 0;
 std::array<Channel, NUM_CHANNELS> channels;
 
 static void throw_error(std::string msg) {
@@ -75,36 +77,36 @@ static void callback(void* userdata, uint8_t* stream, int len) {
 }
 
 void AUDIO_Init() {
-	TraceFunction();
+	// TraceFunction();
 
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
-		throw_error("SDL_Init Error: ");
-	}
+	// if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
+	// 	throw_error("SDL_Init Error: ");
+	// }
 
-	SDL_AudioSpec spec, gotspec;
-	SDL_zero(spec);
-	spec.freq = config::AUDIO_FREQ;
-	spec.format = AUDIO_S16LSB;
-	spec.channels = 1;
-	spec.samples = config::AUDIO_BUFFER_SIZE;
-	spec.callback = callback;
-	audioDevice = SDL_OpenAudioDevice(nullptr, 0, &spec, &gotspec, 0);
-	if (audioDevice == 0) {
-		throw_error("SDL_OpenAudioDevice error: ");
-	}
-	SDL_PauseAudioDevice(audioDevice, 0);
+	// SDL_AudioSpec spec, gotspec;
+	// SDL_zero(spec);
+	// spec.freq = config::AUDIO_FREQ;
+	// spec.format = AUDIO_S16LSB;
+	// spec.channels = 1;
+	// spec.samples = config::AUDIO_BUFFER_SIZE;
+	// spec.callback = callback;
+	// audioDevice = SDL_OpenAudioDevice(nullptr, 0, &spec, &gotspec, 0);
+	// if (audioDevice == 0) {
+	// 	throw_error("SDL_OpenAudioDevice error: ");
+	// }
+	// SDL_PauseAudioDevice(audioDevice, 0);
 }
 
 void AUDIO_Shutdown() {
-	TraceFunction();
-	SDL_PauseAudioDevice(audioDevice, 1);
-	SDL_CloseAudioDevice(audioDevice);
+	// TraceFunction();
+	// SDL_PauseAudioDevice(audioDevice, 1);
+	// SDL_CloseAudioDevice(audioDevice);
 
-	for (auto& wav : loadedWavs) {
-		SDL_FreeWAV((uint8_t*)(wav.sampleData));
-	}
-	loadedWavs.clear();
-	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+	// for (auto& wav : loadedWavs) {
+	// 	SDL_FreeWAV((uint8_t*)(wav.sampleData));
+	// }
+	// loadedWavs.clear();
+	// SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
 static uint32_t trim_sample(int16_t* sampleData, uint32_t numSamples) {
@@ -117,50 +119,52 @@ static uint32_t trim_sample(int16_t* sampleData, uint32_t numSamples) {
 }
 
 int AUDIO_LoadWav(const char* name, bool trim) {
-	Wav wav;
-	SDL_zero(wav);
+	return -1;
 
-	if (SDL_LoadWAV(name, &wav.spec, (uint8_t**)&wav.sampleData, &wav.numSamples) == nullptr) {
-		throw_error("SDL_LoadWav error: ");
-	}
+	// Wav wav;
+	// SDL_zero(wav);
 
-	wav.numSamples /= 2;
+	// if (SDL_LoadWAV(name, &wav.spec, (uint8_t**)&wav.sampleData, &wav.numSamples) == nullptr) {
+	// 	throw_error("SDL_LoadWav error: ");
+	// }
 
-	if (trim) {
-		wav.numSamples = trim_sample(wav.sampleData, wav.numSamples);
-	}
+	// wav.numSamples /= 2;
 
-	SDL_LockAudioDevice(audioDevice);
-	loadedWavs.push_back(wav);
-	SDL_UnlockAudioDevice(audioDevice);
+	// if (trim) {
+	// 	wav.numSamples = trim_sample(wav.sampleData, wav.numSamples);
+	// }
 
-	int id = loadedWavs.size() - 1;
+	// SDL_LockAudioDevice(audioDevice);
+	// loadedWavs.push_back(wav);
+	// SDL_UnlockAudioDevice(audioDevice);
 
-	logr << "loaded wav: " << name << " id: " << id << " freq: " << wav.spec.freq
-	     << " samples: " << wav.numSamples
-	     << " duration: " << (double)wav.numSamples / (double)wav.spec.freq;
+	// int id = loadedWavs.size() - 1;
 
-	return id;
+	// logr << "loaded wav: " << name << " id: " << id << " freq: " << wav.spec.freq
+	//      << " samples: " << wav.numSamples
+	//      << " duration: " << (double)wav.numSamples / (double)wav.spec.freq;
+
+	// return id;
 }
 
 void AUDIO_Play(int id, int chan, bool loop) {
-	if (id >= (int)loadedWavs.size())
-		return;
+	// if (id >= (int)loadedWavs.size())
+	// 	return;
 
-	Channel ci;
-	ci.wav = loadedWavs[id];
-	ci.loop = loop;
-	ci.playing = true;
+	// Channel ci;
+	// ci.wav = loadedWavs[id];
+	// ci.loop = loop;
+	// ci.playing = true;
 
-	ci.start = 0;
-	ci.end = ci.wav.numSamples;
-	ci.loop_start = ci.start;
-	ci.loop_end = ci.end;
-	ci.current = ci.start;
+	// ci.start = 0;
+	// ci.end = ci.wav.numSamples;
+	// ci.loop_start = ci.start;
+	// ci.loop_end = ci.end;
+	// ci.current = ci.start;
 
-	SDL_LockAudioDevice(audioDevice);
-	channels[chan] = ci;
-	SDL_UnlockAudioDevice(audioDevice);
+	// SDL_LockAudioDevice(audioDevice);
+	// channels[chan] = ci;
+	// SDL_UnlockAudioDevice(audioDevice);
 }
 
 // convert a position in a sample (128th of a second) to a sample index
@@ -169,80 +173,82 @@ static uint32_t pos2sample(int pos, int frequency) {
 }
 
 void AUDIO_Play(int id, int chan, int start, int end, bool loop) {
-	if (id >= (int)loadedWavs.size())
-		return;
+	// if (id >= (int)loadedWavs.size())
+	// 	return;
 
-	Channel ci;
-	ci.wav = loadedWavs[id];
-	ci.loop = loop;
-	ci.playing = true;
+	// Channel ci;
+	// ci.wav = loadedWavs[id];
+	// ci.loop = loop;
+	// ci.playing = true;
 
-	ci.start = std::min(pos2sample(start, ci.wav.spec.freq), ci.wav.numSamples);
-	ci.end = std::min(pos2sample(end, ci.wav.spec.freq), ci.wav.numSamples);
-	ci.loop_start = ci.start;
-	ci.loop_end = ci.end;
-	ci.current = ci.start;
+	// ci.start = std::min(pos2sample(start, ci.wav.spec.freq), ci.wav.numSamples);
+	// ci.end = std::min(pos2sample(end, ci.wav.spec.freq), ci.wav.numSamples);
+	// ci.loop_start = ci.start;
+	// ci.loop_end = ci.end;
+	// ci.current = ci.start;
 
-	SDL_LockAudioDevice(audioDevice);
-	channels[chan] = ci;
-	SDL_UnlockAudioDevice(audioDevice);
+	// SDL_LockAudioDevice(audioDevice);
+	// channels[chan] = ci;
+	// SDL_UnlockAudioDevice(audioDevice);
 }
 
 void AUDIO_Play(int id, int chan, int loop_start, int loop_end) {
-	if (id >= (int)loadedWavs.size())
-		return;
+	// if (id >= (int)loadedWavs.size())
+	// 	return;
 
-	Channel ci;
-	ci.wav = loadedWavs[id];
-	ci.loop = true;
-	ci.playing = true;
+	// Channel ci;
+	// ci.wav = loadedWavs[id];
+	// ci.loop = true;
+	// ci.playing = true;
 
-	ci.start = 0;
-	ci.end = ci.wav.numSamples;
-	ci.loop_start = std::min(pos2sample(loop_start, ci.wav.spec.freq), ci.end);
-	ci.loop_end = std::min(pos2sample(loop_end, ci.wav.spec.freq), ci.end);
-	ci.current = ci.start;
+	// ci.start = 0;
+	// ci.end = ci.wav.numSamples;
+	// ci.loop_start = std::min(pos2sample(loop_start, ci.wav.spec.freq), ci.end);
+	// ci.loop_end = std::min(pos2sample(loop_end, ci.wav.spec.freq), ci.end);
+	// ci.current = ci.start;
 
-	SDL_LockAudioDevice(audioDevice);
-	channels[chan] = ci;
-	SDL_UnlockAudioDevice(audioDevice);
+	// SDL_LockAudioDevice(audioDevice);
+	// channels[chan] = ci;
+	// SDL_UnlockAudioDevice(audioDevice);
 }
 
 void AUDIO_StopAll() {
-	for (size_t c = 0; c < channels.size(); c++) {
-		AUDIO_Stop(c);
-	}
+	// for (size_t c = 0; c < channels.size(); c++) {
+	// 	AUDIO_Stop(c);
+	// }
 }
 
 void AUDIO_Stop(int chan) {
-	SDL_LockAudioDevice(audioDevice);
-	channels[chan].playing = false;
-	SDL_UnlockAudioDevice(audioDevice);
+	// SDL_LockAudioDevice(audioDevice);
+	// channels[chan].playing = false;
+	// SDL_UnlockAudioDevice(audioDevice);
 }
 
 void AUDIO_StopLoop(int chan) {
-	SDL_LockAudioDevice(audioDevice);
-	channels[chan].loop = false;
-	SDL_UnlockAudioDevice(audioDevice);
+	// SDL_LockAudioDevice(audioDevice);
+	// channels[chan].loop = false;
+	// SDL_UnlockAudioDevice(audioDevice);
 }
 
 bool AUDIO_isPlaying(int chan) {
-	SDL_LockAudioDevice(audioDevice);
-	bool playing = channels[chan].playing;
-	SDL_UnlockAudioDevice(audioDevice);
-	return playing;
+	return false;
+	// SDL_LockAudioDevice(audioDevice);
+	// bool playing = channels[chan].playing;
+	// SDL_UnlockAudioDevice(audioDevice);
+	// return playing;
 }
 
 int AUDIO_AvailableChan(bool force) {
-	for (int c = 0; c < (int)channels.size(); c++) {
-		if (!AUDIO_isPlaying(c)) {
-			return c;
-		}
-	}
-	// no free channels - use the oldest playing
-	if (force) {
-		return 0;  // TODO: look for oldest playing chan
-	} else {
-		return -1;
-	}
+	return -1;
+	// for (int c = 0; c < (int)channels.size(); c++) {
+	// 	if (!AUDIO_isPlaying(c)) {
+	// 		return c;
+	// 	}
+	// }
+	// // no free channels - use the oldest playing
+	// if (force) {
+	// 	return 0;  // TODO: look for oldest playing chan
+	// } else {
+	// 	return -1;
+	// }
 }

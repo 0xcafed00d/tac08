@@ -8,36 +8,21 @@
 
 namespace hal_fs {
 	std::string cwd() {
-	    char buf[PATH_MAX+1];
-		getcwd(buf, PATH_MAX);
-		std::string val(buf);
-		return val;
+		return "";
+	 	// char buf[PATH_MAX+1];
+		// getcwd(buf, PATH_MAX);
+		// std::string val(buf);
+		// return val;
 	}
 
 	finfo files() {
-		static DIR* dir_ptr = nullptr;
-
-		if (!dir_ptr) {
-			dir_ptr = opendir(cwd().c_str());
-		}
-
-		finfo fi = {};
-		if (dir_ptr) {
-			auto entry = readdir(dir_ptr);
-			if (entry) {
-				fi.name = entry->d_name;
-				fi.dir = entry->d_type == DT_DIR;
-				return fi;
-			} else {
-				closedir(dir_ptr);
-				dir_ptr = nullptr;
-			}
-		}
-		return fi;
+		finfo f;
+		f.name = "";
+		return f;
 	}
 
 	void cd(const char* dir) {
-		chdir(dir);
+		// chdir(dir);
 	}
 
 	/*
