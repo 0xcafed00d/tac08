@@ -16,4 +16,8 @@ add_library(lua STATIC IMPORTED GLOBAL)
 set_target_properties(lua PROPERTIES IMPORTED_LOCATION ../src/z8lua/libluaz8.a)
 target_link_libraries(${COMPONENT_LIB} PUBLIC lua)
 
+# This doesn't work either:
+# add_prebuilt_library(lua /Users/aric/src/tac08/src/z8lua/libluaz8.a)
+# target_link_libraries(${COMPONENT_LIB} PRIVATE lua)
+
 target_compile_options(${COMPONENT_LIB} PRIVATE -fexceptions -Wno-unused-variable -Wno-unused-function)
